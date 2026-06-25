@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { GoogleAuthButton } from "@/components/google-auth-button";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -105,6 +106,14 @@ export function SignUpForm({
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Creating an account..." : "Sign up"}
               </Button>
+            </div>
+            <div className="mt-4 flex items-center gap-3">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted-foreground">OR</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <div className="mt-4">
+              <GoogleAuthButton />
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
