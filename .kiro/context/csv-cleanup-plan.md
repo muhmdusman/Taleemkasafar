@@ -230,3 +230,28 @@ input,label}.
   Next+Supabase starter readme).
 Final components: auth/{sign-in-form,sign-up-form,social-buttons},
 forgot-password-form, update-password-form, logout-button, ui/{button,card,input,label}.
+
+
+## 2026-06-26 — Dashboard home built (Soft Brutalism)
+- DB: migration mcq_10_dashboard_views adds `subject_overview` view
+  (security_invoker) — per (test,subject) chapter_count + approved question_count.
+  Verified: english 4/310, maths 16/326, physics 21/482. Regenerated TS types
+  (Views block added to lib/database.types.ts).
+- Data layer: lib/queries/dashboard.ts (getDashboardData, server-only, RLS),
+  + lib/queries/dashboard-helpers.ts (pure: resolveDisplayName, avatarInitial,
+  cardIndex).
+- Route group app/(dashboard)/ with shared shell layout (Sidebar + BottomNav).
+  Root "/" moved here = dashboard home. proxy.ts already guards all non-/auth.
+- Components in components/dashboard/: icon, sidebar, bottom-nav, header,
+  hero-section, subjects-section (REAL data + counts, links to /subjects/[slug]),
+  challenge-section. Honest empty states (no fake stats; hasActivity flag from
+  attempts count). Brand = "Taleem ka Safar".
+- TESTING set up: Vitest installed, `npm run test`/`test:watch` scripts,
+  vitest.config.ts. lib/queries/dashboard-helpers.test.ts (7 tests) — all pass.
+- Build passes. Nav links to /subjects, /mock-tests, /performance, /settings,
+  /help are placeholders (pages not built yet — next).
+- Advisor note (deferred, dashboard toggle): leaked-password-protection is OFF;
+  enable in Supabase Auth settings for production.
+
+### Next: build /subjects (subject -> chapters list) then chapter view
+(4 buttons: Past Paper | Practice | Quick Notes | Lectures), then practice loop.

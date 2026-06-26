@@ -783,7 +783,28 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      subject_overview: {
+        Row: {
+          chapter_count: number | null
+          display_order: number | null
+          entry_test_id: string | null
+          entry_test_slug: string | null
+          nature_of_questions: string | null
+          question_count: number | null
+          subject_id: string | null
+          subject_name: string | null
+          subject_slug: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_subjects_entry_test_id_fkey"
+            columns: ["entry_test_id"]
+            isOneToOne: false
+            referencedRelation: "entry_tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }
