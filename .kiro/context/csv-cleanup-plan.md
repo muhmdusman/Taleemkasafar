@@ -186,6 +186,47 @@ Next: build importer to load mcqs/normalized_mcqs.csv, then gen TS types.
 - Subject -> chapter/topic -> [Practice | Past Paper | Quick Notes | Lectures].
 - Practice loop (instant feedback) + mock test flow + analytics.
 - Google OAuth still needs manual dashboard config (see decisions.md).
+
+## 2026-06-25 — Auth UI built (Soft Brutalism)
+- Added design system: tailwind tokens (ink/brand/surface/outline + shadow-hard),
+  Space Grotesk + Inter fonts, Material Symbols. Steering: design-system.md.
+- Auth business logic on server: app/auth/actions.ts (signInAction/signUpAction
+  as Server Actions; redirect server-side — sign in -> "/", sign up ->
+  /auth/sign-up-success). Google OAuth client-side via social-buttons.tsx;
+  GitHub button rendered but disabled (coming soon).
+- New components: components/auth/{sign-in-form,sign-up-form,social-buttons}.tsx
+  ported from ui_design HTML (brand = "Taleem ka Safar", not TEST_ARCHITECT).
+- app/auth/layout.tsx = branded auth shell. login + sign-up pages rewired.
+  sign-up-success restyled. Deleted old login-form/sign-up-form/google-auth-button.
+- Route protection: proxy.ts now guards EVERYTHING except /auth/* (root "/" is the
+  authenticated landing). app/page.tsx = authed landing (Suspense-wrapped auth read
+  for Cache Components) with logout.
+- User updated Google OAuth client/secret in dashboard, so Google sign-in is live.
+- Build passes (Next 16.1.6, Cache Components). Note: avoid `new Date()` in Server
+  Components (must be cached/Suspense) — hardcoded footer year.
 - [ ] Phase 2: standardize headers & IDs
 - [ ] Phase 3: validate
 - [ ] Phase 4: migration + import (separate)
+
+
+## 2026-06-25 — Starter cruft cleanup
+Deleted unused Next.js+Supabase starter demo code:
+- app/protected/ (whole folder — replaced by authed root "/")
+- components/tutorial/ (whole folder)
+- components/{hero,next-logo,supabase-logo,deploy-button,env-var-warning,auth-button}.tsx
+- components/ui/{badge,checkbox}.tsx (unused primitives)
+Fixed update-password-form redirect /protected -> /. Build passes.
+Remaining components: auth/{sign-in,sign-up,social-buttons}, forgot-password-form,
+update-password-form, logout-button, theme-switcher, ui/{button,card,dropdown-menu,
+input,label}.
+
+## 2026-06-25 — Final cleanup + docs
+- Removed now-orphaned theme-switcher.tsx (unused after protected layout deleted)
+  and ui/dropdown-menu.tsx (only used by theme-switcher).
+- Verified every remaining app/, components/, lib/ source file is reachable/used.
+  Lean source tree. (npm deps for deleted radix components left for later; harmless.)
+- Created PROJECT_MAP.md — file-by-file "what lives where" guide for the user.
+- Rewrote README.md as the real Taleem ka Safar project readme (was the generic
+  Next+Supabase starter readme).
+Final components: auth/{sign-in-form,sign-up-form,social-buttons},
+forgot-password-form, update-password-form, logout-button, ui/{button,card,input,label}.

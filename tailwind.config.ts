@@ -10,7 +10,38 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        // Soft Brutalism: Space Grotesk for headlines, Inter for body.
+        headline: ["var(--font-space-grotesk)", "sans-serif"],
+        body: ["var(--font-inter)", "sans-serif"],
+        sans: ["var(--font-inter)", "sans-serif"],
+      },
       colors: {
+        // --- Soft Brutalism design-system palette (see ui_design/design_scheme) ---
+        ink: "#000000",
+        brand: {
+          DEFAULT: "#0058be", // primary / electric blue
+          container: "#2170e4", // primary-container
+          fixed: "#d8e2ff", // primary-fixed (gamified card bg)
+        },
+        surface: {
+          DEFAULT: "#f9f9f9",
+          lowest: "#ffffff",
+          low: "#f3f3f4",
+          container: "#eeeeee",
+          high: "#e8e8e8",
+          variant: "#e2e2e2",
+        },
+        outline: {
+          DEFAULT: "#727785",
+          variant: "#c2c6d6",
+        },
+        "on-surface": {
+          DEFAULT: "#1a1c1c",
+          variant: "#424754",
+        },
+        danger: "#ba1a1a", // error
+        // --- shadcn tokens (kept for existing ui/ primitives) ---
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -56,6 +87,12 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        // Soft Brutalism "hard shadow" — solid offset, no blur.
+        hard: "4px 4px 0px 0px rgba(0,0,0,1)",
+        "hard-primary": "4px 4px 0px 0px #0058be",
+        "hard-sm": "2px 2px 0px 0px rgba(0,0,0,1)",
       },
     },
   },

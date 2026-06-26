@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   // `next` lets us send the user to a specific page after sign-in.
-  const next = searchParams.get("next") ?? "/protected";
+  const next = searchParams.get("next") ?? "/";
   const error = searchParams.get("error");
   const errorDescription = searchParams.get("error_description");
 

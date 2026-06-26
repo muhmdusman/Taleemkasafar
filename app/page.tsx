@@ -1,58 +1,66 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
-import Link from "next/link";
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { LogoutButton } from "@/components/logout-button";
 
+/**
+ * Root = authenticated landing. The proxy guards this route; we also verify on
+ * the server. The auth read (cookies) is isolated in a Suspense boundary as
+ * required by Cache Components.
+ */
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
-              </div>
-            </div>
-            {!hasEnvVars ? (
-              <EnvVarWarning />
-            ) : (
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            )}
-          </div>
-        </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          <Hero />
-          <main className="flex-1 flex flex-col gap-6 px-4">
-            <h2 className="font-medium text-xl mb-4">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
-        </div>
+    <div className="flex min-h-svh flex-col bg-surface font-body text-on-surface">
+      <header className="flex h-20 w-full items-center justify-between border-b-2 border-black bg-white px-6">
+        <span className="font-headline text-2xl font-bold uppercase tracking-tighter text-black">
+          Taleem ka Safar
+        </span>
+        <LogoutButton />
+      </header>
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 p-6 md:p-10">
+        <Suspense fallback={<WelcomeSkeleton />}>
+          <Welcome />
+        </Suspense>
+
+        <div className="border-2 border-black bg-white p-8 shadow-hard">
+          <p className="font-body text-on-surface-variant">
+            Your dashboard is coming next — subjects, practice, mock tests and
+            performance analytics.
           </p>
-          <ThemeSwitcher />
-        </footer>
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+async function Welcome() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getClaims();
+
+  if (error || !data?.claims) {
+    redirect("/auth/login");
+  }
+
+  const email = data.claims.email as string | undefined;
+
+  return (
+    <div className="space-y-2">
+      <h1 className="font-headline text-4xl font-bold uppercase leading-none tracking-tighter md:text-5xl">
+        Welcome
+      </h1>
+      <p className="text-lg font-medium tracking-tight text-on-surface-variant">
+        {email ? `Signed in as ${email}` : "You are signed in."}
+      </p>
+    </div>
+  );
+}
+
+function WelcomeSkeleton() {
+  return (
+    <div className="space-y-2">
+      <div className="h-12 w-48 animate-pulse bg-surface-high" />
+      <div className="h-6 w-72 animate-pulse bg-surface-container" />
+    </div>
   );
 }

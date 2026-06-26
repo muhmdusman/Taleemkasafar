@@ -13,6 +13,7 @@
 # testing
 /coverage
 /mcqs
+/ui_design
 
 # next.js
 /.next/
