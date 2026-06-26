@@ -783,6 +783,34 @@ export type Database = {
       }
     }
     Views: {
+      chapter_overview: {
+        Row: {
+          chapter_external_id: string | null
+          chapter_id: string | null
+          chapter_kind: Database["public"]["Enums"]["topic_kind"] | null
+          chapter_slug: string | null
+          chapter_title: string | null
+          display_order: number | null
+          entry_test_id: string | null
+          entry_test_slug: string | null
+          question_count: number | null
+          subject_id: string | null
+          subject_slug: string | null
+          subtopic_count: number | null
+        }
+        Relationships: []
+      }
+      entry_test_public: {
+        Row: {
+          description: string | null
+          display_order: number | null
+          id: string | null
+          name: string | null
+          slug: string | null
+          source: string | null
+        }
+        Relationships: []
+      }
       subject_overview: {
         Row: {
           chapter_count: number | null

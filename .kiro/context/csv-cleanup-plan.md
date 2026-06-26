@@ -255,3 +255,28 @@ forgot-password-form, update-password-form, logout-button, ui/{button,card,input
 
 ### Next: build /subjects (subject -> chapters list) then chapter view
 (4 buttons: Past Paper | Practice | Quick Notes | Lectures), then practice loop.
+
+
+## 2026-06-26 — Entry-test selector + inside-subject screen
+- DB: migration mcq_11_chapter_view adds `chapter_overview` view
+  (security_invoker): per top-level topic (chapter) of a subject for a test,
+  with subtopic_count + approved question_count (counts chapter + descendants).
+  Verified physics chapters (Measurements 34, Motion&Force 39, etc.).
+  Added to lib/database.types.ts Views.
+- Header entry-test selector (center): components/dashboard/entry-test-selector.tsx
+  (client dropdown) + Server Action app/(dashboard)/actions.ts selectEntryTest
+  (validates active, updates profiles.selected_test_id, revalidates). Header
+  updated to show it center; DashboardHeader now takes tests + activeTestId.
+- Query layer refactor: lib/queries/entry-test.ts (getActiveEntryTest,
+  listActiveEntryTests) shared; dashboard.ts uses it; lib/queries/profile.ts
+  (getDisplayName); lib/queries/subject.ts (getSubjectPage -> chapters + total).
+- Inside-subject screen: app/(dashboard)/subjects/[slug]/page.tsx +
+  components/dashboard/chapter-list.tsx (accordion; first chapter open; each
+  expands to 4 buttons: Past Paper + Practice link to
+  /subjects/[slug]/[chapter]/{past-paper,practice} when count>0; Quick Notes &
+  Lectures disabled "coming soon"). Also /subjects index page.
+- Cache Components: wrapped Sidebar + BottomNav (usePathname) in <Suspense> in
+  the dashboard layout to avoid blocking dynamic routes.
+- Build passes; 7 tests pass. Routes added: /subjects, /subjects/[slug].
+
+### Next: chapter content routes (practice loop + past-paper view), then mock tests.

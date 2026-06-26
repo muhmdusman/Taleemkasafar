@@ -24,12 +24,14 @@ async function DashboardHome() {
         title="Dashboard"
         badge="Active Session"
         displayName={data.displayName}
+        tests={data.tests}
+        activeTestId={data.entryTest.id}
       />
       <main className="px-6 pb-24 pt-28 md:px-8 md:pb-20">
         <div className="mx-auto flex max-w-7xl flex-col gap-16">
           <HeroSection
             displayName={data.displayName}
-            testName={data.entryTestName}
+            testName={data.entryTest.name}
             hasActivity={data.hasActivity}
           />
           <SubjectsSection subjects={data.subjects} />

@@ -60,3 +60,45 @@ Google Cloud Console OAuth client: Authorized redirect URI stays
 https://lcsuasddoertvoujwsgo.supabase.co/auth/v1/callback (unchanged per env).
 Also set NEXT_PUBLIC_SITE_URL env in production so server-side emailRedirectTo
 uses the right origin.
+
+
+## 2026-06-26 — Catalog caching + two-tier context memory
+
+### How we fetch from Supabase (clarification)
+The app does NOT open a direct Postgres connection. It uses `@supabase/ssr` /
+`@supabase/supabase-js`, which call Supabase's PostgREST REST API over HTTPS.
+Two read clients by ownership of data:
+- `lib/supabase/server.ts` — cookie-based, RLS as the signed-in user. Reading
+  cookies makes the page dynamic. Use for USER data + writes.
+- `lib/supabase/anon.ts` — cookieless, no session. Safe inside `"use cache"`.
+  Use ONLY for public catalog reads.
+
+### Cache the catalog, not the user
+Reference data (subjects, chapters, counts, entry-test list) is identical for
+everyone and changes rarely → cache it. Implemented `lib/queries/catalog.ts`
+with `"use cache"` + `cacheTag(CATALOG_TAG, ...)`, read via the cookieless anon
+client. User data stays dynamic (cookie client, RLS), never shared-cached.
+Navigating Home → Subjects → Home no longer refetches the catalog.
+Invalidate after an import/edit with `revalidateCatalog()` in
+`app/(dashboard)/actions.ts` → `revalidateTag(CATALOG_TAG, "max")` (Next 16
+requires the 2nd "max" arg).
+
+### Security model for the cacheable layer (mcq_12 → mcq_13)
+mcq_12 first made the catalog views `security definer` + granted anon — the
+security advisor flagged definer views as ERRORs. mcq_13 REVERTED to
+`security_invoker` views and instead granted the `anon` role read access via
+explicit RLS policies on only the non-sensitive reference rows (active entry
+tests, subjects, active test_subjects, live topics, and approved+live
+questions/question_tests for counts). `options` (correct answers), explanations,
+and all user tables have NO anon policy → stay locked. Advisor is now clean of
+view errors. DECISION: public reference data uses invoker views + scoped anon
+RLS, never security-definer.
+
+### Two-tier AI-agent context memory
+Split memory to keep sessions cheap:
+- GLOBAL (committed) — `.kiro/context/{progress,decisions,csv-cleanup-plan}.md`:
+  curated durable record, shared across machines/sessions.
+- LOCAL (gitignored, `.kiro/context/local/session.md`) — fast volatile
+  scratchpad; read FIRST to recover state, then read only targeted files.
+Workflow: jot volatile notes locally during work; promote durable facts up to
+the global files when a chunk completes, then trim the local file.

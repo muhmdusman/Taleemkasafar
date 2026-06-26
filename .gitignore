@@ -26,6 +26,9 @@
 .DS_Store
 *.pem
 
+# local AI-agent working memory (per-machine scratchpad; global context is committed)
+/.kiro/context/local/
+
 # debug
 npm-debug.log*
 yarn-debug.log*

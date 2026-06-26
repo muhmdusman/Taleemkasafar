@@ -3,6 +3,8 @@ import {
   resolveDisplayName,
   avatarInitial,
   cardIndex,
+  sumQuestionCounts,
+  chapterMetaLabel,
 } from "./dashboard-helpers";
 
 describe("resolveDisplayName", () => {
@@ -44,5 +46,36 @@ describe("cardIndex", () => {
     expect(cardIndex(0)).toBe("01");
     expect(cardIndex(8)).toBe("09");
     expect(cardIndex(11)).toBe("12");
+  });
+});
+
+describe("sumQuestionCounts", () => {
+  it("sums counts, treating null as 0", () => {
+    expect(
+      sumQuestionCounts([
+        { question_count: 34 },
+        { question_count: null },
+        { question_count: 7 },
+      ]),
+    ).toBe(41);
+  });
+
+  it("returns 0 for an empty list", () => {
+    expect(sumQuestionCounts([])).toBe(0);
+  });
+});
+
+describe("chapterMetaLabel", () => {
+  it("shows only MCQs when there are no subtopics", () => {
+    expect(chapterMetaLabel(0, 34)).toBe("34 MCQs");
+    expect(chapterMetaLabel(null, 12)).toBe("12 MCQs");
+  });
+
+  it("includes the topic count when subtopics exist", () => {
+    expect(chapterMetaLabel(18, 140)).toBe("18 Topics · 140 MCQs");
+  });
+
+  it("treats null question count as 0", () => {
+    expect(chapterMetaLabel(0, null)).toBe("0 MCQs");
   });
 });

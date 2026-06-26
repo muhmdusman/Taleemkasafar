@@ -46,3 +46,32 @@
 
 ### Current DB state
 - No `public` tables yet (clean slate). Only the default `auth.*` schema exists.
+
+
+## 2026-06-26 — Catalog caching + two-tier context memory
+
+### Done
+- **Data-fetching clarified + cached.** App reads Supabase via the PostgREST
+  REST API (not a direct DB connection). Added `lib/supabase/anon.ts` (cookieless
+  client) + `lib/queries/catalog.ts` (`"use cache"` + `cacheTag` functions:
+  `getEntryTestsCached`, `getSubjectsCached`, `getChaptersCached`, `CATALOG_TAG`).
+  Refactored `dashboard.ts` / `subject.ts` to read reference data from the cached
+  catalog and the cookie client only for user data. Home → Subjects → Home no
+  longer refetches the catalog. `revalidateCatalog()` action invalidates it.
+- **Security model finalized** (mcq_12 → mcq_13): catalog views are
+  `security_invoker`; anon read granted via scoped RLS policies on non-sensitive
+  reference rows only. `options`/answers/user data stay locked. Advisor clean of
+  view errors.
+- **Two-tier context memory**: global (committed) + local
+  (`.kiro/context/local/session.md`, gitignored) scratchpad. Documented in
+  `.kiro/context/README.md`; reconciled `data-fetching.md` steering to the real
+  invoker+RLS model.
+- **Tests + lint + build green**: 12 Vitest tests pass; lint 0 errors;
+  `npm run build` passes (Next 16, Cache Components). Added pure helpers
+  `sumQuestionCounts` + `chapterMetaLabel` with tests.
+
+### Next steps
+- Chapter content routes: practice loop (instant feedback) + past-paper viewer.
+- Mock tests flow, then analytics.
+- Deferred (pre-prod): enable leaked-password protection in Supabase Auth;
+  resolve local Google OAuth http/https quirk (prod-only).
