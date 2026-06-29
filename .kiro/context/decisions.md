@@ -102,3 +102,40 @@ Split memory to keep sessions cheap:
   scratchpad; read FIRST to recover state, then read only targeted files.
 Workflow: jot volatile notes locally during work; promote durable facts up to
 the global files when a chunk completes, then trim the local file.
+
+
+## 2026-06-29 — Mock/practice grading: server-authoritative answer key
+
+### Decision: hide is_correct, grade via SECURITY DEFINER RPCs
+`question_options.is_correct` was readable by `authenticated`, making mock scores
+forgeable. We revoked column read of `is_correct` from anon+authenticated
+(re-granted the other option columns) and moved all grading behind four
+SECURITY DEFINER RPCs (migration mcq_14): `start_attempt`,
+`submit_practice_answer` (returns correctness+explanation — practice's whole
+point), `generate_mock_attempt` (server-side selection + freeze), `submit_mock`
+(grades whole paper in one tx, writes mock_results, idempotent). Each body pins
+`search_path=public` and re-checks `auth.uid()` ownership; execute granted to
+authenticated only. Advisor flags these as WARN (definer + authenticated-
+executable) which is EXPECTED and correct for this design.
+
+### Decision: reuse existing tables; two additive columns only
+No new tables. `attempts.usage` separates practice vs past-paper resume state;
+`attempt_answers.display_order` freezes mock question ordering;
+`attempt_answers.marked_for_review` persists review flags. Mock question set is
+frozen by pre-inserting unanswered attempt_answers rows at generation (carries
+ordering), avoiding an attempt_questions table.
+
+### Decision: mock difficulty mix is data, deterministic
+Whole-paper target 30 easy / 90 medium / 80 hard, split proportionally per slot
+and stored in `mock_blueprint_slots.difficulty_mix` (jsonb). Selection borrows
+from the nearest difficulty band on shortfall. Tunable without code changes.
+
+### Decision: practice resume is server-side (not localStorage)
+The reference quiz app used localStorage; we persist each practice answer to the
+server (via submit_practice_answer) so progress follows the user across devices
+and feeds analytics. Resume = first unanswered question in stable order.
+
+### Decision: exclude ui_design + mcqs from tsconfig
+`ui_design/quiz_screen` is a full reference Next app (design source, gitignored);
+it broke `next build`'s typecheck. Added `ui_design` + `mcqs` to tsconfig
+`exclude`. They remain on disk as reference/data, not part of the app build.

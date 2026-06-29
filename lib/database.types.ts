@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       attempt_answers: {
@@ -19,8 +44,10 @@ export type Database = {
           answered_at: string
           attempt_id: string
           created_at: string
+          display_order: number | null
           id: string
           is_correct: boolean | null
+          marked_for_review: boolean
           question_id: string
           selected_option_id: string | null
           time_taken_ms: number | null
@@ -29,8 +56,10 @@ export type Database = {
           answered_at?: string
           attempt_id: string
           created_at?: string
+          display_order?: number | null
           id?: string
           is_correct?: boolean | null
+          marked_for_review?: boolean
           question_id: string
           selected_option_id?: string | null
           time_taken_ms?: number | null
@@ -39,8 +68,10 @@ export type Database = {
           answered_at?: string
           attempt_id?: string
           created_at?: string
+          display_order?: number | null
           id?: string
           is_correct?: boolean | null
+          marked_for_review?: boolean
           question_id?: string
           selected_option_id?: string | null
           time_taken_ms?: number | null
@@ -83,6 +114,7 @@ export type Database = {
           test_subject_id: string | null
           topic_id: string | null
           updated_at: string
+          usage: Database["public"]["Enums"]["question_usage"] | null
           user_id: string
         }
         Insert: {
@@ -98,6 +130,7 @@ export type Database = {
           test_subject_id?: string | null
           topic_id?: string | null
           updated_at?: string
+          usage?: Database["public"]["Enums"]["question_usage"] | null
           user_id: string
         }
         Update: {
@@ -113,6 +146,7 @@ export type Database = {
           test_subject_id?: string | null
           topic_id?: string | null
           updated_at?: string
+          usage?: Database["public"]["Enums"]["question_usage"] | null
           user_id?: string
         }
         Relationships: [
@@ -121,6 +155,13 @@ export type Database = {
             columns: ["blueprint_id"]
             isOneToOne: false
             referencedRelation: "mock_test_blueprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attempts_entry_test_id_fkey"
+            columns: ["entry_test_id"]
+            isOneToOne: false
+            referencedRelation: "entry_test_public"
             referencedColumns: ["id"]
           },
           {
@@ -136,6 +177,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "test_subjects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attempts_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_overview"
+            referencedColumns: ["chapter_id"]
           },
           {
             foreignKeyName: "attempts_topic_id_fkey"
@@ -272,6 +320,13 @@ export type Database = {
           url?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "learning_resources_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "chapter_overview"
+            referencedColumns: ["chapter_id"]
+          },
           {
             foreignKeyName: "learning_resources_topic_id_fkey"
             columns: ["topic_id"]
@@ -430,6 +485,13 @@ export type Database = {
             foreignKeyName: "mock_test_blueprints_entry_test_id_fkey"
             columns: ["entry_test_id"]
             isOneToOne: false
+            referencedRelation: "entry_test_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mock_test_blueprints_entry_test_id_fkey"
+            columns: ["entry_test_id"]
+            isOneToOne: false
             referencedRelation: "entry_tests"
             referencedColumns: ["id"]
           },
@@ -464,6 +526,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_selected_test_id_fkey"
+            columns: ["selected_test_id"]
+            isOneToOne: false
+            referencedRelation: "entry_test_public"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_selected_test_id_fkey"
             columns: ["selected_test_id"]
@@ -556,6 +625,13 @@ export type Database = {
             foreignKeyName: "question_tests_entry_test_id_fkey"
             columns: ["entry_test_id"]
             isOneToOne: false
+            referencedRelation: "entry_test_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_tests_entry_test_id_fkey"
+            columns: ["entry_test_id"]
+            isOneToOne: false
             referencedRelation: "entry_tests"
             referencedColumns: ["id"]
           },
@@ -628,8 +704,22 @@ export type Database = {
             foreignKeyName: "fk_questions_topic_subject"
             columns: ["topic_id", "subject_id"]
             isOneToOne: false
+            referencedRelation: "chapter_overview"
+            referencedColumns: ["chapter_id", "subject_id"]
+          },
+          {
+            foreignKeyName: "fk_questions_topic_subject"
+            columns: ["topic_id", "subject_id"]
+            isOneToOne: false
             referencedRelation: "topics"
             referencedColumns: ["id", "subject_id"]
+          },
+          {
+            foreignKeyName: "questions_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subject_overview"
+            referencedColumns: ["subject_id"]
           },
           {
             foreignKeyName: "questions_subject_id_fkey"
@@ -709,8 +799,22 @@ export type Database = {
             foreignKeyName: "test_subjects_entry_test_id_fkey"
             columns: ["entry_test_id"]
             isOneToOne: false
+            referencedRelation: "entry_test_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_subjects_entry_test_id_fkey"
+            columns: ["entry_test_id"]
+            isOneToOne: false
             referencedRelation: "entry_tests"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_subjects_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subject_overview"
+            referencedColumns: ["subject_id"]
           },
           {
             foreignKeyName: "test_subjects_subject_id_fkey"
@@ -769,8 +873,22 @@ export type Database = {
             foreignKeyName: "fk_topics_parent_subject"
             columns: ["parent_topic_id", "subject_id"]
             isOneToOne: false
+            referencedRelation: "chapter_overview"
+            referencedColumns: ["chapter_id", "subject_id"]
+          },
+          {
+            foreignKeyName: "fk_topics_parent_subject"
+            columns: ["parent_topic_id", "subject_id"]
+            isOneToOne: false
             referencedRelation: "topics"
             referencedColumns: ["id", "subject_id"]
+          },
+          {
+            foreignKeyName: "topics_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subject_overview"
+            referencedColumns: ["subject_id"]
           },
           {
             foreignKeyName: "topics_subject_id_fkey"
@@ -798,7 +916,36 @@ export type Database = {
           subject_slug: string | null
           subtopic_count: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "test_subjects_entry_test_id_fkey"
+            columns: ["entry_test_id"]
+            isOneToOne: false
+            referencedRelation: "entry_test_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_subjects_entry_test_id_fkey"
+            columns: ["entry_test_id"]
+            isOneToOne: false
+            referencedRelation: "entry_tests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "topics_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subject_overview"
+            referencedColumns: ["subject_id"]
+          },
+          {
+            foreignKeyName: "topics_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       entry_test_public: {
         Row: {
@@ -808,6 +955,22 @@ export type Database = {
           name: string | null
           slug: string | null
           source: string | null
+        }
+        Insert: {
+          description?: string | null
+          display_order?: number | null
+          id?: string | null
+          name?: string | null
+          slug?: string | null
+          source?: string | null
+        }
+        Update: {
+          description?: string | null
+          display_order?: number | null
+          id?: string | null
+          name?: string | null
+          slug?: string | null
+          source?: string | null
         }
         Relationships: []
       }
@@ -828,6 +991,13 @@ export type Database = {
             foreignKeyName: "test_subjects_entry_test_id_fkey"
             columns: ["entry_test_id"]
             isOneToOne: false
+            referencedRelation: "entry_test_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_subjects_entry_test_id_fkey"
+            columns: ["entry_test_id"]
+            isOneToOne: false
             referencedRelation: "entry_tests"
             referencedColumns: ["id"]
           },
@@ -835,7 +1005,33 @@ export type Database = {
       }
     }
     Functions: {
+      generate_mock_attempt: { Args: { p_blueprint: string }; Returns: string }
       is_admin: { Args: never; Returns: boolean }
+      start_attempt: {
+        Args: {
+          p_entry_test: string
+          p_topic: string
+          p_usage: Database["public"]["Enums"]["question_usage"]
+        }
+        Returns: string
+      }
+      submit_mock: {
+        Args: { p_answers: Json; p_attempt: string }
+        Returns: string
+      }
+      submit_practice_answer: {
+        Args: {
+          p_attempt: string
+          p_option: string
+          p_question: string
+          p_time_ms: number
+        }
+        Returns: {
+          correct_option_id: string
+          explanation: string
+          is_correct: boolean
+        }[]
+      }
     }
     Enums: {
       attempt_mode: "practice" | "mock"
@@ -972,6 +1168,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       attempt_mode: ["practice", "mock"],

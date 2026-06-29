@@ -3,7 +3,7 @@ import { Icon } from "./icon";
 
 const CHALLENGES = [
   {
-    href: "/mock-tests",
+    href: "/mock",
     icon: "description",
     title: "Full Mock Test",
     subtitle: "Timed, multi-subject paper",

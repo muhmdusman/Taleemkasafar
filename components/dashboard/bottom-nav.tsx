@@ -7,7 +7,7 @@ import { Icon } from "./icon";
 const ITEMS = [
   { href: "/", label: "Home", icon: "dashboard" },
   { href: "/subjects", label: "Subjects", icon: "menu_book" },
-  { href: "/mock-tests", label: "Tests", icon: "quiz" },
+  { href: "/mock", label: "Tests", icon: "quiz" },
   { href: "/performance", label: "Profile", icon: "person" },
 ];
 

@@ -75,3 +75,40 @@
 - Mock tests flow, then analytics.
 - Deferred (pre-prod): enable leaked-password protection in Supabase Auth;
   resolve local Google OAuth http/https quirk (prod-only).
+
+
+## 2026-06-29 — Practice/Past-Paper + Mock Tests + Analytics (spec: mock-test-and-practice)
+
+### Done
+- **Spec** `.kiro/specs/mock-test-and-practice/` (design + requirements + tasks),
+  design-first, user-approved. Tasks 1-8 complete; 9 (verify) green.
+- **Pure logic + tests** `lib/quiz/{mock-plan,scoring,session,time}.ts` with
+  co-located tests (36 new, 48 total passing). mock-plan does difficulty-mix
+  selection with nearest-band shortfall borrowing; scoring is the grading oracle.
+- **DB migration mcq_14** (applied + mirrored): additive cols `attempts.usage`,
+  `attempt_answers.display_order` + `marked_for_review`; **revoked is_correct**
+  from anon/authenticated (answer key hidden); 4 SECURITY DEFINER RPCs
+  (`start_attempt`, `submit_practice_answer`, `generate_mock_attempt`,
+  `submit_mock`) — ownership-checked, search_path pinned, execute granted to
+  authenticated only; seeded `net-full-mock` blueprint (200Q/120min) + 3 slots
+  (Maths 100 / Physics 60 / English 40, difficulty mix per slot). Advisor clean
+  (only expected WARNs). Types regenerated.
+- **Integration check** PASSED: generated exactly 200Q with the exact mix,
+  submit_mock graded 10/5/185 = 5.00% matching the scoring.ts oracle, idempotent.
+- **Loaders** `lib/queries/{practice,mock,performance}.ts` (answer-free content
+  via cookie client/RLS). **Actions** `app/(dashboard)/quiz-actions.ts` wrap the
+  RPCs. **UI** `components/quiz/*` (Soft Brutalism, green/red gamified feedback):
+  option-button, question-card, explanation-panel, bookmark-button,
+  practice-runner, mock-runner, quiz-timer, quiz-navigation, question-palette,
+  section-progress, mock-result.
+- **Routes**: `/subjects/[slug]/[chapter]/{practice,past-paper}`, `/mock`,
+  `/mock/[attemptId]`, `/mock/[attemptId]/result`, `/performance`. Nav fixed
+  (/mock-tests -> /mock in sidebar, bottom-nav, hero, challenge).
+- **Verify**: 48 tests pass, lint clean (1 known font warning), build passes
+  (Cache Components). Excluded `ui_design` + `mcqs` from tsconfig (reference app
+  was breaking the typecheck).
+
+### Next steps
+- Quick Notes / Lectures (learning_resources) when ready.
+- Practice "reset" UI; deeper analytics charts; multiple blueprints / tests.
+- Pre-prod: enable leaked-password protection; resolve local Google OAuth quirk.

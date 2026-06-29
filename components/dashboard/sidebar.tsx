@@ -11,7 +11,7 @@ type NavItem = { href: string; label: string; icon: string };
 const NAV: NavItem[] = [
   { href: "/", label: "Home", icon: "dashboard" },
   { href: "/subjects", label: "My Subjects", icon: "menu_book" },
-  { href: "/mock-tests", label: "Mock Tests", icon: "quiz" },
+  { href: "/mock", label: "Mock Tests", icon: "quiz" },
   { href: "/performance", label: "Performance", icon: "insights" },
   { href: "/settings", label: "Settings", icon: "settings" },
 ];

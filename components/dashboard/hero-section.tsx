@@ -47,7 +47,7 @@ export function HeroSection({
 
         <div className="flex flex-wrap gap-4 pt-4">
           <Link
-            href="/mock-tests"
+            href="/mock"
             className="border-2 border-black bg-black px-8 py-5 font-headline text-xl font-bold uppercase text-white shadow-hard transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-brand hover:shadow-none"
           >
             Start Mock Test ⚡
