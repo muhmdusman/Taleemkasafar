@@ -134,3 +134,42 @@
 
 ### Next
 - Optional: fully static default subject cards per test; full LaTeX in MathText.
+
+
+## 2026-06-29 — UX follow-ups + auth hardening + branding
+
+### Done
+- **Icon FOUT fully fixed**: Material Symbols font URL switched `display=swap`
+  → `display=block` (swap was rendering the fallback ligature TEXT during load);
+  reveal script now only adds `html.ms-loaded` once `document.fonts.check()`
+  confirms the font is loaded (removed the unconditional timeout that leaked
+  ligature text on slow/blocked loads). If the font never loads, icons stay
+  blank rather than showing text. NOTE: if the Material Symbols request is
+  network-blocked for a user, self-hosting the icon font is the bulletproof fix.
+- **PKCE "code verifier not found" (production Google OAuth)**: root cause = the
+  app served from multiple hosts (apex, *.vercel.app, canonical
+  entrytest.taleemkasafar.com); verifier cookie is host-scoped. Fix:
+  `lib/supabase/proxy.ts` canonical-host 308 redirect when NEXT_PUBLIC_SITE_URL
+  is set (localhost exempt); `social-buttons.tsx` builds redirectTo from
+  NEXT_PUBLIC_SITE_URL. Also routed email confirmation through token_hash flow
+  (/auth/confirm) instead of PKCE /auth/callback. ⚠️ REQUIRES Vercel env
+  `NEXT_PUBLIC_SITE_URL=https://entrytest.taleemkasafar.com` (see decisions.md).
+- **Back-button bug**: signed-in users hitting auth entry pages (login, sign-up,
+  sign-up-success, forgot-password) now redirect to `/` in the middleware; auth
+  flow routes (callback/confirm/update-password/error) excluded.
+- **Branding**: removed starter Vercel `app/favicon.ico`; added Soft Brutalism
+  "TS" mark as `app/icon.svg` (+ `app/apple-icon.svg`), drawn as geometric
+  shapes (font-independent).
+- **Math/loaders/practice redesign** shipped in the prior UX pass commit.
+
+### Runtime / infra notes (for the "edge" question)
+- NO Supabase Edge Functions deployed (grading is via Postgres SECURITY DEFINER
+  RPCs). NO explicit Next.js `runtime = 'edge'` anywhere. Pages + Server Actions
+  run on the Node runtime (Vercel Fluid compute, required by @supabase/ssr);
+  middleware runs on the edge by default. This is the correct architecture —
+  do NOT force the full app onto the edge runtime.
+
+### Next
+- Set NEXT_PUBLIC_SITE_URL in Vercel + redeploy (auth fix is inert until then).
+- Optional: self-host Material Symbols if the font is network-blocked for users.
+- Optional: fully static default subject cards; full LaTeX in MathText.
