@@ -1,0 +1,20 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Soft Brutalism: black square, 0px radius, electric-blue base bar -->
+  <rect width="64" height="64" fill="#000000"/>
+  <rect y="55" width="64" height="9" fill="#0058be"/>
+
+  <!-- "T" drawn as geometric bars (font-independent) -->
+  <g fill="#ffffff">
+    <rect x="9" y="16" width="22" height="7"/>
+    <rect x="16.5" y="16" width="7" height="30"/>
+  </g>
+
+  <!-- "S" drawn as three bars + two connectors (font-independent) -->
+  <g fill="#0058be">
+    <rect x="35" y="16" width="20" height="7"/>
+    <rect x="35" y="16" width="7" height="14"/>
+    <rect x="35" y="27.5" width="20" height="7"/>
+    <rect x="48" y="32" width="7" height="14"/>
+    <rect x="35" y="39" width="20" height="7"/>
+  </g>
+</svg>

@@ -1,0 +1,20 @@
+<svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <!-- Soft Brutalism TS mark, scaled for Apple touch icon -->
+  <rect width="180" height="180" fill="#000000"/>
+  <rect y="154" width="180" height="26" fill="#0058be"/>
+
+  <!-- "T" -->
+  <g fill="#ffffff">
+    <rect x="26" y="46" width="62" height="20"/>
+    <rect x="47" y="46" width="20" height="84"/>
+  </g>
+
+  <!-- "S" -->
+  <g fill="#0058be">
+    <rect x="98" y="46" width="56" height="20"/>
+    <rect x="98" y="46" width="20" height="40"/>
+    <rect x="98" y="78" width="56" height="20"/>
+    <rect x="134" y="90" width="20" height="40"/>
+    <rect x="98" y="110" width="56" height="20"/>
+  </g>
+</svg>
