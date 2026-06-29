@@ -65,4 +65,32 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /*
+   * Prevent the Material Symbols "FOUT": before the icon font loads, the raw
+   * ligature text (e.g. "arrow_forward", "search") would otherwise flash on
+   * screen. We hide the glyph text until the font is ready, then reveal.
+   *
+   * `.material-symbols-outlined` starts transparent; once the font loads we add
+   * `.ms-loaded` to <html> (see app/layout.tsx inline script) to reveal them.
+   * Using visibility keeps layout stable (no reflow) while hidden.
+   */
+  .material-symbols-outlined {
+    font-family: "Material Symbols Outlined";
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    /* Hidden until the font is confirmed loaded to avoid showing ligature text. */
+    visibility: hidden;
+  }
+  html.ms-loaded .material-symbols-outlined {
+    visibility: visible;
+  }
 }

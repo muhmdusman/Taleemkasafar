@@ -41,9 +41,26 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+        />
+        {/*
+          Reveal Material Symbols only once the icon font has loaded, so the raw
+          ligature text (e.g. "arrow_forward") never flashes. Inline + early so
+          it runs before paint; falls back to revealing after a short timeout in
+          case the Font Loading API is unavailable.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){function show(){document.documentElement.classList.add('ms-loaded')}if(document.fonts&&document.fonts.load){document.fonts.load('24px "Material Symbols Outlined"').then(show).catch(show);document.fonts.ready.then(show)}else{show()}setTimeout(show,1500)})();`,
+          }}
         />
       </head>
       <body

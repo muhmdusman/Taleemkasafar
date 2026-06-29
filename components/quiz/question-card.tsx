@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { MathText } from "./math-text";
 
 /**
  * Question shell: a status header bar + the statement. Options/feedback are
@@ -31,7 +32,7 @@ export function QuestionCard({
       </div>
       <div className="border-b-2 border-black p-6">
         <p className="font-body text-lg leading-relaxed text-on-surface">
-          {statement}
+          <MathText>{statement}</MathText>
         </p>
       </div>
       <div className="p-6">{children}</div>

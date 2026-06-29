@@ -95,6 +95,16 @@ export default {
         "hard-primary": "4px 4px 0px 0px #0058be",
         "hard-sm": "2px 2px 0px 0px rgba(0,0,0,1)",
       },
+      keyframes: {
+        // Left-to-right sweep used by the quiz loaders (no blur, hard edge).
+        loaderSweep: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(300%)" },
+        },
+      },
+      animation: {
+        loaderSweep: "loaderSweep 1s linear infinite",
+      },
     },
   },
   plugins: [tailwindcssAnimate],

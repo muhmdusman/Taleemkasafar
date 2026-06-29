@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Icon } from "@/components/dashboard/icon";
-import { QuestionCard } from "./question-card";
 import { OptionButton, type OptionVisualState } from "./option-button";
-import { ExplanationPanel } from "./explanation-panel";
+import { MathText } from "./math-text";
 import { BookmarkButton } from "./bookmark-button";
 import {
   startPractice,
@@ -14,6 +13,7 @@ import {
   type PracticeGrade,
 } from "@/app/(dashboard)/quiz-actions";
 import type { PracticeScreenData } from "@/lib/queries/practice";
+import { cn } from "@/lib/utils";
 
 type Graded = {
   selectedOptionId: string;
@@ -23,20 +23,24 @@ type Graded = {
 };
 
 /**
- * Practice / past-paper loop. One question at a time, instant server-graded
- * feedback (green correct / red wrong) + explanation, Next/Prev, Save bookmark,
- * Finish. Resumes at the server-provided index. Business logic (grading) is on
- * the server; this component only orchestrates interaction.
+ * Focused practice / past-paper screen (no dashboard sidebar). Layout:
+ *  - slim top header: logo (left) + moving progress counter (center) + End (right)
+ *  - body: statement panel (left) + options panel (right), compact within the
+ *    viewport; explanation revealed via a button at the bottom
+ *  - bottom bar: Prev / Next + Explanation toggle
+ * Instant server-graded feedback (green correct / red wrong); the clicked
+ * option shows a "TS" loader while grading.
  */
 export function PracticeRunner({ data }: { data: PracticeScreenData }) {
+  const router = useRouter();
   const { questions, subjectSlug } = data;
   const [attemptId, setAttemptId] = useState<string | null>(null);
   const [index, setIndex] = useState(data.resumeIndex);
   const [graded, setGraded] = useState<Record<string, Graded>>({});
-  const [pending, setPending] = useState(false);
+  const [pendingOption, setPendingOption] = useState<string | null>(null);
+  const [showExplanation, setShowExplanation] = useState(false);
   const questionStartRef = useRef<number>(Date.now());
 
-  // Create/resume the attempt once on mount.
   useEffect(() => {
     let active = true;
     startPractice(data.entryTestSlug, data.topicId, data.usage).then((id) => {
@@ -47,9 +51,9 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
     };
   }, [data.entryTestSlug, data.topicId, data.usage]);
 
-  // Reset the per-question timer whenever we move to a new question.
   useEffect(() => {
     questionStartRef.current = Date.now();
+    setShowExplanation(false);
   }, [index]);
 
   const current = questions[index];
@@ -57,8 +61,8 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
 
   const handleSelect = useCallback(
     async (optionId: string) => {
-      if (!current || !attemptId || currentGrade || pending) return;
-      setPending(true);
+      if (!current || !attemptId || currentGrade || pendingOption) return;
+      setPendingOption(optionId);
       const timeTaken = Date.now() - questionStartRef.current;
       const result: PracticeGrade = await answerPractice(
         attemptId,
@@ -76,24 +80,32 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
             explanation: result.explanation ?? null,
           },
         }));
+        setShowExplanation(true);
       }
-      setPending(false);
+      setPendingOption(null);
     },
-    [current, attemptId, currentGrade, pending],
+    [current, attemptId, currentGrade, pendingOption],
   );
+
+  const endHref = `/subjects/${subjectSlug}`;
+  const handleEnd = useCallback(() => {
+    if (attemptId) finishPractice(attemptId);
+    router.push(endHref);
+  }, [attemptId, endHref, router]);
 
   if (questions.length === 0) {
     return (
-      <div className="border-2 border-black bg-white p-8 shadow-hard">
+      <div className="flex h-full flex-col items-center justify-center gap-4 p-8">
         <p className="font-body text-on-surface-variant">
           No questions available for this chapter yet.
         </p>
-        <Link
-          href={`/subjects/${subjectSlug}`}
-          className="mt-4 inline-flex items-center gap-1 font-headline text-xs font-bold uppercase tracking-widest text-brand"
+        <button
+          type="button"
+          onClick={() => router.push(endHref)}
+          className="inline-flex items-center gap-1 border-2 border-black bg-white px-4 py-2 font-headline text-xs font-bold uppercase tracking-widest text-black hover:bg-brand-fixed"
         >
           <Icon name="arrow_back" className="text-base" /> Back to chapters
-        </Link>
+        </button>
       </div>
     );
   }
@@ -108,88 +120,148 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
   }
 
   const answeredCount = Object.keys(graded).length;
+  const progressPct = (answeredCount / questions.length) * 100;
   const isLast = index === questions.length - 1;
+  const isFirst = index === 0;
 
   return (
-    <div>
-      {/* progress bar */}
-      <div className="mb-6">
-        <div className="mb-1 flex justify-between font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant">
-          <span>
-            {answeredCount} / {questions.length} answered
+    <div className="flex h-full flex-col">
+      {/* Slim header: logo · moving counter · end */}
+      <header className="flex h-14 shrink-0 items-center justify-between border-b-2 border-black bg-white px-4 md:px-6">
+        <span className="font-headline text-base font-bold tracking-tighter text-black">
+          Taleem ka Safar
+        </span>
+        <div className="mx-4 flex flex-1 items-center gap-3">
+          <div className="h-2.5 w-full max-w-md border-2 border-black bg-surface-high">
+            <div
+              className="h-full bg-brand transition-all duration-300"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+          <span className="shrink-0 font-headline text-xs font-bold uppercase tracking-tight text-on-surface-variant tabular-nums">
+            {index + 1}/{questions.length}
           </span>
         </div>
-        <div className="h-3 w-full border-2 border-black bg-surface-high">
-          <div
-            className="h-full bg-brand transition-all"
-            style={{
-              width: `${(answeredCount / questions.length) * 100}%`,
-            }}
-          />
+        <button
+          type="button"
+          onClick={handleEnd}
+          className="flex items-center gap-1 border-2 border-black bg-white px-3 py-1.5 font-headline text-xs font-bold uppercase tracking-tight text-black transition-colors hover:bg-danger hover:text-white"
+        >
+          <Icon name="close" className="text-base" /> End
+        </button>
+      </header>
+
+      {/* Body: statement (left) + options (right) */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="mx-auto grid h-full max-w-6xl grid-cols-1 gap-6 p-4 md:grid-cols-2 md:gap-8 md:p-8">
+          {/* Statement panel */}
+          <section className="flex flex-col">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="font-headline text-xs font-bold uppercase tracking-widest text-brand">
+                {data.subjectName} · Q{index + 1}
+              </span>
+              <BookmarkButton questionId={current.id} />
+            </div>
+            <div className="flex-1 border-2 border-black bg-white p-6 shadow-hard">
+              <p className="font-body text-xl leading-relaxed text-on-surface">
+                <MathText>{current.statement}</MathText>
+              </p>
+            </div>
+          </section>
+
+          {/* Options panel */}
+          <section className="flex flex-col gap-3">
+            {current.options.map((o) => (
+              <OptionButton
+                key={o.id}
+                label={o.label}
+                content={o.content}
+                state={optionState(o.id)}
+                disabled={!!currentGrade || pendingOption !== null}
+                loading={pendingOption === o.id}
+                onClick={() => handleSelect(o.id)}
+              />
+            ))}
+
+            {/* Explanation (toggle) */}
+            {currentGrade && showExplanation && (
+              <div className="mt-1 border-2 border-black bg-white">
+                <div
+                  className={cn(
+                    "flex items-center gap-2 p-3 text-white",
+                    currentGrade.isCorrect ? "bg-[#16a34a]" : "bg-danger",
+                  )}
+                >
+                  <Icon
+                    name={currentGrade.isCorrect ? "check_circle" : "cancel"}
+                    className="text-xl"
+                  />
+                  <span className="font-headline text-sm font-bold uppercase tracking-tight">
+                    {currentGrade.isCorrect ? "Correct!" : "Not quite"}
+                  </span>
+                </div>
+                <div className="p-4">
+                  <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                    Explanation
+                  </div>
+                  <p className="font-body text-sm leading-relaxed text-on-surface">
+                    {currentGrade.explanation ? (
+                      <MathText>{currentGrade.explanation}</MathText>
+                    ) : (
+                      "No explanation available for this question."
+                    )}
+                  </p>
+                </div>
+              </div>
+            )}
+          </section>
         </div>
       </div>
 
-      <QuestionCard
-        index={index}
-        total={questions.length}
-        sectionLabel={data.subjectName}
-        statusSlot={
-          <BookmarkButton questionId={current.id} />
-        }
-        statement={current.statement}
-      >
-        <div className="flex flex-col gap-3">
-          {current.options.map((o) => (
-            <OptionButton
-              key={o.id}
-              label={o.label}
-              content={o.content}
-              state={optionState(o.id)}
-              disabled={!!currentGrade || pending}
-              onClick={() => handleSelect(o.id)}
-            />
-          ))}
-        </div>
-
-        {currentGrade && (
-          <ExplanationPanel
-            isCorrect={currentGrade.isCorrect}
-            explanation={currentGrade.explanation}
-          />
-        )}
-      </QuestionCard>
-
-      {/* navigation */}
-      <div className="mt-6 flex flex-wrap items-center gap-3">
+      {/* Bottom bar: Prev · Explanation · Next */}
+      <footer className="flex h-16 shrink-0 items-center justify-between gap-3 border-t-2 border-black bg-white px-4 md:px-8">
         <button
           type="button"
           onClick={() => setIndex((i) => Math.max(0, i - 1))}
-          disabled={index === 0}
-          className="flex items-center gap-2 border-2 border-black bg-white px-5 py-3 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-brand-fixed disabled:opacity-40 active:translate-x-[2px] active:translate-y-[2px]"
+          disabled={isFirst}
+          className="flex items-center gap-2 border-2 border-black bg-white px-4 py-2.5 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-brand-fixed disabled:opacity-40 active:translate-x-[2px] active:translate-y-[2px]"
         >
-          <Icon name="arrow_back" className="text-lg" /> Prev
+          <Icon name="arrow_back" className="text-lg" />
+          <span className="hidden sm:inline">Prev</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setShowExplanation((s) => !s)}
+          disabled={!currentGrade}
+          className="flex items-center gap-2 border-2 border-black bg-white px-4 py-2.5 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-brand-fixed disabled:opacity-40"
+        >
+          <Icon name="lightbulb" className="text-lg" />
+          <span className="hidden sm:inline">
+            {showExplanation ? "Hide" : "Explanation"}
+          </span>
         </button>
 
         {!isLast ? (
           <button
             type="button"
             onClick={() => setIndex((i) => Math.min(questions.length - 1, i + 1))}
-            className="flex items-center gap-2 border-2 border-black bg-black px-5 py-3 font-headline text-sm font-bold uppercase tracking-tight text-white shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+            className="flex items-center gap-2 border-2 border-black bg-black px-5 py-2.5 font-headline text-sm font-bold uppercase tracking-tight text-white shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
           >
-            Next <Icon name="arrow_forward" className="text-lg" />
+            <span className="hidden sm:inline">Next</span>
+            <Icon name="arrow_forward" className="text-lg" />
           </button>
         ) : (
-          <Link
-            href={`/subjects/${subjectSlug}`}
-            onClick={() => {
-              if (attemptId) finishPractice(attemptId);
-            }}
-            className="flex items-center gap-2 border-2 border-black bg-black px-5 py-3 font-headline text-sm font-bold uppercase tracking-tight text-white shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+          <button
+            type="button"
+            onClick={handleEnd}
+            className="flex items-center gap-2 border-2 border-black bg-black px-5 py-2.5 font-headline text-sm font-bold uppercase tracking-tight text-white shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
           >
-            Finish <Icon name="flag" className="text-lg" />
-          </Link>
+            <span className="hidden sm:inline">Finish</span>
+            <Icon name="flag" className="text-lg" />
+          </button>
         )}
-      </div>
+      </footer>
     </div>
   );
 }

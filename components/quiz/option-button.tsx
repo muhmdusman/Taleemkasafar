@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/dashboard/icon";
+import { MathText } from "./math-text";
 
 export type OptionVisualState =
   | "idle"
@@ -14,19 +15,21 @@ export type OptionVisualState =
  * A single MCQ option in Soft Brutalism. Feedback colors (green correct / red
  * wrong) are used ONLY after grading. Before grading, options are idle or
  * selected. `muted-correct` highlights the right answer when the user picked
- * wrong.
+ * wrong. Option text is rendered with proper math typography.
  */
 export function OptionButton({
   label,
   content,
   state,
   disabled,
+  loading = false,
   onClick,
 }: {
   label: string;
   content: string;
   state: OptionVisualState;
   disabled?: boolean;
+  loading?: boolean;
   onClick?: () => void;
 }) {
   const base =
@@ -56,11 +59,16 @@ export function OptionButton({
     >
       <span
         className={cn(
-          "flex h-9 w-9 shrink-0 items-center justify-center font-headline text-base font-bold uppercase",
+          "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden font-headline text-base font-bold uppercase",
           badge[state],
         )}
       >
-        {state === "correct" || state === "muted-correct" ? (
+        {loading ? (
+          <span className="relative flex h-full w-full items-center justify-center">
+            <span className="absolute inset-0 -translate-x-full animate-[loaderSweep_0.8s_linear_infinite] bg-brand/40" />
+            <span className="relative text-[11px] tracking-tighter">TS</span>
+          </span>
+        ) : state === "correct" || state === "muted-correct" ? (
           <Icon name="check" className="text-xl" />
         ) : state === "wrong" ? (
           <Icon name="close" className="text-xl" />
@@ -68,7 +76,9 @@ export function OptionButton({
           label.toUpperCase()
         )}
       </span>
-      <span className="text-base font-medium">{content}</span>
+      <span className="text-base font-medium">
+        <MathText>{content}</MathText>
+      </span>
     </button>
   );
 }

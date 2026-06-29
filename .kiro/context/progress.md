@@ -112,3 +112,25 @@
 - Quick Notes / Lectures (learning_resources) when ready.
 - Practice "reset" UI; deeper analytics charts; multiple blueprints / tests.
 - Pre-prod: enable leaked-password protection; resolve local Google OAuth quirk.
+
+
+## 2026-06-29 — UX pass (math rendering, loaders, practice redesign)
+
+### Done
+- **Math typography**: `lib/quiz/math.ts` (pure, tested) + `components/quiz/math-text.tsx`.
+  `^`→superscript, `_`→subscript, sqrt/pi/operators→symbols. Used in practice +
+  mock statements, options, explanations.
+- **Icon FOUT fixed**: Material Symbols hidden until font loads (globals.css +
+  inline Font Loading API script in layout.tsx, `html.ms-loaded`), + preconnect.
+- **Loaders**: `components/quiz/quiz-loader.tsx` (InlineLoader "TS" + FullscreenLoader).
+  Mock start uses `start-mock-button.tsx` with the fullscreen "creating your
+  mock" loader. Practice option-click shows the inline TS loader on the option.
+  Added `loaderSweep` keyframes to tailwind.config.ts.
+- **Practice/past-paper redesigned** (focused, no sidebar): nested fixed layout
+  under the two chapter routes; slim header (logo · moving counter · End),
+  two-column statement/options, bottom bar (Prev · Explanation · Next), Save tag.
+  Removed now-unused explanation-panel.tsx.
+- 55 tests pass; lint clean (1 known font warning); build passes.
+
+### Next
+- Optional: fully static default subject cards per test; full LaTeX in MathText.

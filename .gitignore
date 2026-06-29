@@ -30,6 +30,10 @@
 # local AI-agent working memory (per-machine scratchpad; global context is committed)
 /.kiro/context/local/
 
+# local scratch notes & pasted reference screenshots (not part of the app)
+/ux-issues.md
+/image*.png
+
 # debug
 npm-debug.log*
 yarn-debug.log*

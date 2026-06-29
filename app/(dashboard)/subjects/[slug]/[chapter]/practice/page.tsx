@@ -1,13 +1,8 @@
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
 import { getPracticeScreen } from "@/lib/queries/practice";
 import { getActiveEntryTest } from "@/lib/queries/entry-test";
-import { getEntryTestsCached } from "@/lib/queries/catalog";
-import { getDisplayName } from "@/lib/queries/profile";
-import { DashboardHeader } from "@/components/dashboard/header";
 import { PracticeRunner } from "@/components/quiz/practice-runner";
-import { Icon } from "@/components/dashboard/icon";
 
 export default function PracticePage({
   params,
@@ -28,54 +23,33 @@ async function PracticeView({
 }) {
   const { slug, chapter } = await params;
 
-  const [data, entryTest, tests, displayName] = await Promise.all([
+  const [data, entryTest] = await Promise.all([
     getPracticeScreen(slug, chapter, "practice"),
     getActiveEntryTest(),
-    getEntryTestsCached(),
-    getDisplayName(),
   ]);
 
   if (!entryTest) redirect("/auth/login");
   if (!data) notFound();
 
-  return (
-    <>
-      <DashboardHeader
-        title={data.chapterTitle}
-        badge="Practice"
-        displayName={displayName}
-        tests={tests}
-        activeTestId={entryTest.id}
-      />
-      <main className="px-4 pb-24 pt-28 md:px-12 md:pb-20">
-        <div className="mx-auto max-w-3xl">
-          <Link
-            href={`/subjects/${data.subjectSlug}`}
-            className="mb-6 inline-flex items-center gap-1 font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-brand"
-          >
-            <Icon name="arrow_back" className="text-base" />
-            {data.subjectName}
-          </Link>
-          <h2 className="mb-8 font-headline text-3xl font-bold uppercase leading-none tracking-tighter text-black md:text-4xl">
-            {data.chapterTitle}
-          </h2>
-          <PracticeRunner data={data} />
-        </div>
-      </main>
-    </>
-  );
+  return <PracticeRunner data={data} />;
 }
 
 function QuizSkeleton() {
   return (
-    <>
-      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-black bg-white md:left-64" />
-      <main className="px-4 pb-24 pt-28 md:px-12">
-        <div className="mx-auto max-w-3xl">
-          <div className="mb-8 h-10 w-2/3 animate-pulse border-2 border-black bg-surface-high" />
-          <div className="h-80 w-full animate-pulse border-2 border-black bg-surface-container" />
+    <div className="flex h-full flex-col">
+      <div className="h-14 shrink-0 border-b-2 border-black bg-white" />
+      <div className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-1 gap-6 p-4 md:grid-cols-2 md:p-8">
+        <div className="animate-pulse border-2 border-black bg-surface-high" />
+        <div className="flex flex-col gap-3">
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-16 animate-pulse border-2 border-black bg-surface-container"
+            />
+          ))}
         </div>
-      </main>
-    </>
+      </div>
+      <div className="h-16 shrink-0 border-t-2 border-black bg-white" />
+    </div>
   );
 }

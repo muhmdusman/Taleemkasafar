@@ -7,7 +7,7 @@ import { getEntryTestsCached } from "@/lib/queries/catalog";
 import { getDisplayName } from "@/lib/queries/profile";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Icon } from "@/components/dashboard/icon";
-import { startMock } from "@/app/(dashboard)/quiz-actions";
+import { StartMockButton } from "@/components/quiz/start-mock-button";
 import { formatTime } from "@/lib/quiz/time";
 
 export default function MockPage() {
@@ -27,13 +27,6 @@ async function MockLandingView() {
   ]);
 
   if (!entryTest) redirect("/auth/login");
-
-  async function beginMock() {
-    "use server";
-    if (!data?.blueprint) return;
-    const attemptId = await startMock(data.blueprint.id);
-    if (attemptId) redirect(`/mock/${attemptId}`);
-  }
 
   return (
     <>
@@ -76,14 +69,7 @@ async function MockLandingView() {
                   </div>
                 </div>
               </div>
-              <form action={beginMock}>
-                <button
-                  type="submit"
-                  className="flex items-center gap-2 border-2 border-white bg-white px-6 py-3 font-headline text-sm font-bold uppercase tracking-tight text-black shadow-[4px_4px_0px_0px_#0058be] transition-colors hover:bg-brand-fixed active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-                >
-                  Start Mock Test <Icon name="play_arrow" className="text-lg" />
-                </button>
-              </form>
+              <StartMockButton blueprintId={data.blueprint.id} />
             </section>
           ) : (
             <section className="mb-12 border-2 border-black bg-white p-8 shadow-hard">
