@@ -16,18 +16,21 @@ function meta(slug: string) {
 
 export function SubjectsSection({
   subjects,
+  heading = true,
 }: {
   subjects: SubjectOverview[];
+  heading?: boolean;
 }) {
   return (
-    <section>
-      <div className="mb-8 flex items-center gap-4">
-        <h2 className="font-headline text-4xl font-bold uppercase tracking-tight">
-          Subjects
-        </h2>
-        <div className="h-1 flex-grow bg-black" />
-      </div>
-
+    <div>
+      {heading && (
+        <div className="mb-8 flex items-center gap-4">
+          <h2 className="font-headline text-4xl font-bold uppercase tracking-tight">
+            Subjects
+          </h2>
+          <div className="h-1 flex-grow bg-black" />
+        </div>
+      )}
       {subjects.length === 0 ? (
         <div className="border-2 border-black bg-white p-8 shadow-hard">
           <p className="font-body text-on-surface-variant">
@@ -70,6 +73,6 @@ export function SubjectsSection({
           })}
         </div>
       )}
-    </section>
+    </div>
   );
 }
