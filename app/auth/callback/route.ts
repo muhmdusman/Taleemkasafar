@@ -40,7 +40,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.redirect(
       `${origin}/auth/error?error=${encodeURIComponent(
-        exchangeError.message,
+        exchangeError.message.includes("code verifier")
+          ? "Your sign-in link was opened in a different browser or the session expired. Please start sign-in again in this browser."
+          : exchangeError.message,
       )}`,
     );
   }

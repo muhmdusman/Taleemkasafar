@@ -13,6 +13,26 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
+  // --- Canonical host enforcement (fixes "PKCE code verifier not found") ---
+  // The OAuth PKCE code_verifier is stored in a cookie scoped to the host where
+  // sign-in STARTED. If a user begins on a non-canonical host (apex domain,
+  // www, or the *.vercel.app URL) and the flow ends on the canonical host, the
+  // verifier cookie is orphaned and the exchange fails. Redirecting every
+  // request to the single canonical host up front guarantees the verifier is
+  // written and read on the same origin. Gated on NEXT_PUBLIC_SITE_URL so local
+  // dev (localhost) is unaffected.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (siteUrl) {
+    const canonical = new URL(siteUrl);
+    const url = request.nextUrl;
+    const isLocalhost =
+      url.hostname === "localhost" || url.hostname === "127.0.0.1";
+    if (!isLocalhost && url.host !== canonical.host) {
+      const redirectUrl = new URL(url.pathname + url.search, canonical.origin);
+      return NextResponse.redirect(redirectUrl, 308);
+    }
+  }
+
   // With Fluid compute, don't put this client in a global environment
   // variable. Always create a new one on each request.
   const supabase = createServerClient(

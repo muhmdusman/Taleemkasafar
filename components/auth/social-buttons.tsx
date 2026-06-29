@@ -16,10 +16,15 @@ export function SocialButtons({ next = "/" }: { next?: string }) {
     setIsLoading(true);
     setError(null);
     try {
+      // Always return to the canonical origin so the PKCE code_verifier cookie
+      // (set on this host) is present on the callback. Falls back to the
+      // current origin in local dev where NEXT_PUBLIC_SITE_URL is unset.
+      const origin =
+        process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+          redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
         },
       });
       if (error) throw error;

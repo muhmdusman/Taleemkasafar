@@ -62,7 +62,13 @@ export async function signUpAction(
     password,
     options: {
       data: { full_name: fullName },
-      emailRedirectTo: `${origin}/auth/callback`,
+      // Use the token_hash + verifyOtp flow (/auth/confirm), NOT the PKCE
+      // code-exchange (/auth/callback). The PKCE code verifier is stored in a
+      // cookie bound to the browser that started sign-up; confirmation emails
+      // are frequently opened in a different browser/in-app webview, which
+      // would fail with "PKCE code verifier not found in storage". The
+      // token_hash flow verifies server-side and works from any browser.
+      emailRedirectTo: `${origin}/auth/confirm?next=/`,
     },
   });
 

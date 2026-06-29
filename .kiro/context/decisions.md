@@ -139,3 +139,71 @@ and feeds analytics. Resume = first unanswered question in stable order.
 `ui_design/quiz_screen` is a full reference Next app (design source, gitignored);
 it broke `next build`'s typecheck. Added `ui_design` + `mcqs` to tsconfig
 `exclude`. They remain on disk as reference/data, not part of the app build.
+
+
+## 2026-06-29 — Fix "PKCE code verifier not found in storage" on first login
+
+### Root cause
+Email sign-up confirmation was routed through the PKCE code-exchange flow
+(`emailRedirectTo: /auth/callback` → `exchangeCodeForSession`). PKCE stores a
+`code_verifier` in a cookie bound to the browser that STARTED sign-up. Users
+frequently open the confirmation email in a different browser / device / in-app
+webview (Gmail/Outlook app), where that cookie doesn't exist → error. This is
+why it was intermittent and "first login only". (OAuth round-trips in the same
+browser, so it's mostly fine there; email confirmation does not.)
+
+### Fix (per Supabase Next.js SSR tutorial)
+- `app/auth/actions.ts` signUp now uses `emailRedirectTo: /auth/confirm?next=/`
+  (token_hash + verifyOtp flow, NOT browser-bound).
+- `app/auth/confirm/route.ts` hardened (NextResponse redirects, clear errors).
+- `app/auth/callback/route.ts` gives a clear recoverable message if a PKCE
+  verifier is ever missing.
+- Local email template: `supabase/templates/confirm-signup.html` +
+  `[auth.email.template.confirmation]` in config.toml.
+
+### ⚠️ REQUIRED manual step on the HOSTED project (emails come from there)
+Dashboard → Authentication → Emails → **Confirm signup** template: change the
+link from `{{ .ConfirmationURL }}` to:
+  `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/`
+Without this, production emails still send the PKCE ?code= link and the error
+persists. (Recovery/magic-link templates should get the same treatment if used.)
+
+
+## 2026-06-29 — PKCE error in PRODUCTION is a multi-host cookie issue (not email)
+
+### Symptom
+`https://entrytest.taleemkasafar.com/auth/error?error=PKCE code verifier not
+found in storage` after Google sign-in. Email confirmation is OFF and no SMTP is
+configured, so this is the OAuth flow, not email.
+
+### Root cause
+The PKCE `code_verifier` is stored in a cookie scoped to the host where sign-in
+STARTED. The app is reachable from multiple hosts (apex `taleemkasafar.com`,
+`entrytest-taleemkasafar.vercel.app`, and the canonical
+`entrytest.taleemkasafar.com`). If the flow starts on one host and the callback
+lands on another (or Supabase falls back to Site URL), the verifier cookie is
+orphaned and `exchangeCodeForSession` fails.
+
+### Ruled out
+- Supabase URL config is correct (Site URL = entrytest; redirect URLs include
+  entrytest + vercel.app + localhost).
+- Google Console: redirect URI correctly = `…supabase.co/auth/v1/callback`.
+  An `app.taleemkasafar.com` entry under *Authorized JavaScript origins* is
+  harmless — the server-side redirect flow doesn't use JS origins, only the
+  redirect URI. Not the cause.
+- "User clicked Google before signing up" is NOT a cause — OAuth auto-creates
+  the user; sign-in/sign-up pages call the same signInWithOAuth.
+
+### Fix (code)
+- `lib/supabase/proxy.ts`: canonical-host enforcement — if NEXT_PUBLIC_SITE_URL
+  is set and the request host differs (and isn't localhost), 308-redirect to the
+  canonical origin BEFORE auth starts, so the verifier is set+read on one host.
+- `components/auth/social-buttons.tsx`: `redirectTo` built from
+  NEXT_PUBLIC_SITE_URL (fallback window.location.origin in dev).
+- `.env.example`: documented NEXT_PUBLIC_SITE_URL.
+
+### ⚠️ REQUIRED on Vercel
+Set env var `NEXT_PUBLIC_SITE_URL=https://entrytest.taleemkasafar.com`
+(Production; also Preview if desired) and redeploy. The fix is inert until this
+is set. Optional hygiene: point apex/www domains in Vercel to redirect to the
+canonical host; clean the Google JS-origins entry to entrytest.

@@ -248,6 +248,16 @@ otp_expiry = 3600
 # subject = "You have been invited"
 # content_path = "./supabase/templates/invite.html"
 
+# Confirm-signup uses the token_hash + verifyOtp flow (/auth/confirm), NOT the
+# default {{ .ConfirmationURL }} (which is a browser-bound PKCE ?code= link to
+# /auth/callback and fails with "PKCE code verifier not found in storage" when
+# the email is opened in a different browser/device/in-app webview).
+# NOTE: the hosted project's template must be changed to match — Dashboard ->
+# Authentication -> Emails -> Confirm signup -> set the link to:
+#   {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/
+[auth.email.template.confirmation]
+content_path = "./supabase/templates/confirm-signup.html"
+
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
 # enabled = true
