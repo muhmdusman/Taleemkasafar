@@ -49,7 +49,7 @@ export default function RootLayout({
         />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
         />
         {/*
           Reveal Material Symbols only once the icon font has loaded, so the raw
@@ -59,7 +59,7 @@ export default function RootLayout({
         */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){function show(){document.documentElement.classList.add('ms-loaded')}if(document.fonts&&document.fonts.load){document.fonts.load('24px "Material Symbols Outlined"').then(show).catch(show);document.fonts.ready.then(show)}else{show()}setTimeout(show,1500)})();`,
+            __html: `(function(){var F='24px "Material Symbols Outlined"';function show(){document.documentElement.classList.add('ms-loaded')}function ready(){return document.fonts&&document.fonts.check&&document.fonts.check(F)}if(document.fonts&&document.fonts.load){document.fonts.load(F).then(function(){show()});document.fonts.ready.then(function(){if(ready())show()});var n=0,iv=setInterval(function(){n++;if(ready()||n>40){clearInterval(iv);show()}},100)}else{setTimeout(show,1200)}})();`,
           }}
         />
       </head>
