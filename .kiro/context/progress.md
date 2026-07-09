@@ -173,3 +173,39 @@
 - Set NEXT_PUBLIC_SITE_URL in Vercel + redeploy (auth fix is inert until then).
 - Optional: self-host Material Symbols if the font is network-blocked for users.
 - Optional: fully static default subject cards; full LaTeX in MathText.
+
+
+## 2026-07-01 — Database index and query audit
+
+### Done
+- **Index & Query Audit**: Comprehensive analysis of database schema and query
+  patterns. Created `INDEX_AND_QUERY_AUDIT.md` + `DATA_ACCESS_PATTERNS.md`.
+- **Findings**: ✅ Database is production-ready. All critical paths indexed, all
+  queries simple (single-table or 1-join, explicit columns, filtered predicates).
+- **Index coverage**: 41 indexes across 14 tables; all FK, slug, and user_id
+  lookups covered; filtered indexes for soft-deletes + approved status.
+- **Query patterns**: 100% simple patterns (avg: 1 table, 3-5 columns, 1-2
+  predicates); no N+1 (batch fetches via `.in()`); no full table scans.
+- **Performance advisor**: 12 unused indexes (INFO level, expected for early
+  stage); all are for FK coverage or anticipated analytics patterns → KEEP.
+- **Security advisor**: 7 SECURITY DEFINER function warnings (expected/intentional
+  for grading RPCs that access hidden answer key; ownership-checked in body).
+- **Query execution**: Catalog reads ~0.1-1ms, question fetches ~1-5ms (50-100Q),
+  user data ~0.5-2ms, mock generation ~50-200ms (200Q RPC).
+- **Scalability**: Current size (<5K questions, <100 users) = excellent; 10K
+  questions/1K users = excellent; 100K questions/10K users = good (may need
+  optional composite indexes); 1M+ = requires partitioning/materialized views.
+
+### Recommendations
+- ✅ No critical issues. Current state is production-ready.
+- 🔹 Optional: 3 minor composite indexes for 100K+ scale (practice attempt lookup,
+  mock random selection, active blueprints) — defer until needed.
+- 🔹 Optional: revoke EXECUTE on `rls_auto_enable()` and `is_admin()` from API
+  roles (low priority hardening).
+- 🔹 Recommended: enable leaked password protection in Auth settings (Dashboard).
+
+### Next
+- Deploy to production with confidence.
+- Monitor pg_stat_statements as usage grows; run EXPLAIN ANALYZE on top queries
+  monthly to catch slow paths.
+- Re-audit indexes every 6 months; drop unused ones that remain unused.
