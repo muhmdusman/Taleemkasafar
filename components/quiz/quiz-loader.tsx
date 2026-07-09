@@ -1,30 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
-
-/**
- * Small inline "TS" branded spinner shown while a single action resolves
- * (e.g. grading a practice answer). Soft Brutalism: square, 2px black border,
- * electric-blue sweep — no rounded SaaS spinner.
- */
-export function InlineLoader({ className }: { className?: string }) {
-  return (
-    <span
-      className={cn(
-        "relative inline-flex h-9 w-9 items-center justify-center overflow-hidden border-2 border-black bg-white",
-        className,
-      )}
-      role="status"
-      aria-label="Loading"
-    >
-      <span className="absolute inset-0 -translate-x-full animate-[loaderSweep_0.9s_linear_infinite] bg-brand/30" />
-      <span className="relative font-headline text-xs font-bold tracking-tighter text-black">
-        TS
-      </span>
-    </span>
-  );
-}
 
 /**
  * Full-screen overlay loader for longer operations (e.g. generating a mock

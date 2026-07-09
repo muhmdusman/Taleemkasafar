@@ -6,6 +6,7 @@ import { Icon } from "@/components/dashboard/icon";
 import { OptionButton, type OptionVisualState } from "./option-button";
 import { MathText } from "./math-text";
 import { BookmarkButton } from "./bookmark-button";
+import { CheckingOverlay } from "./ts-ring-loader";
 import {
   startPractice,
   answerPractice,
@@ -126,6 +127,8 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
 
   return (
     <div className="flex h-full flex-col">
+      <CheckingOverlay active={pendingOption !== null} />
+
       {/* Slim header: logo · moving counter · end */}
       <header className="flex h-14 shrink-0 items-center justify-between border-b-2 border-black bg-white px-4 md:px-6">
         <span className="font-headline text-base font-bold tracking-tighter text-black">

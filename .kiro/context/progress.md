@@ -209,3 +209,32 @@
 - Monitor pg_stat_statements as usage grows; run EXPLAIN ANALYZE on top queries
   monthly to catch slow paths.
 - Re-audit indexes every 6 months; drop unused ones that remain unused.
+
+
+## 2026-07-01 — Brand-consistent quiz loaders (TS ring spinner)
+
+### Done
+- **`components/quiz/ts-ring-loader.tsx`**: new `TsRingLoader` (favicon "TS"
+  mark + rotating electric-blue arc, pure CSS `animate-spin`), `QuizLoadingScreen`
+  (full-screen branded fallback, same slim header/footer chrome as the runner —
+  no layout jump on hydration), and `CheckingOverlay` (centered "checking
+  answer..." overlay for practice/past-paper grading).
+- **`lib/hooks/use-delayed-visible.ts`**: delayed-loader hook — only renders
+  the overlay if the async action exceeds 150ms, and hides it the instant the
+  action resolves (no artificial minimum display time). Since
+  `submit_practice_answer` typically grades in well under 150ms, the overlay
+  effectively never flashes for normal answers.
+- Replaced the generic pulsing-skeleton Suspense fallback on
+  `/subjects/[slug]/[chapter]/practice` and `.../past-paper` with
+  `QuizLoadingScreen`.
+- Wired `CheckingOverlay` into `practice-runner.tsx` during answer grading.
+- Removed now-dead `InlineLoader` from `quiz-loader.tsx` (superseded by the
+  ring loader); `FullscreenLoader` (mock generation, a genuinely multi-step
+  ~50-200ms operation) is untouched.
+- Verified: lint clean, `npm run build` passes, 55/55 Vitest tests pass,
+  manually confirmed in `next dev` that the skeleton no longer appears and the
+  TS ring loader renders immediately on practice/past-paper load + option select.
+
+### Next
+- Push to production (Vercel auto-deploys from `main`) so
+  entrytest.taleemkasafar.com picks up the new loader.
