@@ -236,3 +236,4 @@ export async function getMockResult(
         ?.submitted_at ?? null,
   };
 }
+
