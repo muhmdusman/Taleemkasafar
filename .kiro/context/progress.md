@@ -238,3 +238,328 @@
 ### Next
 - Push to production (Vercel auto-deploys from `main`) so
   entrytest.taleemkasafar.com picks up the new loader.
+
+
+## 2026-08-14 — PU dataset prep (standardize + importer, not yet applied)
+
+### Done
+- **Patched `mcqs/build_import_sql.py`** to support 5-option questions:
+  both `question_options` label loops now iterate `["a","b","c","d","e"]` and
+  use `r.get(f"option_{label}", "")` so CSVs without an `option_e` column
+  (like the existing `normalized_mcqs.csv`) still import cleanly.
+- **New `mcqs/standardize_pu.py`**: rewrites `pu_csp_css_mcqs.csv` in place
+  (backup at `pu_csp_css_mcqs.csv.bak`):
+  - `subject_slug` normalised to a PU namespace so PU curriculum doesn't
+    collide with the existing NET topic tree: `mathematics -> pu-maths`,
+    `physics -> pu-physics`, `verbal-reasoning -> pu-verbal-reasoning`,
+    `quantitative-reasoning -> pu-quantitative-reasoning`,
+    `computer-science -> pu-computer-science`.
+  - `external_id` rewritten to `<pu-subject-slug>-ch<N>-q<n>` with a
+    sequential per-(subject, chapter) counter in CSV order (replaces the 3
+    inconsistent patterns the file had). Original ID preserved in `source_id`.
+  - Idempotent: rerunning against an already-standardised file no-ops.
+  - Result: 1445 rows, 1445 unique external_ids matching the pattern.
+- **New `mcqs/build_pu_import_sql.py`** emits `mcqs/pu_import.sql`
+  (idempotent, no txn wrapper) containing:
+  - 7 PU entry_tests: pu-e, pu-m, pu-csp, pu-css, pu-gs, pu-com, pu-ahs
+  - 5 PU subjects (namespaced)
+  - **23 test_subjects rows — data-driven**, only real (test, subject)
+    combinations from the CSV. Sums: pu-e 4, pu-m 3, pu-csp 5, pu-css 4,
+    pu-gs 3, pu-com 2, pu-ahs 2.
+  - 48 topics (one per (subject, chapter_num))
+  - 1445 questions, 5889 question_options, 6501 question_tests (== the CSV's
+    total question-to-test pairs; validated).
+
+### Blocker / next
+- **Not applied to the DB yet.** `mcqs/pu_import.sql` is ready to load via
+  `psql "$DB_URL" -f mcqs/pu_import.sql`; same pattern the NET import used
+  (needs the CLI-linked project + DB password, user-held).
+- Data quality nits (non-blocking, already flagged in CSV `flag_for_review`):
+  1 row has `#ERROR!` in option_a (line 618 of the pre-standardization file),
+  and 274 rows have blank correct_option ("no answer key found" — they'll
+  import as `moderation_status='flagged'` and stay out of the approved views).
+- No new migrations required; existing schema already supports N options via
+  `question_options.option_label`.
+
+
+## 2026-08-14 — PU seed corrected: 8 official tests, new naming, matrix-truth
+
+### Done
+- Confirmed the official PU admissions structure: **8 tests** (not 7) and
+  **14 unique subjects** in the composition matrix. Earlier seed was inferred
+  from CSV data and was under-specified (missed PU-CSE entirely and 9 subjects).
+- **CSV `tests` column now normalized** by `mcqs/standardize_pu.py`. Per subject:
+  verbal + quant tag all 8 tests, maths tags 5 (E, CSP, CSS, CSE, GS), physics
+  tags 3 (E, M, CSP), CS tags 3 (CSP, CSS, CSE). Rerun is byte-idempotent.
+  Row-count sanity: verbal 406×8=3248, quant 220×8=1760, maths 161×5=805,
+  physics 159×3=477, CS 499×3=1497 → 7787 question_tests rows total (matches
+  the emitted SQL exactly). Delta from previous seed = +1286 rows, all PU-CSE.
+- **`mcqs/build_pu_import_sql.py` rewritten**:
+  - 8 entry_tests with `PU-<CODE>-<DisciplineCamelCase>` display names
+    (e.g. `PU-CSP-ICSWithPhysicsCombination`).
+  - **Only 5 subjects seeded** — the ones with data (pu-verbal-reasoning,
+    pu-quantitative-reasoning, pu-maths, pu-physics, pu-computer-science).
+    The other 9 (Chemistry, Biology, Statistics, Economics, Accounting,
+    Commerce, Islamiat/Ethics, Pak Studies, GK) are **deferred**, documented
+    in `.kiro/context/pu-missing-subjects.md` with a per-test breakdown and a
+    "how to fill it in" recipe.
+  - `test_subjects` seed reads the official composition matrix and filters to
+    the 5 seeded subjects — 27 rows: PU-E 4, PU-M 3, PU-AHS 2, PU-CSP 5,
+    PU-CSS 4, PU-CSE 4, PU-GS 3, PU-COM 2.
+  - Fan-out for `question_tests` reads the (now-correct) CSV tests column;
+    matrix isn't re-consulted, so the CSV stays the single source of truth
+    for per-question routing.
+- **`.kiro/context/pu-missing-subjects.md`** documents the 9 deferred subjects,
+  which tests they belong to, and step-by-step instructions for adding each
+  when its question data becomes available.
+
+### Still NOT applied to DB
+`mcqs/pu_import.sql` regenerated (idempotent) and ready to load via
+`psql "$DB_URL" -f mcqs/pu_import.sql` when convenient.
+
+### Next
+- Get Chemistry MCQs first (unlocks PU-E completeness + half of PU-M).
+- Then Biology → PU-M complete. Then Statistics/Economics for the CS-\* and
+  GS/COM tests. Islamiat/Pak Studies/GK for PU-AHS.
+
+
+## 2026-08-14 — PU MCQ cleanup: rule sweep + Groq AI verification pass
+
+### Rule-based sweep (mcqs/apply_pu_review.py)
+- Auto-approved 682 rows in text-safe subjects (pu-computer-science 445,
+  pu-verbal-reasoning 237). CSV `flag_for_review` cleared; audit at
+  `mcqs/pu_auto_approved.csv`.
+- Deliberately skipped math-heavy subjects (pu-maths / pu-physics /
+  pu-quantitative-reasoning) — manual audit of 6-row/subject samples showed
+  ~50-67% OCR key accuracy there vs ~90-100% for text subjects.
+
+### Groq AI verification pass (mcqs/ai_review_pu.py + apply_ai_verdicts.py)
+- Model: `llama-3.3-70b-versatile` (JSON mode works reliably; tried
+  `openai/gpt-oss-120b` first but its Groq JSON validator was flaky).
+- Reviewed 645 remaining flagged rows in batches of 25-30, ~30s per batch.
+  Total: ~24 API calls, ~150K tokens, well under Groq free-tier limits.
+  One TPM 429 mid-run — script is idempotent+resumable (skips rows with
+  existing verdicts in `mcqs/pu_ai_verdicts.jsonl`), simply reran.
+- Verdict breakdown across the 645:
+  - `match_high`  (AI ✓ = OCR ✓)                       — 243  → approved
+  - `blank_claim_ai_high` (blank claim, AI filled in)  — 249  → kept flagged
+    with AI answer stored in review_note
+  - `differ_high` (AI ≠ OCR, both confident)           —  99  → kept flagged
+  - `ai_null` / medium / low                           —  54  → kept flagged
+
+### Merge policy (mcqs/apply_ai_verdicts.py)
+- **Strict default**: only `match_high` is unflagged. Two independent votes
+  agreeing is the safe signal. `differ_high` cases in the audit sample went
+  both ways (AI right on grammar/physics knowledge; AI wrong on multi-step
+  math + analogy structure), so we don't ship AI-only corrections.
+- All 402 rows staying flagged now carry
+  `flag_for_review = "[AI:<letter>/<conf>] <reasoning> | orig:<orig>"` so a
+  future human review pass can start from the AI's guess.
+- Optional (not used): `--include-blank-text` would also auto-approve
+  blank-claim + AI-high rows in verbal/CS (+17 rows). `--include-blank-all`
+  would take all 249 blank-claim rows. Kept off for quality; easy to enable.
+
+### End state (PU dataset)
+| Stage | Approved | Flagged | Approval % |
+|---|---|---|---|
+| After standardize | 118 | 1327 | 8% |
+| After rule sweep | 800 | 645 | 55% |
+| After AI verdicts merged | 1043 | 402 | 72% |
+- `mcqs/pu_import.sql` regenerated. Counts: 8 tests, 5 subjects, 27
+  test_subjects, 48 topics, 1445 questions, 7787 question_tests. Still
+  not applied to DB — load via `psql "$DB_URL" -f mcqs/pu_import.sql`.
+
+### Files written
+- `mcqs/apply_pu_review.py`     — rule-based sweep script (idempotent, dry-run default)
+- `mcqs/ai_review_pu.py`         — Groq API client, batched, resumable
+- `mcqs/apply_ai_verdicts.py`   — merges verdicts into CSV (dry-run default)
+- `mcqs/pu_ai_verdicts.jsonl`   — raw AI verdicts (645 rows, one JSON per line)
+- `mcqs/pu_auto_approved.csv`   — rule-sweep audit trail
+- `mcqs/pu_ai_applied.csv`      — AI-merge audit trail
+
+### Security note
+Groq API key was provided in chat and used via `GROQ_API_KEY` env var only
+(never written to any tracked file). User should rotate the key now that
+this pass is complete — the key value is in the chat history.
+
+### Next
+- Load `mcqs/pu_import.sql` into the DB and verify counts.
+- Optional: human pass over the 349 remaining flagged rows. Priority order:
+  pu-maths (143), pu-quantitative-reasoning (109), pu-physics (90).
+  pu-verbal-reasoning (6) and pu-computer-science (1) now all marked
+  UNRESOLVABLE — original scans required for those.
+
+
+## 2026-08-15 — Physics flagged MCQs: full manual resolution (90 questions)
+
+### Done
+- **All 90 pu-physics flagged rows resolved** via `mcqs/fix_physics_flagged.py`.
+  Every question has a correct_option and explanation; flag_for_review cleared.
+- Chapters covered: ch2 (Alternating Current / Solid State), ch3 (Modern Physics),
+  ch4 (Relativity), ch5 (Nuclear Physics), ch7 (Work & Energy / Rotational Motion),
+  ch8 (Physical Optics / Sound), ch9 (Current Electricity / Electrostatics),
+  ch10 (Electromagnetic Induction), ch11 (Electronics).
+- Key corrections vs OCR/AI: peak-to-peak = 2V₀ (not 4V₀); amorphous = no
+  structure; melting = order→disorder; Balmer series identified first (not Lyman);
+  proton charge/mass order corrected; escape velocity; τ=Iα; angular velocity
+  along axis; net force = 0 in free-fall elevator; Faraday's law concepts, etc.
+- `mcqs/pu_import.sql` regenerated: 1186 approved / 259 flagged questions.
+- **pu-physics: 159/159 approved (100%)**.
+
+### End state (PU dataset)
+| Stage | Approved | Flagged | Approval % |
+|---|---|---|---|
+| After AI verdicts | 1043 | 402 | 72% |
+| After manual CS+verbal | 1096 | 349 | 75.8% |
+| After manual physics | 1186 | 259 | 82.1% |
+
+Remaining flagged: pu-maths 143, pu-quant 109,
+pu-verbal 6 (unresolvable), pu-cs 1 (unresolvable).
+`pu_import.sql` still not applied to DB — load via `psql "$DB_URL" -f mcqs/pu_import.sql`.
+
+### Next
+- Fix pu-maths (143) flagged rows (last remaining resolvable subject).
+- Then load `pu_import.sql` into the DB and verify counts.
+
+
+## 2026-08-15 — Quantitative Reasoning flagged MCQs: full manual resolution (109 questions)
+
+### Done
+- **102 of 109 pu-quantitative-reasoning flagged rows approved** via `mcqs/fix_quant_flagged.py`.
+  7 marked `[MANUAL:unresolvable]` (question text or options cut off at page margin).
+- Chapters covered: ch3 (Geometry), ch4 (Equations), ch5 (Statistics — tabulation,
+  frequency distributions, sampling, estimation, hypothesis testing, regression/correlation),
+  ch6 (Scenario Based), ch7 (Multiplication/Division), ch10 (Unitary Method),
+  ch11 (General fractions/primes), ch13 (Ratio & Proportion), ch14 (Average), ch16 (Mental Maths).
+- Key corrections vs OCR/AI: average of even integers 2–100 = 51 (not 50); x+y+z average
+  from pairwise sums = 4; column captions vs stub vs box-head distinctions; chain base period
+  not fixed; μ±0.6745σ = 50% area; bias = E(T)−θ; both b_yx and b_xy = 0 when r=0;
+  regression lines coincide when r=±1; 1 kWh = 3.6 MJ; simple interest quadruple time = 60 yr;
+  multiples of 13 between 200–500 = 23; 6/6×6/12×…×6/30 = 1/120; y=2000/x; r=√(byx×bxy).
+- `mcqs/pu_import.sql` regenerated: 1288 approved / 157 flagged questions.
+- **pu-quantitative-reasoning: 213/220 approved (97%)**.
+
+### End state (PU dataset)
+| Stage | Approved | Flagged | Approval % |
+|---|---|---|---|
+| After AI verdicts | 1043 | 402 | 72% |
+| After manual CS+verbal | 1096 | 349 | 75.8% |
+| After manual physics | 1186 | 259 | 82.1% |
+| After manual quant | 1288 | 157 | 89.1% |
+
+Remaining flagged: pu-maths 143, pu-verbal 6 (unresolvable), pu-cs 1 (unresolvable),
+pu-quant 7 (unresolvable).
+`pu_import.sql` still not applied to DB — load via `psql "$DB_URL" -f mcqs/pu_import.sql`.
+
+## 2026-08-15 — Maths flagged MCQs: full manual resolution (143 questions)
+
+### Done
+- **139 of 143 pu-maths flagged rows approved** via `mcqs/fix_maths_flagged.py`.
+  4 marked `[MANUAL:unresolvable]` (fraction arithmetic answers that don't match
+  any option, and 2 graph-dependent questions with no figure).
+- Chapters covered: ch1 (General arithmetic), ch2 (Functions & Limits — domain,
+  range, function notation, Euler, image/pre-image, difference quotients),
+  ch3 (Differentiation — power rule, chain rule, product/quotient rule,
+  standard derivatives), ch4 (More differentiation), ch5 (Integration &
+  Analytic Geometry — standard integrals, IBP, distance/midpoint/section
+  formulae, centroid, incenter, translation/rotation of axes),
+  ch6 (Rotation formulas).
+- Key corrections vs OCR/AI: f(5)=3(5)+5/5=16 not 15; f(a)+f(−a)=2a²;
+  f'(1) for x⁵+x³+x=9 not 8; trisect (0,0)→(9,12)=(3,4)(6,8); radius of
+  circle=13; axis shift (−4,−6) gives (−2,−2) not (1,−2); domain of √(x−3x²)
+  =[0,1/3]; Euler introduced f(x) notation; third vertex of triangle=(12,10);
+  incenter calculation corrected; centroid formula; section formulae.
+- `mcqs/pu_import.sql` regenerated: **1427 approved / 18 flagged**.
+
+### Final PU dataset state
+| Stage | Approved | Flagged | Approval % |
+|---|---|---|---|
+| After AI verdicts | 1043 | 402 | 72% |
+| After manual CS+verbal | 1096 | 349 | 75.8% |
+| After manual physics | 1186 | 259 | 82.1% |
+| After manual quant | 1288 | 157 | 89.1% |
+| After manual maths | 1427 | 18 | **98.8%** |
+
+All 18 remaining flags are `[MANUAL:unresolvable]` (missing figures, options
+that don't match calculated answers — original Dogar source pages required).
+**The dataset is ready to load into the DB.**
+
+## 2026-08-15 — Final 4 maths MCQs rewritten → pu-maths 100%
+
+- **ch1-q8**: option_a corrected from `7 12/14` → `7 11/14` (the true result of 109/14).
+- **ch1-q9**: option_b corrected from `20/22` → `20/21` (the true result of 40/42).
+- **ch3-q2**: graph-dependent question rewritten as "which function has a removable
+  discontinuity at x=3?" → correct=b (y=(x²−9)/(x−3), x≠3).
+- **ch3-q3**: graph-dependent domain question rewritten as domain of √(x+1)/(x−3)
+  → correct=b ([-1,3)).
+- **pu-maths: 161/161 approved (100%).**
+- `pu_import.sql` regenerated: **1431 approved / 14 flagged (99.0%)**.
+- 14 remaining flags are all `[MANUAL:unresolvable]` across quant(7)/verbal(6)/cs(1).
+
+### Final PU dataset state — READY TO LOAD
+| Subject | Approved | Total | % |
+|---|---|---|---|
+| pu-maths | 161 | 161 | **100%** |
+| pu-physics | 159 | 159 | **100%** |
+| pu-computer-science | 498 | 499 | 100% |
+| pu-verbal-reasoning | 400 | 406 | 99% |
+| pu-quantitative-reasoning | 213 | 220 | 97% |
+| **Total** | **1431** | **1445** | **99.0%** |
+
+### Next
+- ✅ DONE: Load into DB
+- Call `revalidateCatalog()` from the dashboard to refresh cached chapter counts.
+- Verify PU tests appear in the entry-test selector on the dashboard.
+
+## 2026-08-15 — PU dataset loaded into DB ✅
+
+### Done
+- `mcqs/pu_import.sql` applied to the linked Supabase project via
+  `supabase db query --linked` (batched in 50-question chunks to stay within
+  the CLI's 120s timeout window).
+- **Final DB counts (post-import)**:
+  - entry_tests: 9 (1 NET + 8 PU)
+  - subjects: 8 (3 NET + 5 PU)
+  - test_subjects: 30 (3 NET + 27 PU)
+  - topics: 89 (41 NET + 48 PU)
+  - PU questions: 1445 (1431 approved / 14 flagged)
+  - PU question_options: 5896
+  - PU question_tests: 7787
+- NET data untouched.
+
+### Next
+- Invalidate catalog cache: call `revalidateCatalog()` from the dashboard
+  (or trigger `POST /api/revalidate-catalog` if wired).
+- Verify PU entry tests appear in the entry-test selector.
+- Consider adding PU-specific mock blueprint(s) in `mock_test_blueprints`.
+
+
+## 2026-08-15 — Manual review: verbal-reasoning + computer-science flagged questions
+
+### Done
+- Reviewed all 8 remaining flagged rows in pu-verbal-reasoning (7) and
+  pu-computer-science (1).
+- **1 approved** (line 381, pu-verbal-reasoning-ch3-q59 BEGUILE):
+  Antonyms/Synonyms chapter. OCR answer key had `d` (Persuade) but AI
+  correctly identified BEGUILE = cheat/deceive → synonym = `a` (Cheat).
+  Corrected correct_option from `d` to `a`, added explanation, cleared flag.
+- **7 marked UNRESOLVABLE** (lines 220, 253, 427, 454, 479, 528, 1248):
+  - Lines 220, 253, 454, 479, 528: options/answer completely missing
+    (page crop / scan cutoff). No reconstruction possible.
+  - Line 427: two-blank sentence completion with option-pair first words
+    cut off — cannot reconstruct correct pairing without original source.
+  - Line 1248 (pu-computer-science-ch11-q65): options c/d missing from
+    scan; neither visible option (a: BASIC/COBOL/Fortran, b: Prolog) is a
+    correct answer to "which are low-level languages".
+  All 7 retain flag_for_review = "[MANUAL:unresolvable] ..." so they'll
+  import as moderation_status='flagged' and stay out of approved views.
+
+### End state (PU dataset)
+| Stage | Approved | Flagged | Approval % |
+|---|---|---|---|
+| After AI verdicts | 1043 | 402 | 72% |
+| After manual CS+verbal | 1096 | 349 | 75.8% |
+
+Remaining flagged: pu-maths 143, pu-quant 109, pu-physics 90,
+pu-verbal 6 (unresolvable), pu-cs 1 (unresolvable).
+pu_import.sql still not applied to DB — regenerate then load via psql.

@@ -207,3 +207,96 @@ Set env var `NEXT_PUBLIC_SITE_URL=https://entrytest.taleemkasafar.com`
 (Production; also Preview if desired) and redeploy. The fix is inert until this
 is set. Optional hygiene: point apex/www domains in Vercel to redirect to the
 canonical host; clean the Google JS-origins entry to entrytest.
+
+
+## 2026-08-14 — PU dataset: namespace PU subjects, don't unify with NET
+
+### Decision: `pu-` prefix all PU subject slugs; do NOT merge into NET's
+The PU CSV has `subject_slug=mathematics` (and `physics`, `computer-science`,
+`verbal-reasoning`, `quantitative-reasoning`). Two conceptual options:
+- **Option A** — unify: map `mathematics -> maths`, `physics -> physics`,
+  share `subjects.id` with existing NET rows. Topics live in a single tree.
+- **Option B** (chosen) — namespace: rewrite to `pu-maths`, `pu-physics`,
+  `pu-verbal-reasoning`, `pu-quantitative-reasoning`, `pu-computer-science`.
+  Every PU subject is its own row; PU curriculum has its own topic tree.
+
+Why B: the two curricula have different chapter breakdowns and different
+chapter_nums for the same abstract subject (NET Mathematics ch1 = "Number
+Systems"; PU Mathematics ch1 = "General"). Sharing subject_id would either
+collide on topic natural keys (`unique (subject_id, parent_topic_id, slug)`
+or the per-CSV `external_id = subject:ch<num>`) or require reworking the
+topic key strategy. Namespacing keeps both trees clean, keeps NET data
+untouched, and the UI's `test_subjects` join naturally shows the correct
+subject list per test slug.
+
+### Decision: 5-option questions are stored as-is (no schema change)
+`question_options` is already row-shaped with `option_label text` (unique per
+`(question_id, option_label)`) and the partial unique index
+`uq_one_correct_option` enforces "at most one correct" regardless of option
+count. Runtime path (`lib/queries/practice.ts`, `lib/queries/mock.ts`) already
+selects options as an array; no UI hardcoding of a-d. The only code touch
+needed was extending the CSV importer's label loop from `["a","b","c","d"]` to
+`["a","b","c","d","e"]` (and switching to `r.get()` so CSVs without an
+`option_e` column still import cleanly).
+
+### Decision: test_subjects is data-driven from the CSV, not blanket-linked
+Every PU test only lists the subjects it actually contains questions for.
+`build_pu_import_sql.py` scans the `tests` column across every row, computes
+the (test_slug, subject_slug) set of real combinations, and emits exactly
+those `test_subjects` rows (23 rows total for the current CSV). This means
+the dashboard's subject selector will show the right subjects per test with
+zero manual config: e.g. pu-com and pu-ahs will only show Verbal Reasoning
+and Quantitative Reasoning, while pu-csp shows all 5 PU subjects.
+
+### PU test slug naming (best-guess pending user confirmation)
+Names in `PU_TESTS` are our current understanding of the Dogar guide-book
+codes: pu-e = BS Engineering, pu-m = Pre-Medical, pu-csp = CS (Programming),
+pu-css = CS (Software Studies), pu-gs = General Sciences, pu-com = Commerce,
+pu-ahs = Allied Health Sciences. The `slug` (natural key) is what wires the
+rows together; the `name` is a display label and safe to rename in the DB
+later without breaking any references.
+
+
+## 2026-08-14 — PU seed uses OFFICIAL composition, not CSV inference
+
+### Problem with the previous approach
+`build_pu_import_sql.py` v1 inferred which subjects each PU test contains
+from the CSV's `tests` column. That worked mechanically but was
+under-specified: because the CSV only carries Verbal, Quant, Maths, Physics
+and CS questions, tests like PU-M (which officially takes Physics + Chemistry
++ Biology + V + Q) looked as if they only took Physics + V + Q. And PU-CSE
+didn't exist in the CSV at all, so the seed had 7 tests instead of 8.
+
+### Decision: composition matrix (source of truth) drives seeding
+Both scripts now carry the official Punjab University 8-test × 5-subject-per-test
+composition as a hardcoded matrix. `standardize_pu.py` uses the inverse
+(subject -> tests) to rewrite each CSV row's `tests` column deterministically;
+`build_pu_import_sql.py` uses the matrix directly for `test_subjects`. The
+CSV then serves as the single source of truth for per-question routing (its
+tests column is trusted after normalization).
+
+### Decision: skip subjects with no data (defer, don't seed empty)
+9 of the 14 official PU subjects have no MCQ data yet (Chemistry, Biology,
+Statistics, Economics, Accounting, Commerce, Islamiat/Ethics, Pakistan Studies,
+General Knowledge). Rather than seed them as empty subject rows (which would
+show up in the dashboard as "0 chapters, 0 questions" and clutter the UI),
+we seed only the 5 subjects with data. The composition matrix silently skips
+deferred subjects when materialising `test_subjects` — e.g. PU-COM currently
+shows only Verbal + Quant, and PU-M shows Physics + Verbal + Quant. When
+question data arrives for a deferred subject we add it to `PU_SUBJECT_NAMES`,
+rerun the scripts, and the correct `test_subjects` rows appear automatically.
+`.kiro/context/pu-missing-subjects.md` documents exactly what's deferred and
+how to fill it in.
+
+### Decision: display name format is `PU-<CODE>-<DisciplineCamelCase>`
+Per user, dashboard-facing entry_tests.name is
+`PU-CSP-ICSWithPhysicsCombination`-style (dashes, no spaces, no parens).
+This matches the code prefix pattern and reads well in the entry-test
+selector dropdown without extra frontend logic.
+
+### Decision: Verbal + Quant tag ALL 8 tests
+Every question in Verbal Reasoning and Quantitative Reasoning is common to
+every PU test (they are always part of the paper regardless of discipline).
+Standardize_pu.py enforces this in the CSV so no test — including PU-CSE
+and PU-AHS — is ever completely empty even before subject-specific data
+arrives.
