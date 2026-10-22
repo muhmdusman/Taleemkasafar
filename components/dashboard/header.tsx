@@ -22,13 +22,13 @@ export function DashboardHeader({
 }) {
   const initial = avatarInitial(displayName);
   return (
-    <header className="fixed left-0 right-0 top-0 z-30 flex h-20 items-center justify-between border-b-2 border-black bg-white px-6 md:left-64 md:px-8">
+    <header className="fixed left-0 right-0 top-0 z-30 flex h-20 items-center justify-between border-b-2 border-ink bg-surface-lowest px-6 md:left-64 md:px-8">
       <div className="flex items-center gap-4">
-        <h1 className="font-headline text-2xl font-bold uppercase tracking-tighter text-black">
+        <h1 className="font-headline text-2xl font-bold uppercase tracking-tighter text-on-surface">
           {title}
         </h1>
         {badge && (
-          <span className="hidden border-2 border-black bg-brand-fixed px-2 py-1 text-xs font-bold text-[#001a42] lg:inline">
+          <span className="hidden border-2 border-ink bg-brand-fixed px-2 py-1 text-xs font-bold text-on-surface lg:inline">
             {badge}
           </span>
         )}
@@ -43,12 +43,12 @@ export function DashboardHeader({
         <button
           type="button"
           aria-label="Search"
-          className="flex h-10 w-10 items-center justify-center border-2 border-black transition-colors hover:bg-surface-container"
+          className="flex h-10 w-10 items-center justify-center border-2 border-ink transition-colors hover:bg-surface-container"
         >
           <Icon name="search" />
         </button>
         <div
-          className="flex h-10 w-10 items-center justify-center border-2 border-black bg-brand-fixed font-headline font-bold text-[#001a42]"
+          className="flex h-10 w-10 items-center justify-center border-2 border-ink bg-brand-fixed font-headline font-bold text-on-surface"
           aria-label={`Signed in as ${displayName}`}
         >
           {initial}

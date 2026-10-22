@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Icon } from "@/components/dashboard/icon";
-import { toggleBookmark } from "@/app/(dashboard)/quiz-actions";
+import { toggleBookmark } from "@/app/dashboard/quiz-actions";
 import { cn } from "@/lib/utils";
 
 /** Toggle a bookmark for a question. Optimistic, with a server round trip. */
@@ -32,8 +32,8 @@ export function BookmarkButton({
       disabled={isPending}
       aria-pressed={saved}
       className={cn(
-        "flex items-center gap-2 border-2 border-black px-3 py-2 font-headline text-xs font-bold uppercase tracking-tight transition-colors",
-        saved ? "bg-black text-white" : "bg-white text-black hover:bg-brand-fixed",
+        "flex items-center gap-2 border-2 border-ink px-3 py-2 font-headline text-xs font-bold uppercase tracking-tight transition-colors",
+        saved ? "bg-ink text-on-ink" : "bg-surface-lowest text-on-surface hover:bg-brand-fixed",
       )}
     >
       <Icon name="bookmark" filled={saved} className="text-lg" />

@@ -15,19 +15,19 @@ export function SignUpForm() {
   );
 
   const inputClass =
-    "w-full border-2 border-black bg-white p-4 font-body text-black transition-all placeholder:text-outline focus:border-brand focus:shadow-hard-primary focus:outline-none";
+    "w-full border-2 border-ink bg-surface-lowest p-4 font-body text-on-surface transition-all placeholder:text-outline focus:border-brand focus:shadow-hard-primary focus:outline-none";
 
   return (
-    <div className="grid w-full max-w-2xl grid-cols-1 border-2 border-black bg-white shadow-hard md:grid-cols-12">
+    <div className="grid w-full max-w-2xl grid-cols-1 border-2 border-ink bg-surface-lowest shadow-hard md:grid-cols-12">
       {/* Branding side */}
-      <aside className="relative flex flex-col justify-between overflow-hidden border-b-2 border-black bg-brand-fixed p-8 md:col-span-5 md:border-b-0 md:border-r-2">
+      <aside className="relative flex flex-col justify-between overflow-hidden border-b-2 border-ink bg-brand-fixed p-8 md:col-span-5 md:border-b-0 md:border-r-2">
         <div className="relative z-10">
-          <h1 className="mb-6 font-headline text-4xl font-bold uppercase leading-none tracking-tighter text-[#001a42]">
+          <h1 className="mb-6 font-headline text-4xl font-bold uppercase leading-none tracking-tighter text-on-surface">
             Build Your
             <br />
             Future.
           </h1>
-          <p className="font-body font-medium leading-relaxed text-[#004395]">
+          <p className="font-body font-medium leading-relaxed text-brand">
             Join the journey of high-performance entry-test preparation.
             Precise, focused, and built for success.
           </p>
@@ -56,16 +56,16 @@ export function SignUpForm() {
             </span>
           </div>
         </div>
-        <div className="absolute -bottom-10 -right-10 h-40 w-40 rotate-12 border-4 border-black bg-brand opacity-10" />
+        <div className="absolute -bottom-10 -right-10 h-40 w-40 rotate-12 border-4 border-ink bg-brand opacity-10" />
       </aside>
 
       {/* Form side */}
       <div className="p-8 md:col-span-7 md:p-12">
         <div className="mb-8">
-          <h2 className="mb-2 font-headline text-3xl font-extrabold uppercase tracking-tight text-black">
+          <h2 className="mb-2 font-headline text-3xl font-extrabold uppercase tracking-tight text-on-surface">
             Create Account
           </h2>
-          <p className="font-medium text-secondary">
+          <p className="font-medium text-on-surface-variant">
             Enter your details to start your journey.
           </p>
         </div>
@@ -74,7 +74,7 @@ export function SignUpForm() {
           <div className="space-y-2">
             <label
               htmlFor="name"
-              className="block font-headline text-xs font-bold uppercase tracking-widest text-black"
+              className="block font-headline text-xs font-bold uppercase tracking-widest text-on-surface"
             >
               Full Name
             </label>
@@ -91,7 +91,7 @@ export function SignUpForm() {
           <div className="space-y-2">
             <label
               htmlFor="email"
-              className="block font-headline text-xs font-bold uppercase tracking-widest text-black"
+              className="block font-headline text-xs font-bold uppercase tracking-widest text-on-surface"
             >
               Email Address
             </label>
@@ -108,7 +108,7 @@ export function SignUpForm() {
           <div className="space-y-2">
             <label
               htmlFor="password"
-              className="block font-headline text-xs font-bold uppercase tracking-widest text-black"
+              className="block font-headline text-xs font-bold uppercase tracking-widest text-on-surface"
             >
               Password
             </label>
@@ -125,7 +125,7 @@ export function SignUpForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-black"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 <span className="material-symbols-outlined">
@@ -133,7 +133,7 @@ export function SignUpForm() {
                 </span>
               </button>
             </div>
-            <p className="text-[10px] font-bold uppercase tracking-tight text-secondary">
+            <p className="text-[10px] font-bold uppercase tracking-tight text-on-surface-variant">
               Minimum 8 characters.
             </p>
           </div>
@@ -143,7 +143,7 @@ export function SignUpForm() {
               id="terms"
               name="terms"
               type="checkbox"
-              className="mt-0.5 h-5 w-5 rounded-none border-2 border-black text-brand focus:ring-0"
+              className="mt-0.5 h-5 w-5 rounded-none border-2 border-ink text-brand focus:ring-0"
             />
             <label
               htmlFor="terms"
@@ -168,7 +168,7 @@ export function SignUpForm() {
           <button
             type="submit"
             disabled={isPending}
-            className="flex w-full items-center justify-center gap-3 border-2 border-black bg-black px-8 py-5 font-headline text-xl font-bold uppercase tracking-tighter text-white transition-colors hover:bg-brand disabled:opacity-70"
+            className="flex w-full items-center justify-center gap-3 border-2 border-ink bg-ink px-8 py-5 font-headline text-xl font-bold uppercase tracking-tighter text-on-ink transition-colors hover:bg-brand disabled:opacity-70"
           >
             <span>{isPending ? "Creating…" : "Create Account"}</span>
             {!isPending && (
@@ -185,7 +185,7 @@ export function SignUpForm() {
             </span>
             <div className="flex-grow border-t-2 border-surface-variant" />
           </div>
-          <SocialButtons next="/" />
+          <SocialButtons />
         </div>
 
         <div className="mt-8 flex items-center justify-center gap-2 font-headline">

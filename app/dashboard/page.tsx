@@ -96,20 +96,20 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
       <h2 className="font-headline text-4xl font-bold uppercase tracking-tight">
         {children}
       </h2>
-      <div className="h-1 flex-grow bg-black" />
+      <div className="h-1 flex-grow bg-ink" />
     </div>
   );
 }
 
 function HeaderFallback() {
   return (
-    <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-black bg-white md:left-64" />
+    <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-ink bg-surface-lowest md:left-64" />
   );
 }
 
 function HeroFallback() {
   return (
-    <div className="h-40 w-full animate-pulse border-2 border-black bg-surface-high" />
+    <div className="h-40 w-full animate-pulse border-2 border-ink bg-surface-high" />
   );
 }
 
@@ -119,7 +119,7 @@ function SubjectsFallback() {
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className="h-56 animate-pulse border-2 border-black bg-surface-container"
+          className="h-56 animate-pulse border-2 border-ink bg-surface-container"
         />
       ))}
     </div>

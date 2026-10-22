@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { selectEntryTest } from "@/app/(dashboard)/actions";
+import { selectEntryTest } from "@/app/dashboard/actions";
 import { Icon } from "./icon";
 import type { EntryTest } from "@/lib/queries/entry-test";
 
@@ -42,7 +42,7 @@ export function EntryTestSelector({
         disabled={isPending}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center gap-2 border-2 border-black bg-white px-4 py-2 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-surface-container disabled:opacity-60"
+        className="flex items-center gap-2 border-2 border-ink bg-surface-lowest px-4 py-2 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-surface-container disabled:opacity-60"
       >
         <Icon name="school" className="text-lg text-brand" filled />
         <span className="max-w-[10rem] truncate">{active.name}</span>
@@ -59,7 +59,7 @@ export function EntryTestSelector({
           />
           <ul
             role="listbox"
-            className="absolute left-1/2 z-20 mt-2 w-64 -translate-x-1/2 border-2 border-black bg-white shadow-hard"
+            className="absolute left-1/2 z-20 mt-2 w-64 -translate-x-1/2 border-2 border-ink bg-surface-lowest shadow-hard"
           >
             {tests.map((t) => {
               const selected = t.id === activeId;
@@ -70,7 +70,7 @@ export function EntryTestSelector({
                     onClick={() => choose(t.id)}
                     className={`flex w-full items-center justify-between px-4 py-3 text-left font-headline text-sm font-bold uppercase tracking-tight transition-colors ${
                       selected
-                        ? "bg-brand-fixed text-[#001a42]"
+                        ? "bg-brand-fixed text-on-surface"
                         : "hover:bg-surface-container"
                     }`}
                   >

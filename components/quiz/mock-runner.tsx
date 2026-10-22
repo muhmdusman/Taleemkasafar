@@ -13,7 +13,8 @@ import {
   saveMockAnswer,
   toggleReview,
   submitMock,
-} from "@/app/(dashboard)/quiz-actions";
+} from "@/app/dashboard/quiz-actions";
+import { routes } from "@/lib/routes";
 import {
   buildSections,
   nextSectionStart,
@@ -84,7 +85,7 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
       time_taken_ms: null,
     }));
     const id = await submitMock(attemptId, answers);
-    if (id) router.push(`/mock/${id}/result`);
+    if (id) router.push(routes.mockResult(id));
     else setSubmitting(false);
   }, [submitting, questions, selected, attemptId, router]);
 
@@ -96,7 +97,7 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
 
   if (questions.length === 0) {
     return (
-      <div className="border-2 border-black bg-white p-8 shadow-hard">
+      <div className="border-2 border-ink bg-surface-lowest p-8 shadow-hard">
         <p className="font-body text-on-surface-variant">
           This mock has no questions.
         </p>
@@ -117,7 +118,7 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
             type="button"
             onClick={doSubmit}
             disabled={submitting}
-            className="flex items-center gap-2 border-2 border-black bg-black px-5 py-3 font-headline text-sm font-bold uppercase tracking-tight text-white shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
+            className="flex items-center gap-2 border-2 border-ink bg-ink px-5 py-3 font-headline text-sm font-bold uppercase tracking-tight text-on-ink shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
           >
             {submitting ? "Submitting..." : "Submit Test"}
             <Icon name="done_all" className="text-lg" />
@@ -130,15 +131,15 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
           sectionLabel={sectionLabels[index] ?? ""}
           statusSlot={
             review[current.id] ? (
-              <span className="flex items-center gap-1 border-2 border-danger bg-white px-2 py-1 text-xs font-bold uppercase text-danger">
+              <span className="flex items-center gap-1 border-2 border-danger bg-surface-lowest px-2 py-1 text-xs font-bold uppercase text-danger">
                 <Icon name="flag" className="text-sm" /> Review
               </span>
             ) : selected[current.id] ? (
-              <span className="border-2 border-black bg-[#16a34a] px-2 py-1 text-xs font-bold uppercase text-white">
+              <span className="border-2 border-ink bg-success px-2 py-1 text-xs font-bold uppercase text-on-brand">
                 Answered
               </span>
             ) : (
-              <span className="border-2 border-black bg-surface-high px-2 py-1 text-xs font-bold uppercase text-on-surface-variant">
+              <span className="border-2 border-ink bg-surface-high px-2 py-1 text-xs font-bold uppercase text-on-surface-variant">
                 Not answered
               </span>
             )
@@ -182,13 +183,13 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
 
       {/* Sidebar: progress + palette */}
       <aside className="flex flex-col gap-6">
-        <div className="border-2 border-black bg-white p-5 shadow-hard">
+        <div className="border-2 border-ink bg-surface-lowest p-5 shadow-hard">
           <div className="mb-3 font-headline text-sm font-bold uppercase tracking-tight">
             Progress · {answeredCount}/{questions.length}
           </div>
           <SectionProgress sections={sections} savedFlags={savedFlags} />
         </div>
-        <div className="border-2 border-black bg-white p-5 shadow-hard">
+        <div className="border-2 border-ink bg-surface-lowest p-5 shadow-hard">
           <div className="mb-3 font-headline text-sm font-bold uppercase tracking-tight">
             Questions
           </div>

@@ -254,7 +254,7 @@ otp_expiry = 3600
 # the email is opened in a different browser/device/in-app webview).
 # NOTE: the hosted project's template must be changed to match — Dashboard ->
 # Authentication -> Emails -> Confirm signup -> set the link to:
-#   {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/
+#   {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/dashboard
 [auth.email.template.confirmation]
 content_path = "./supabase/templates/confirm-signup.html"
 

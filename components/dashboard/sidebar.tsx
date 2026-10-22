@@ -4,22 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { isNavActive, routes } from "@/lib/routes";
 import { Icon } from "./icon";
 
 type NavItem = { href: string; label: string; icon: string };
 
 const NAV: NavItem[] = [
-  { href: "/", label: "Home", icon: "dashboard" },
-  { href: "/subjects", label: "My Subjects", icon: "menu_book" },
-  { href: "/mock", label: "Mock Tests", icon: "quiz" },
-  { href: "/performance", label: "Performance", icon: "insights" },
-  { href: "/settings", label: "Settings", icon: "settings" },
+  { href: routes.dashboard, label: "Home", icon: "dashboard" },
+  { href: routes.subjects, label: "My Subjects", icon: "menu_book" },
+  { href: routes.mocks, label: "Mock Tests", icon: "quiz" },
+  { href: routes.performance, label: "Performance", icon: "insights" },
+  { href: routes.settings, label: "Settings", icon: "settings" },
 ];
-
-function isActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
 
 /** Fixed left sidebar (desktop). Brand = Taleem ka Safar. */
 export function Sidebar() {
@@ -33,9 +29,9 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col gap-4 border-r-2 border-black bg-white p-4 md:flex">
+    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col gap-4 border-r-2 border-ink bg-surface-lowest p-4 md:flex">
       <div className="mb-6 flex flex-col gap-1">
-        <span className="font-headline text-xl font-bold tracking-tighter text-black">
+        <span className="font-headline text-xl font-bold tracking-tighter text-on-surface">
           Taleem ka Safar
         </span>
         <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">
@@ -45,7 +41,7 @@ export function Sidebar() {
 
       <nav className="flex flex-grow flex-col gap-2">
         {NAV.map((item) => {
-          const active = isActive(pathname, item.href);
+          const active = isNavActive(pathname, item.href);
           return (
             <Link
               key={item.href}
@@ -53,8 +49,8 @@ export function Sidebar() {
               aria-current={active ? "page" : undefined}
               className={
                 active
-                  ? "flex items-center gap-3 border-2 border-black bg-brand p-3 font-headline font-bold text-white"
-                  : "flex items-center gap-3 p-3 font-headline font-bold text-black transition-transform hover:translate-x-1"
+                  ? "flex items-center gap-3 border-2 border-ink bg-brand p-3 font-headline font-bold text-on-brand"
+                  : "flex items-center gap-3 p-3 font-headline font-bold text-on-surface transition-transform hover:translate-x-1"
               }
             >
               <Icon name={item.icon} filled={active} />
@@ -64,10 +60,10 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto flex flex-col gap-2 border-t-2 border-black pt-4">
+      <div className="mt-auto flex flex-col gap-2 border-t-2 border-ink pt-4">
         <Link
-          href="/help"
-          className="flex items-center gap-3 p-3 font-headline font-bold text-black transition-transform hover:translate-x-1"
+          href={routes.help}
+          className="flex items-center gap-3 p-3 font-headline font-bold text-on-surface transition-transform hover:translate-x-1"
         >
           <Icon name="help" />
           Help Center
@@ -75,7 +71,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={logout}
-          className="flex items-center gap-3 p-3 text-left font-headline font-bold text-black transition-transform hover:translate-x-1"
+          className="flex items-center gap-3 p-3 text-left font-headline font-bold text-on-surface transition-transform hover:translate-x-1"
         >
           <Icon name="logout" />
           Logout

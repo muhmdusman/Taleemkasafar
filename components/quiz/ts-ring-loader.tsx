@@ -16,13 +16,13 @@ function TsMark({ size = 40 }: { size?: number }) {
       aria-hidden="true"
       className="shrink-0"
     >
-      <rect width="64" height="64" fill="#000000" />
-      <rect y="55" width="64" height="9" fill="#0058be" />
-      <g fill="#ffffff">
+      <rect width="64" height="64" className="fill-ink" />
+      <rect y="55" width="64" height="9" className="fill-brand" />
+      <g className="fill-on-ink">
         <rect x="9" y="16" width="22" height="7" />
         <rect x="16.5" y="16" width="7" height="30" />
       </g>
-      <g fill="#0058be">
+      <g className="fill-brand">
         <rect x="35" y="16" width="20" height="7" />
         <rect x="35" y="16" width="7" height="14" />
         <rect x="35" y="27.5" width="20" height="7" />
@@ -72,7 +72,7 @@ export function TsRingLoader({
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="#0058be"
+          className="stroke-brand"
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={`${dash} ${gap}`}
@@ -97,14 +97,14 @@ export function QuizLoadingScreen({
 }) {
   return (
     <div className="flex h-full flex-col">
-      <div className="h-14 shrink-0 border-b-2 border-black bg-white" />
+      <div className="h-14 shrink-0 border-b-2 border-ink bg-surface-lowest" />
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
         <TsRingLoader size={96} label={label} />
         <p className="font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant">
           {label}
         </p>
       </div>
-      <div className="h-16 shrink-0 border-t-2 border-black bg-white" />
+      <div className="h-16 shrink-0 border-t-2 border-ink bg-surface-lowest" />
     </div>
   );
 }
@@ -130,11 +130,11 @@ export function CheckingOverlay({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-white/75 backdrop-blur-[1px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-surface-lowest/75 backdrop-blur-[1px]"
       role="status"
       aria-live="polite"
     >
-      <div className="flex flex-col items-center gap-4 border-2 border-black bg-white px-10 py-8 shadow-hard">
+      <div className="flex flex-col items-center gap-4 border-2 border-ink bg-surface-lowest px-10 py-8 shadow-hard">
         <TsRingLoader size={72} label={label} />
         <span className="font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant">
           {label}

@@ -37,13 +37,13 @@ async function SubjectsView() {
 function Skeleton() {
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-black bg-white md:left-64" />
+      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-ink bg-surface-lowest md:left-64" />
       <main className="px-6 pb-24 pt-28 md:px-8">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-3">
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="h-56 animate-pulse border-2 border-black bg-surface-container"
+              className="h-56 animate-pulse border-2 border-ink bg-surface-container"
             />
           ))}
         </div>

@@ -3,6 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { CATALOG_TAG } from "@/lib/queries/catalog";
+import { routes } from "@/lib/routes";
 
 /**
  * Server Action: set the signed-in user's selected entry test.
@@ -28,9 +29,10 @@ export async function selectEntryTest(entryTestId: string): Promise<void> {
     .update({ selected_test_id: entryTestId })
     .eq("id", userId);
 
-  // The selected test changed → re-render pages (catalog stays cached and is
-  // shared across tests, so we only need to refresh the dynamic shell).
-  revalidatePath("/", "layout");
+  // The selected test changed → re-render dashboard pages (catalog stays
+  // cached and is shared across tests, so we only need to refresh the dynamic
+  // shell). The public landing page doesn't depend on the selected test.
+  revalidatePath(routes.dashboard, "layout");
 }
 
 /**

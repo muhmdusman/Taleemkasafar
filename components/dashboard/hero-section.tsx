@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { routes } from "@/lib/routes";
 import { Icon } from "./icon";
 
 /**
@@ -18,11 +19,11 @@ export function HeroSection({
     <section className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
       <div className="space-y-6 lg:col-span-8">
         <div className="flex flex-wrap gap-3">
-          <span className="flex items-center gap-1 border-2 border-black bg-brand-fixed px-3 py-1 text-sm font-bold uppercase text-[#001a42]">
+          <span className="flex items-center gap-1 border-2 border-ink bg-brand-fixed px-3 py-1 text-sm font-bold uppercase text-on-surface">
             {testName}
           </span>
           {hasActivity && (
-            <span className="flex items-center gap-1 border-2 border-black bg-surface-variant px-3 py-1 text-sm font-bold uppercase">
+            <span className="flex items-center gap-1 border-2 border-ink bg-surface-variant px-3 py-1 text-sm font-bold uppercase">
               Keep your streak going 🔥
             </span>
           )}
@@ -47,14 +48,14 @@ export function HeroSection({
 
         <div className="flex flex-wrap gap-4 pt-4">
           <Link
-            href="/mock"
-            className="border-2 border-black bg-black px-8 py-5 font-headline text-xl font-bold uppercase text-white shadow-hard transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-brand hover:shadow-none"
+            href={routes.mocks}
+            className="border-2 border-ink bg-ink px-8 py-5 font-headline text-xl font-bold uppercase text-on-ink shadow-hard transition-all hover:translate-x-1 hover:translate-y-1 hover:bg-brand hover:shadow-none"
           >
             Start Mock Test ⚡
           </Link>
           <Link
-            href="/subjects"
-            className="border-2 border-black bg-white px-8 py-5 font-headline text-xl font-bold uppercase text-black transition-all hover:bg-surface-high"
+            href={routes.subjects}
+            className="border-2 border-ink bg-surface-lowest px-8 py-5 font-headline text-xl font-bold uppercase text-on-surface transition-all hover:bg-surface-high"
           >
             Practice by Topic
           </Link>
@@ -63,8 +64,8 @@ export function HeroSection({
 
       <div className="hidden lg:col-span-4 lg:block">
         <div className="relative">
-          <div className="absolute inset-0 translate-x-4 translate-y-4 border-2 border-black bg-brand-fixed" />
-          <div className="relative flex aspect-square flex-col items-center justify-center border-2 border-black bg-white p-6 text-center">
+          <div className="absolute inset-0 translate-x-4 translate-y-4 border-2 border-ink bg-brand-fixed" />
+          <div className="relative flex aspect-square flex-col items-center justify-center border-2 border-ink bg-surface-lowest p-6 text-center">
             <Icon
               name="rocket_launch"
               filled

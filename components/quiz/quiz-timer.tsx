@@ -40,8 +40,8 @@ export function QuizTimer({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 border-2 border-black px-4 py-2 font-headline text-lg font-bold tabular-nums",
-        danger ? "bg-danger text-white" : "bg-black text-white",
+        "flex items-center gap-2 border-2 border-ink px-4 py-2 font-headline text-lg font-bold tabular-nums",
+        danger ? "bg-danger text-on-brand" : "bg-ink text-on-ink",
       )}
       aria-live="polite"
     >

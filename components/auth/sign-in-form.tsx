@@ -15,7 +15,7 @@ export function SignInForm() {
   );
 
   const inputClass =
-    "w-full border-2 border-black p-4 font-body text-on-surface transition-all placeholder:text-outline-variant focus:border-brand focus:shadow-hard-primary focus:outline-none";
+    "w-full border-2 border-ink p-4 font-body text-on-surface transition-all placeholder:text-outline-variant focus:border-brand focus:shadow-hard-primary focus:outline-none";
 
   return (
     <div className="flex w-full flex-col gap-8">
@@ -28,12 +28,12 @@ export function SignInForm() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-6 border-2 border-black bg-white p-8 shadow-hard">
+      <div className="flex flex-col gap-6 border-2 border-ink bg-surface-lowest p-8 shadow-hard">
         <form action={formAction} className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
             <label
               htmlFor="email"
-              className="font-headline text-sm font-bold uppercase tracking-wider text-black"
+              className="font-headline text-sm font-bold uppercase tracking-wider text-on-surface"
             >
               Email Address
             </label>
@@ -51,7 +51,7 @@ export function SignInForm() {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="password"
-                className="font-headline text-sm font-bold uppercase tracking-wider text-black"
+                className="font-headline text-sm font-bold uppercase tracking-wider text-on-surface"
               >
                 Password
               </label>
@@ -74,7 +74,7 @@ export function SignInForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-black"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 <span className="material-symbols-outlined">
@@ -91,7 +91,7 @@ export function SignInForm() {
           <button
             type="submit"
             disabled={isPending}
-            className="flex w-full items-center justify-center gap-3 border-2 border-black bg-black py-5 font-headline text-xl font-bold uppercase tracking-tight text-white shadow-hard transition-all hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-70"
+            className="flex w-full items-center justify-center gap-3 border-2 border-ink bg-ink py-5 font-headline text-xl font-bold uppercase tracking-tight text-on-ink shadow-hard transition-all hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-70"
           >
             {isPending ? "Authenticating…" : "Authenticate"}
             {!isPending && (
@@ -108,7 +108,7 @@ export function SignInForm() {
           <div className="flex-grow border-t-2 border-surface-variant" />
         </div>
 
-        <SocialButtons next="/" />
+        <SocialButtons />
 
         <div className="flex items-center justify-center gap-2 font-headline">
           <span className="text-xs font-bold uppercase text-on-surface-variant">

@@ -1,12 +1,14 @@
 import { Suspense } from "react";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { BottomNav } from "@/components/dashboard/bottom-nav";
+import { MaterialSymbolsFont } from "@/components/material-symbols-font";
 
 /**
  * Shell for all authenticated dashboard pages: fixed sidebar (desktop),
  * bottom nav (mobile), and a content area offset for the fixed chrome.
- * Auth is enforced by proxy.ts (everything outside /auth/* requires login);
- * pages also verify on the server.
+ * Auth is enforced by proxy.ts (deny-by-default: everything outside the
+ * public allowlist in lib/routes.ts requires login); pages also verify on the
+ * server.
  *
  * The nav components read usePathname() (dynamic); they're wrapped in Suspense
  * so that dynamic read doesn't block page rendering under Cache Components.
@@ -18,6 +20,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-svh bg-surface font-body text-on-surface">
+      <MaterialSymbolsFont />
       <Suspense fallback={<SidebarFallback />}>
         <Sidebar />
       </Suspense>
@@ -31,6 +34,6 @@ export default function DashboardLayout({
 
 function SidebarFallback() {
   return (
-    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 border-r-2 border-black bg-white md:block" />
+    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 border-r-2 border-ink bg-surface-lowest md:block" />
   );
 }

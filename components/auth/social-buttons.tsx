@@ -1,13 +1,14 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { routes } from "@/lib/routes";
 import { useState } from "react";
 
 /**
  * Social sign-in row (Google + GitHub). Google is wired via Supabase OAuth;
  * GitHub is rendered per design but intentionally non-functional for now.
  */
-export function SocialButtons({ next = "/" }: { next?: string }) {
+export function SocialButtons({ next = routes.dashboard }: { next?: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,7 +42,7 @@ export function SocialButtons({ next = "/" }: { next?: string }) {
           type="button"
           onClick={handleGoogle}
           disabled={isLoading}
-          className="flex items-center justify-center gap-2 border-2 border-black bg-white p-3 font-headline text-sm font-bold uppercase tracking-tight transition-all hover:-translate-y-[2px] hover:shadow-hard disabled:opacity-60"
+          className="flex items-center justify-center gap-2 border-2 border-ink bg-surface-lowest p-3 font-headline text-sm font-bold uppercase tracking-tight transition-all hover:-translate-y-[2px] hover:shadow-hard disabled:opacity-60"
         >
           <svg className="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24">
             <path
@@ -67,7 +68,7 @@ export function SocialButtons({ next = "/" }: { next?: string }) {
           type="button"
           disabled
           title="Coming soon"
-          className="flex cursor-not-allowed items-center justify-center gap-2 border-2 border-black bg-white p-3 font-headline text-sm font-bold uppercase tracking-tight opacity-50"
+          className="flex cursor-not-allowed items-center justify-center gap-2 border-2 border-ink bg-surface-lowest p-3 font-headline text-sm font-bold uppercase tracking-tight opacity-50"
         >
           <span className="material-symbols-outlined text-lg">terminal</span>
           GitHub

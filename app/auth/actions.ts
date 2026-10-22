@@ -2,13 +2,14 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { routes } from "@/lib/routes";
 
 export type AuthState = { error: string | null };
 
 /**
  * Server Action: email + password sign in.
  * Business logic stays on the server; the form is a thin client wrapper.
- * On success it redirects to "/" (server-side).
+ * On success it redirects to the dashboard (server-side).
  */
 export async function signInAction(
   _prev: AuthState,
@@ -25,7 +26,7 @@ export async function signInAction(
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) return { error: error.message };
-  redirect("/");
+  redirect(routes.dashboard);
 }
 
 /**
@@ -68,7 +69,7 @@ export async function signUpAction(
       // are frequently opened in a different browser/in-app webview, which
       // would fail with "PKCE code verifier not found in storage". The
       // token_hash flow verifies server-side and works from any browser.
-      emailRedirectTo: `${origin}/auth/confirm?next=/`,
+      emailRedirectTo: `${origin}/auth/confirm?next=${routes.dashboard}`,
     },
   });
 

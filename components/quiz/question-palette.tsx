@@ -4,11 +4,11 @@ import { paletteStatus, type PaletteStatus, type AnswerState } from "@/lib/quiz/
 import { cn } from "@/lib/utils";
 
 const STYLES: Record<PaletteStatus, string> = {
-  current: "bg-brand text-white border-black",
-  saved: "bg-[#16a34a] text-white border-black",
-  selected: "bg-brand-fixed text-black border-black",
-  review: "bg-white text-danger border-danger ring-2 ring-danger",
-  unattempted: "bg-white text-black border-black",
+  current: "bg-brand text-on-brand border-ink",
+  saved: "bg-success text-on-brand border-ink",
+  selected: "bg-brand-fixed text-on-surface border-ink",
+  review: "bg-surface-lowest text-danger border-danger ring-2 ring-danger",
+  unattempted: "bg-surface-lowest text-on-surface border-ink",
 };
 
 /** Grid of question chips reflecting each question's state (mock palette). */

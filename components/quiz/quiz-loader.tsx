@@ -34,15 +34,15 @@ export function FullscreenLoader({
       role="status"
       aria-live="polite"
     >
-      <div className="w-[min(90vw,420px)] border-2 border-black bg-white p-8 shadow-hard">
-        <div className="mb-2 font-headline text-2xl font-bold uppercase tracking-tighter text-black">
+      <div className="w-[min(90vw,420px)] border-2 border-ink bg-surface-lowest p-8 shadow-hard">
+        <div className="mb-2 font-headline text-2xl font-bold uppercase tracking-tighter text-on-surface">
           {title}
         </div>
         <div className="mb-6 h-5 font-body text-sm text-on-surface-variant">
           {steps[step]}
         </div>
         {/* Indeterminate square progress bar: black track, electric-blue sweep. */}
-        <div className="h-4 w-full overflow-hidden border-2 border-black bg-white">
+        <div className="h-4 w-full overflow-hidden border-2 border-ink bg-surface-lowest">
           <div className="h-full w-1/3 animate-[loaderSweep_1.1s_ease-in-out_infinite] bg-brand" />
         </div>
       </div>

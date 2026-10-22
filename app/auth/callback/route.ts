@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { safeNextPath } from "@/lib/routes";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Handles the OAuth (e.g. Google) PKCE redirect: exchanges the `code` for a
@@ -6,8 +7,10 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  // `next` lets us send the user to a specific page after sign-in.
-  const next = searchParams.get("next") ?? "/";
+  // `next` lets us send the user to a specific page after sign-in. Only
+  // same-origin relative paths are honoured (open-redirect guard); defaults
+  // to the dashboard.
+  const next = safeNextPath(searchParams.get("next"));
   const error = searchParams.get("error");
   const errorDescription = searchParams.get("error_description");
 

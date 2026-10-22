@@ -33,21 +33,21 @@ export function OptionButton({
   onClick?: () => void;
 }) {
   const base =
-    "flex w-full items-center gap-4 border-2 border-black p-4 text-left font-body transition-all";
+    "flex w-full items-center gap-4 border-2 border-ink p-4 text-left font-body transition-all";
   const byState: Record<OptionVisualState, string> = {
-    idle: "bg-white hover:bg-brand-fixed active:translate-x-[2px] active:translate-y-[2px]",
+    idle: "bg-surface-lowest hover:bg-brand-fixed active:translate-x-[2px] active:translate-y-[2px]",
     selected: "bg-brand-fixed shadow-hard",
-    correct: "bg-[#16a34a] text-white shadow-hard",
-    wrong: "bg-danger text-white shadow-hard",
-    "muted-correct": "bg-[#dcfce7] border-[#16a34a]",
+    correct: "bg-success text-on-brand shadow-hard",
+    wrong: "bg-danger text-on-brand shadow-hard",
+    "muted-correct": "bg-success-fixed border-success",
   };
 
   const badge: Record<OptionVisualState, string> = {
-    idle: "bg-black text-white",
-    selected: "bg-black text-white",
-    correct: "bg-white text-[#16a34a]",
-    wrong: "bg-white text-danger",
-    "muted-correct": "bg-[#16a34a] text-white",
+    idle: "bg-ink text-on-ink",
+    selected: "bg-ink text-on-ink",
+    correct: "bg-surface-lowest text-success",
+    wrong: "bg-surface-lowest text-danger",
+    "muted-correct": "bg-success text-on-brand",
   };
 
   return (

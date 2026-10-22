@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Icon } from "./icon";
 import { cardIndex, chapterMetaLabel } from "@/lib/queries/dashboard-helpers";
 import type { ChapterOverview } from "@/lib/queries/subject";
+import { routes } from "@/lib/routes";
 
 type ContentButton = {
   key: string;
@@ -32,7 +33,7 @@ export function ChapterList({
 
   if (chapters.length === 0) {
     return (
-      <div className="border-2 border-black bg-white p-8 shadow-hard">
+      <div className="border-2 border-ink bg-surface-lowest p-8 shadow-hard">
         <p className="font-body text-on-surface-variant">
           No chapters available yet.
         </p>
@@ -46,19 +47,21 @@ export function ChapterList({
         const id = c.chapter_id ?? String(i);
         const open = openId === id;
         const count = c.question_count ?? 0;
-        const base = `/subjects/${subjectSlug}/${c.chapter_slug}`;
+        const chapterSlug = c.chapter_slug ?? "";
         const buttons: ContentButton[] = [
           {
             key: "past_paper",
             label: "Past Paper MCQs",
             icon: "history_edu",
-            href: count > 0 ? `${base}/past-paper` : undefined,
+            href:
+              count > 0 ? routes.pastPaper(subjectSlug, chapterSlug) : undefined,
           },
           {
             key: "practice",
             label: "Practice MCQs",
             icon: "assignment",
-            href: count > 0 ? `${base}/practice` : undefined,
+            href:
+              count > 0 ? routes.practice(subjectSlug, chapterSlug) : undefined,
           },
           { key: "notes", label: "Quick Notes", icon: "sticky_note_2" },
           { key: "lectures", label: "Lectures", icon: "play_circle" },
@@ -69,8 +72,8 @@ export function ChapterList({
             key={id}
             className={
               open
-                ? "relative z-10 flex flex-col border-2 border-black bg-white shadow-hard"
-                : "border-2 border-black bg-white"
+                ? "relative z-10 flex flex-col border-2 border-ink bg-surface-lowest shadow-hard"
+                : "border-2 border-ink bg-surface-lowest"
             }
           >
             <button
@@ -79,7 +82,7 @@ export function ChapterList({
               aria-expanded={open}
               className={
                 open
-                  ? "flex items-center justify-between bg-black p-5 text-left text-white"
+                  ? "flex items-center justify-between bg-ink p-5 text-left text-on-ink"
                   : "flex items-center justify-between p-5 text-left transition-colors hover:bg-surface-low"
               }
             >
@@ -88,7 +91,7 @@ export function ChapterList({
                   className={
                     open
                       ? "font-headline text-2xl font-bold text-brand-fixed"
-                      : "font-headline text-2xl font-bold text-black opacity-20"
+                      : "font-headline text-2xl font-bold text-on-surface opacity-20"
                   }
                 >
                   {cardIndex(i)}
@@ -100,7 +103,7 @@ export function ChapterList({
                   <p
                     className={
                       open
-                        ? "mt-1 text-xs font-bold uppercase tracking-tighter text-blue-200"
+                        ? "mt-1 text-xs font-bold uppercase tracking-tighter text-brand-fixed"
                         : "mt-1 text-xs font-bold uppercase tracking-tighter text-on-surface-variant"
                     }
                   >
@@ -112,13 +115,13 @@ export function ChapterList({
             </button>
 
             {open && (
-              <div className="grid grid-cols-1 gap-4 bg-white p-6 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 bg-surface-lowest p-6 md:grid-cols-2 lg:grid-cols-4">
                 {buttons.map((b) =>
                   b.href ? (
                     <Link
                       key={b.key}
                       href={b.href}
-                      className="group flex flex-col gap-3 border-2 border-black p-4 text-left transition-colors hover:bg-brand-fixed"
+                      className="group flex flex-col gap-3 border-2 border-ink p-4 text-left transition-colors hover:bg-brand-fixed"
                     >
                       <Icon name={b.icon} className="text-brand" />
                       <span className="font-headline text-sm font-bold uppercase tracking-tight">
@@ -129,7 +132,7 @@ export function ChapterList({
                     <div
                       key={b.key}
                       title="Coming soon"
-                      className="flex cursor-not-allowed flex-col gap-3 border-2 border-black p-4 text-left opacity-40"
+                      className="flex cursor-not-allowed flex-col gap-3 border-2 border-ink p-4 text-left opacity-40"
                     >
                       <Icon name={b.icon} className="text-brand" />
                       <span className="font-headline text-sm font-bold uppercase tracking-tight">

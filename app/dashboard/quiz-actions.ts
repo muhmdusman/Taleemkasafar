@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/database.types";
+import { routes } from "@/lib/routes";
 
 type Usage = Database["public"]["Enums"]["question_usage"];
 
@@ -166,7 +167,7 @@ export async function submitMock(
     p_answers: answers,
   });
   if (error) return null;
-  revalidatePath("/performance");
-  revalidatePath("/mock");
+  revalidatePath(routes.performance);
+  revalidatePath(routes.mocks);
   return data as string;
 }

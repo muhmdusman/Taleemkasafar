@@ -12,8 +12,9 @@ import {
   answerPractice,
   finishPractice,
   type PracticeGrade,
-} from "@/app/(dashboard)/quiz-actions";
+} from "@/app/dashboard/quiz-actions";
 import type { PracticeScreenData } from "@/lib/queries/practice";
+import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 type Graded = {
@@ -88,7 +89,7 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
     [current, attemptId, currentGrade, pendingOption],
   );
 
-  const endHref = `/subjects/${subjectSlug}`;
+  const endHref = routes.subject(subjectSlug);
   const handleEnd = useCallback(() => {
     if (attemptId) finishPractice(attemptId);
     router.push(endHref);
@@ -103,7 +104,7 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
         <button
           type="button"
           onClick={() => router.push(endHref)}
-          className="inline-flex items-center gap-1 border-2 border-black bg-white px-4 py-2 font-headline text-xs font-bold uppercase tracking-widest text-black hover:bg-brand-fixed"
+          className="inline-flex items-center gap-1 border-2 border-ink bg-surface-lowest px-4 py-2 font-headline text-xs font-bold uppercase tracking-widest text-on-surface hover:bg-brand-fixed"
         >
           <Icon name="arrow_back" className="text-base" /> Back to chapters
         </button>
@@ -130,12 +131,12 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
       <CheckingOverlay active={pendingOption !== null} />
 
       {/* Slim header: logo · moving counter · end */}
-      <header className="flex h-14 shrink-0 items-center justify-between border-b-2 border-black bg-white px-4 md:px-6">
-        <span className="font-headline text-base font-bold tracking-tighter text-black">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b-2 border-ink bg-surface-lowest px-4 md:px-6">
+        <span className="font-headline text-base font-bold tracking-tighter text-on-surface">
           Taleem ka Safar
         </span>
         <div className="mx-4 flex flex-1 items-center gap-3">
-          <div className="h-2.5 w-full max-w-md border-2 border-black bg-surface-high">
+          <div className="h-2.5 w-full max-w-md border-2 border-ink bg-surface-high">
             <div
               className="h-full bg-brand transition-all duration-300"
               style={{ width: `${progressPct}%` }}
@@ -148,7 +149,7 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
         <button
           type="button"
           onClick={handleEnd}
-          className="flex items-center gap-1 border-2 border-black bg-white px-3 py-1.5 font-headline text-xs font-bold uppercase tracking-tight text-black transition-colors hover:bg-danger hover:text-white"
+          className="flex items-center gap-1 border-2 border-ink bg-surface-lowest px-3 py-1.5 font-headline text-xs font-bold uppercase tracking-tight text-on-surface transition-colors hover:bg-danger hover:text-on-brand"
         >
           <Icon name="close" className="text-base" /> End
         </button>
@@ -165,7 +166,7 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
               </span>
               <BookmarkButton questionId={current.id} />
             </div>
-            <div className="flex-1 border-2 border-black bg-white p-6 shadow-hard">
+            <div className="flex-1 border-2 border-ink bg-surface-lowest p-6 shadow-hard">
               <p className="font-body text-xl leading-relaxed text-on-surface">
                 <MathText>{current.statement}</MathText>
               </p>
@@ -188,11 +189,11 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
 
             {/* Explanation (toggle) */}
             {currentGrade && showExplanation && (
-              <div className="mt-1 border-2 border-black bg-white">
+              <div className="mt-1 border-2 border-ink bg-surface-lowest">
                 <div
                   className={cn(
-                    "flex items-center gap-2 p-3 text-white",
-                    currentGrade.isCorrect ? "bg-[#16a34a]" : "bg-danger",
+                    "flex items-center gap-2 p-3 text-on-brand",
+                    currentGrade.isCorrect ? "bg-success" : "bg-danger",
                   )}
                 >
                   <Icon
@@ -222,12 +223,12 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
       </div>
 
       {/* Bottom bar: Prev · Explanation · Next */}
-      <footer className="flex h-16 shrink-0 items-center justify-between gap-3 border-t-2 border-black bg-white px-4 md:px-8">
+      <footer className="flex h-16 shrink-0 items-center justify-between gap-3 border-t-2 border-ink bg-surface-lowest px-4 md:px-8">
         <button
           type="button"
           onClick={() => setIndex((i) => Math.max(0, i - 1))}
           disabled={isFirst}
-          className="flex items-center gap-2 border-2 border-black bg-white px-4 py-2.5 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-brand-fixed disabled:opacity-40 active:translate-x-[2px] active:translate-y-[2px]"
+          className="flex items-center gap-2 border-2 border-ink bg-surface-lowest px-4 py-2.5 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-brand-fixed disabled:opacity-40 active:translate-x-[2px] active:translate-y-[2px]"
         >
           <Icon name="arrow_back" className="text-lg" />
           <span className="hidden sm:inline">Prev</span>
@@ -237,7 +238,7 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
           type="button"
           onClick={() => setShowExplanation((s) => !s)}
           disabled={!currentGrade}
-          className="flex items-center gap-2 border-2 border-black bg-white px-4 py-2.5 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-brand-fixed disabled:opacity-40"
+          className="flex items-center gap-2 border-2 border-ink bg-surface-lowest px-4 py-2.5 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-brand-fixed disabled:opacity-40"
         >
           <Icon name="lightbulb" className="text-lg" />
           <span className="hidden sm:inline">
@@ -249,7 +250,7 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
           <button
             type="button"
             onClick={() => setIndex((i) => Math.min(questions.length - 1, i + 1))}
-            className="flex items-center gap-2 border-2 border-black bg-black px-5 py-2.5 font-headline text-sm font-bold uppercase tracking-tight text-white shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+            className="flex items-center gap-2 border-2 border-ink bg-ink px-5 py-2.5 font-headline text-sm font-bold uppercase tracking-tight text-on-ink shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
           >
             <span className="hidden sm:inline">Next</span>
             <Icon name="arrow_forward" className="text-lg" />
@@ -258,7 +259,7 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
           <button
             type="button"
             onClick={handleEnd}
-            className="flex items-center gap-2 border-2 border-black bg-black px-5 py-2.5 font-headline text-sm font-bold uppercase tracking-tight text-white shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+            className="flex items-center gap-2 border-2 border-ink bg-ink px-5 py-2.5 font-headline text-sm font-bold uppercase tracking-tight text-on-ink shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
           >
             <span className="hidden sm:inline">Finish</span>
             <Icon name="flag" className="text-lg" />

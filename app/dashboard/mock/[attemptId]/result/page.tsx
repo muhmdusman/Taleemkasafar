@@ -57,11 +57,11 @@ async function MockResultView({
 function ResultSkeleton() {
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-black bg-white md:left-64" />
+      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-ink bg-surface-lowest md:left-64" />
       <main className="px-4 pb-24 pt-28 md:px-12">
         <div className="mx-auto max-w-3xl">
-          <div className="mb-8 h-48 w-full animate-pulse border-2 border-black bg-surface-high" />
-          <div className="h-60 w-full animate-pulse border-2 border-black bg-surface-container" />
+          <div className="mb-8 h-48 w-full animate-pulse border-2 border-ink bg-surface-high" />
+          <div className="h-60 w-full animate-pulse border-2 border-ink bg-surface-container" />
         </div>
       </main>
     </>

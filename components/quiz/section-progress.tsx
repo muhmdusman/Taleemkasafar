@@ -23,7 +23,7 @@ export function SectionProgress({
                 {answered} / {total}
               </span>
             </div>
-            <div className="h-3 w-full border-2 border-black bg-surface-high">
+            <div className="h-3 w-full border-2 border-ink bg-surface-high">
               <div
                 className="h-full bg-brand transition-all"
                 style={{ width: `${pct}%` }}

@@ -21,8 +21,8 @@ export function QuestionCard({
   children: ReactNode;
 }) {
   return (
-    <div className="border-2 border-black bg-white shadow-hard">
-      <div className="flex items-center justify-between border-b-2 border-black bg-surface-low p-4">
+    <div className="border-2 border-ink bg-surface-lowest shadow-hard">
+      <div className="flex items-center justify-between border-b-2 border-ink bg-surface-low p-4">
         <span className="font-headline text-sm font-bold uppercase tracking-tight">
           Q {index + 1}
           <span className="text-on-surface-variant"> / {total}</span>
@@ -30,7 +30,7 @@ export function QuestionCard({
         </span>
         {statusSlot}
       </div>
-      <div className="border-b-2 border-black p-6">
+      <div className="border-b-2 border-ink p-6">
         <p className="font-body text-lg leading-relaxed text-on-surface">
           <MathText>{statement}</MathText>
         </p>

@@ -7,6 +7,7 @@ import { getEntryTestsCached } from "@/lib/queries/catalog";
 import { getDisplayName } from "@/lib/queries/profile";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Icon } from "@/components/dashboard/icon";
+import { routes } from "@/lib/routes";
 
 export default function PerformancePage() {
   return (
@@ -42,7 +43,7 @@ async function PerformanceView() {
       <main className="px-4 pb-24 pt-28 md:px-12 md:pb-20">
         <div className="mx-auto max-w-4xl">
           {!hasActivity ? (
-            <div className="border-2 border-black bg-white p-10 text-center shadow-hard">
+            <div className="border-2 border-ink bg-surface-lowest p-10 text-center shadow-hard">
               <Icon name="insights" className="text-5xl text-brand" />
               <h2 className="mt-4 font-headline text-2xl font-bold uppercase tracking-tight">
                 No activity yet
@@ -53,14 +54,14 @@ async function PerformanceView() {
               </p>
               <div className="mt-6 flex justify-center gap-3">
                 <Link
-                  href="/mock"
-                  className="border-2 border-black bg-black px-5 py-3 font-headline text-sm font-bold uppercase tracking-tight text-white shadow-hard transition-colors hover:bg-brand"
+                  href={routes.mocks}
+                  className="border-2 border-ink bg-ink px-5 py-3 font-headline text-sm font-bold uppercase tracking-tight text-on-ink shadow-hard transition-colors hover:bg-brand"
                 >
                   Start a Mock
                 </Link>
                 <Link
-                  href="/subjects"
-                  className="border-2 border-black bg-white px-5 py-3 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-brand-fixed"
+                  href={routes.subjects}
+                  className="border-2 border-ink bg-surface-lowest px-5 py-3 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-brand-fixed"
                 >
                   Practice
                 </Link>
@@ -111,8 +112,8 @@ async function PerformanceView() {
                     {data!.mockResults.map((r) => (
                       <Link
                         key={r.attemptId}
-                        href={`/mock/${r.attemptId}/result`}
-                        className="flex items-center justify-between border-2 border-black bg-white p-5 transition-colors hover:bg-brand-fixed"
+                        href={routes.mockResult(r.attemptId)}
+                        className="flex items-center justify-between border-2 border-ink bg-surface-lowest p-5 transition-colors hover:bg-brand-fixed"
                       >
                         <div className="flex items-center gap-4">
                           <div className="font-headline text-3xl font-bold text-brand">
@@ -134,7 +135,7 @@ async function PerformanceView() {
                     ))}
                   </div>
                 ) : (
-                  <div className="border-2 border-black bg-white p-6 shadow-hard">
+                  <div className="border-2 border-ink bg-surface-lowest p-6 shadow-hard">
                     <p className="font-body text-on-surface-variant">
                       No mock attempts yet — but your practice is being tracked
                       above.
@@ -160,11 +161,11 @@ function SummaryCard({
   sub?: string;
 }) {
   return (
-    <div className="border-2 border-black bg-white p-5 shadow-hard">
+    <div className="border-2 border-ink bg-surface-lowest p-5 shadow-hard">
       <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant">
         {label}
       </div>
-      <div className="mt-1 font-headline text-4xl font-bold text-black">
+      <div className="mt-1 font-headline text-4xl font-bold text-on-surface">
         {value}
       </div>
       {sub && <div className="mt-1 text-xs text-on-surface-variant">{sub}</div>}
@@ -175,18 +176,18 @@ function SummaryCard({
 function PerfSkeleton() {
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-black bg-white md:left-64" />
+      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-ink bg-surface-lowest md:left-64" />
       <main className="px-4 pb-24 pt-28 md:px-12">
         <div className="mx-auto max-w-4xl">
           <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="h-28 animate-pulse border-2 border-black bg-surface-high"
+                className="h-28 animate-pulse border-2 border-ink bg-surface-high"
               />
             ))}
           </div>
-          <div className="h-40 w-full animate-pulse border-2 border-black bg-surface-container" />
+          <div className="h-40 w-full animate-pulse border-2 border-ink bg-surface-container" />
         </div>
       </main>
     </>

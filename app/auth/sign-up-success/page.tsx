@@ -15,7 +15,7 @@ export default function Page() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-6 border-2 border-black bg-white p-8 shadow-hard">
+        <div className="flex flex-col gap-6 border-2 border-ink bg-surface-lowest p-8 shadow-hard">
           <div className="flex items-center gap-3">
             <span
               className="material-symbols-outlined text-4xl text-brand"
@@ -31,7 +31,7 @@ export default function Page() {
 
           <Link
             href="/auth/login"
-            className="flex w-full items-center justify-center gap-3 border-2 border-black bg-black py-5 font-headline text-xl font-bold uppercase tracking-tight text-white shadow-hard transition-all hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+            className="flex w-full items-center justify-center gap-3 border-2 border-ink bg-ink py-5 font-headline text-xl font-bold uppercase tracking-tight text-on-ink shadow-hard transition-all hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
           >
             Go to Sign In
             <span className="material-symbols-outlined">arrow_forward</span>
