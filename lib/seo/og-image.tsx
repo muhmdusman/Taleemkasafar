@@ -159,11 +159,11 @@ export function renderOgImage() {
               maxWidth: 980,
             }}
           >
-            Entry test prep that keeps you moving.
+            Entry test prep that explains every mistake.
           </div>
           <div style={{ fontSize: 32, color: COLORS.muted, maxWidth: 960 }}>
-            NUST NET and PU entry tests. Practice MCQs, past papers and
-            progress tracking for Pakistani students.
+            NET, PU, UET, FAST and NAT. MCQs with explanations, mock tests
+            and progress tracking for Pakistani students.
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -178,7 +178,7 @@ export function renderOgImage() {
               borderRadius: 16,
             }}
           >
-            3-month free trial
+            Free for students
           </div>
           <div style={{ fontSize: 26, color: COLORS.muted }}>
             {siteConfig.url.replace(/^https?:\/\//, "")}
