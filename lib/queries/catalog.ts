@@ -1,4 +1,4 @@
-import { unstable_cacheTag as cacheTag } from "next/cache";
+import { cacheTag } from "next/cache";
 import { createAnonClient } from "@/lib/supabase/anon";
 import type { Database } from "@/lib/database.types";
 import type { EntryTest } from "./entry-test";

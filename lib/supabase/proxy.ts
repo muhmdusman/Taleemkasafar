@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { hasEnvVars } from "../utils";
+import { isPublicPath, routes, shouldBounceSignedIn } from "../routes";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -69,36 +70,23 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Public routes that do NOT require authentication.
-  const isPublicRoute =
-    pathname.startsWith("/auth") || pathname.startsWith("/login");
-
-  if (!user && !isPublicRoute) {
-    // No user → send to login. Everything except /auth/* is behind auth,
-    // including the root dashboard "/".
+  // Deny-by-default: only the explicit allowlist in lib/routes.ts (landing
+  // page, /auth/*, metadata/static files) is reachable without a session.
+  if (!user && !isPublicPath(pathname)) {
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = routes.login;
     return NextResponse.redirect(url);
   }
 
-  // Already signed in but landing on an auth ENTRY page (login / sign-up).
-  // This is what the browser back button does after logging in — send them
-  // back into the app instead of showing the login screen again. The auth
+  // Already signed in but on the landing page or an auth ENTRY page (what the
+  // browser back button does after logging in) → send them into the app. Auth
   // *flow* routes (callback, confirm, update-password, error) are excluded so
-  // a signed-in user can still complete those when needed.
-  if (user) {
-    const isAuthEntry =
-      pathname === "/auth/login" ||
-      pathname === "/login" ||
-      pathname === "/auth/sign-up" ||
-      pathname === "/auth/sign-up-success" ||
-      pathname === "/auth/forgot-password";
-    if (isAuthEntry) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/";
-      url.search = "";
-      return NextResponse.redirect(url);
-    }
+  // a signed-in user can still complete those.
+  if (user && shouldBounceSignedIn(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = routes.dashboard;
+    url.search = "";
+    return NextResponse.redirect(url);
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
