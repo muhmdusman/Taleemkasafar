@@ -16,7 +16,7 @@ export function FinalCta() {
           />
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute -bottom-20 -right-16 hidden size-72 rounded-full border-[28px] border-brand/50 md:block"
+            className="pointer-events-none absolute -bottom-20 -right-16 hidden size-72 rounded-full border-[28px] border-brand-ondark/50 md:block"
           />
           <span
             aria-hidden="true"
@@ -39,8 +39,8 @@ export function FinalCta() {
             <AuthAwareButton
               size="lg"
               arrow
-              signedOut={{ label: "Register for free", href: auth.register.href, variant: "primary" }}
-              signedIn={{ label: auth.dashboard.label, href: auth.dashboard.href, variant: "primary" }}
+              signedOut={{ label: "Register for free", href: auth.register.href, variant: "primary-dark" }}
+              signedIn={{ label: auth.dashboard.label, href: auth.dashboard.href, variant: "primary-dark" }}
             />
             <AuthAwareButton
               size="lg"

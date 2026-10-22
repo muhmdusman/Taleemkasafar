@@ -261,7 +261,7 @@ export default function AcademiesPage() {
                 href={siteConfig.contact.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                variant="primary"
+                variant="primary-dark"
                 size="lg"
               >
                 <MessageCircle aria-hidden="true" />

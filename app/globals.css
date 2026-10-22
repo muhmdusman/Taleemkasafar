@@ -63,6 +63,7 @@
     --brand: 37 99 235; /* #2563EB bright blue (v2.1), primary actions */
     --on-brand: 253 253 251; /* #FDFDFB */
     --brand-container: 29 78 216; /* #1D4ED8 deeper blue, hover/pressed */
+    --brand-ondark: 37 99 235; /* = brand outside the public site */
     --brand-fixed: 225 234 255; /* #E1EAFF light blue tint */
     --success: 31 122 77; /* #1F7A4D */
     --success-fixed: 227 242 234; /* #E3F2EA */
@@ -141,15 +142,18 @@
  */
 /*
  * PUBLIC-SITE THEME (app/(marketing) layout + the mobile menu portal).
- * Product owner, 2026-10-23 (v3): blue #296FBB, used ONLY for primary CTAs and
- * key highlights; white backgrounds; solid black text; charcoal (#2B2F36,
+ * Product owner, 2026-10-23 (v3): blue used ONLY for primary CTAs and key
+ * highlights: #0768D0 on white backgrounds, #296FBB (`brand-ondark`) on
+ * charcoal banners; white backgrounds; solid black text; charcoal (#2B2F36,
  * a light black) only where a dark banner/poster is needed, plus brutalist
- * borders and hard shadows. White on #296FBB is 5.1:1 (passes WCAG AA).
+ * borders and hard shadows. White on #0768D0 is 5.4:1 and on #296FBB 5.1:1
+ * (both pass WCAG AA).
  * The dashboard and auth pages keep :root.
  */
 .theme-public {
-  --brand: 41 111 187; /* #296FBB primary blue */
-  --brand-container: 31 90 156; /* #1F5A9C hover / pressed */
+  --brand: 7 104 208; /* #0768D0 blue on WHITE backgrounds (text, buttons) */
+  --brand-container: 5 85 171; /* #0555AB hover / pressed */
+  --brand-ondark: 41 111 187; /* #296FBB blue on CHARCOAL backgrounds */
   --brand-fixed: 234 242 251; /* #EAF2FB light blue tint */
   --on-brand: 255 255 255; /* #FFFFFF */
   --ink: 43 47 54; /* #2B2F36 charcoal: dark banners/posters, borders, hard shadows */
@@ -169,7 +173,7 @@
   --primary: 218.2 11.3% 19%; /* = ink */
   --border: 240 5.9% 90%;
   --input: 240 5.9% 90%;
-  --ring: 211.2 64% 44.7%; /* = brand */
+  --ring: 211 93.5% 42.2%; /* = brand */
   --accent: 211.8 68% 95.1%; /* = brand-fixed */
 }
 

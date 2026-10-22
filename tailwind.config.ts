@@ -26,6 +26,8 @@ export default {
         brand: {
           DEFAULT: "rgb(var(--brand) / <alpha-value>)", // primary / electric blue
           container: "rgb(var(--brand-container) / <alpha-value>)", // primary-container
+          // Blue for use ON charcoal/dark backgrounds (public site: #296FBB).
+          ondark: "rgb(var(--brand-ondark) / <alpha-value>)",
           fixed: "rgb(var(--brand-fixed) / <alpha-value>)", // primary-fixed (gamified card bg)
         },
         "on-brand": "rgb(var(--on-brand) / <alpha-value>)",

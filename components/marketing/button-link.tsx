@@ -15,6 +15,9 @@ export const marketingButton = cva(
         // Blue is reserved for the MAIN call to action on a section
         // (owner, 2026-10-23). Hover only deepens the same blue.
         primary: "bg-brand text-on-brand hover:bg-brand-container",
+        // Primary CTA on charcoal banners: the on-dark blue shade.
+        "primary-dark":
+          "bg-brand-ondark text-on-brand hover:bg-brand-ondark/85 focus-visible:ring-offset-ink",
         // Everything else is neutral: no blue on hover.
         secondary:
           "border border-outline-variant bg-surface-lowest text-on-surface hover:border-outline hover:bg-surface-low",
