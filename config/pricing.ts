@@ -33,8 +33,8 @@ export type PricingPlan = {
 export const PRICE_CAP_PKR = 250;
 
 export const studentOffer = {
-  /** Long badge / tagline used across the site. */
-  tagline: "For the students, by the students & teachers",
+  /** Long badge / tagline used across the site (owner wording, 2026-10-23). */
+  tagline: "By Students. For Students. With Teachers.",
   /** Short selling point for chips, buttons and meta copy. */
   short: "Free for students",
   headline: "Free for students, built by students and teachers.",

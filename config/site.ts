@@ -23,9 +23,11 @@ export type NavLink = { label: string; href: string };
 export const siteConfig = {
   name: "Taleem ka Safar",
   shortName: "Taleem ka Safar",
+  /** Plain-text wordmark shown big and white in inner-page banners (owner, 2026-10-23). */
+  wordmark: "Taleemkasafar",
   tagline: "Entry test preparation for Pakistani students",
   description:
-    "Prepare for the NUST NET and Punjab University entry tests with chapter-wise MCQ practice, past papers, timed NET mock tests and progress analytics, plus a merit calculator for 18 universities.",
+    "Free entry test preparation for Pakistani students: NET, PU, UET, FAST and NAT MCQs with an explanation for every wrong answer, past papers, timed mock tests, progress analytics and a merit calculator for 18 universities.",
   url,
   locale: "en_PK",
   language: "en",
@@ -69,11 +71,6 @@ export const siteConfig = {
     responseTime: "Within 24 hours" as string,
   },
 } as const;
-
-/** True while a config value has not been filled in by the product owner. */
-export function isPlaceholder(value: string | null | undefined): boolean {
-  return !value || value.trim().toUpperCase() === "PLACEHOLDER";
-}
 
 /** Alt text of the default OG/Twitter image (app/opengraph-image.tsx). */
 export const defaultOgImageAlt = `${siteConfig.name}: ${siteConfig.tagline}`;

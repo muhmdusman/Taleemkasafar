@@ -7,25 +7,29 @@
  * First-draft copy; refine during the content/SEO phase.
  */
 
+import { PRICE_CAP_PKR } from "@/config/pricing";
+import { siteConfig } from "@/config/site";
+
 export type FaqItem = {
   id: string;
   question: string;
   answer: string;
 };
 
+const TESTS_ANSWER =
+  "Taleem ka Safar covers the NUST Entry Test (NET), Punjab University (PU) entry tests, UET (ECAT), FAST-NUCES and NTS NAT. NET and PU practice, past papers and mock tests are in the dashboard today, and UET, FAST and NAT questions are being added step by step.";
+
 /** /academies FAQ (visible list + FAQPage JSON-LD on that page). First draft. */
 export const academiesFaq: FaqItem[] = [
   {
     id: "academy-tests",
-    question: "Which entry tests can my students practise today?",
-    answer:
-      "Practice MCQs and past papers are live for the NUST Entry Test (NET) and Punjab University entry tests, and full-length timed mock tests are live for NET. PU mock tests are coming soon, and so is ECAT and MDCAT content.",
+    question: "Which entry tests can my students practise?",
+    answer: TESTS_ANSWER,
   },
   {
     id: "academy-pricing",
     question: "How much does it cost for an academy?",
-    answer:
-      "Academy pricing has not been decided yet. Every student can start with the 3-month free trial today, and we will agree a batch rate with you when academy plans launch.",
+    answer: `Message us on WhatsApp at ${siteConfig.contact.phone} and we will agree a plan that fits your batch. Your students can always use Taleem ka Safar for free on their own.`,
   },
   {
     id: "academy-teacher-view",
@@ -39,20 +43,18 @@ export const homeFaq: FaqItem[] = [
   {
     id: "tests-covered",
     question: "Which entry tests can I prepare for?",
-    answer:
-      "Taleem ka Safar currently covers the NUST Entry Test (NET) and Punjab University entry tests, with practice in Maths, Physics and English. We are adding more tests such as ECAT, MDCAT, FAST and GIKI step by step, so check the dashboard for the latest list.",
+    answer: TESTS_ANSWER,
   },
   {
-    id: "free-trial",
-    question: "How does the 3-month free trial work?",
-    answer:
-      "Create an account and you get full access for 3 months. No credit card or payment method is required to start, so nothing can be charged when the trial ends.",
+    id: "is-it-free",
+    question: "Is Taleem ka Safar really free for students?",
+    answer: `Yes. Taleem ka Safar is built for students, by students and teachers, and it is free for students. No credit card or payment method is needed. If we ever add a fee, it will never be more than Rs ${PRICE_CAP_PKR}, only to cover technical costs and keep the experience smooth.`,
   },
   {
     id: "mock-tests",
     question: "Are the mock tests timed like the real exam?",
     answer:
-      "Yes. The full-length NET mock test follows the section pattern and time limit of the real test, so you can practise managing time before test day. Your results show where you lost marks. PU mock tests are coming soon.",
+      "Yes. Full-length mock tests follow the section pattern and time limit of the real test, so you can practise managing time before test day. Your results show where you lost marks.",
   },
   {
     id: "merit-calculator",
@@ -64,7 +66,7 @@ export const homeFaq: FaqItem[] = [
     id: "explanations",
     question: "Do questions come with explanations?",
     answer:
-      "Practice questions show the correct answer right after you attempt them, along with an explanation where one is available, so you learn the concept instead of memorising answers.",
+      "Yes. You see the correct answer right after you attempt a question, and every wrong answer comes with an explanation of why, so you learn the concept instead of memorising answers.",
   },
   {
     id: "devices",
@@ -75,7 +77,6 @@ export const homeFaq: FaqItem[] = [
   {
     id: "academies",
     question: "I run an academy. Can my students use it?",
-    answer:
-      "Yes. We are building tools for academies and coaching centres to give their students structured practice and track batch progress. Get in touch through the contact page to discuss your needs.",
+    answer: `Yes. We are building tools for academies and coaching centres to give their students structured practice and track batch progress. Message us on WhatsApp at ${siteConfig.contact.phone} to discuss your needs.`,
   },
 ];
