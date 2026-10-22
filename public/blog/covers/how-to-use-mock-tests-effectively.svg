@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="cover-title">
+  <title id="cover-title">Study Strategy: Use Mock Tests Well. Abstract exam timer.</title>
+  <rect width="1200" height="630" fill="#F6F6F3"/>
+  <rect x="74" y="74" width="1080" height="510" rx="32" fill="#2D5DB5"/>
+  <rect x="60" y="60" width="1080" height="510" rx="32" fill="#FDFDFB" stroke="#1F2328" stroke-width="3"/>
+  <g font-family="Space Grotesk, Inter, sans-serif">
+    <rect x="120" y="128" width="296" height="46" rx="23" fill="#E3EAF8"/>
+    <text x="146" y="159" font-size="22" font-weight="700" letter-spacing="2" fill="#2D5DB5">STUDY STRATEGY</text>
+    <text x="120" y="268" font-size="68" font-weight="700" fill="#1F2328">Use Mock</text>
+    <text x="120" y="346" font-size="68" font-weight="700" fill="#1F2328">Tests Well</text>
+    <rect x="120" y="384" width="96" height="10" rx="5" fill="#2D5DB5"/>
+    <circle cx="130" cy="492" r="10" fill="#2D5DB5"/>
+    <text x="152" y="501" font-size="26" font-weight="600" fill="#1F2328">Taleem ka Safar</text>
+  </g>
+  <rect x="905" y="150" width="60" height="26" rx="10" fill="#1F2328"/>
+  <circle cx="935" cy="340" r="150" fill="#E3EAF8" stroke="#1F2328" stroke-width="3"/>
+  <circle cx="935" cy="340" r="118" fill="#FDFDFB" stroke="#1F2328" stroke-width="3"/>
+  <path d="M935 190 A150 150 0 0 1 1085 340" fill="none" stroke="#2D5DB5" stroke-width="16" stroke-linecap="round"/>
+  <g stroke="#1F2328" stroke-width="8" stroke-linecap="round">
+    <path d="M935 238 L935 254"/>
+    <path d="M1037 340 L1021 340"/>
+    <path d="M935 442 L935 426"/>
+    <path d="M833 340 L849 340"/>
+    <path d="M935 340 L935 270"/>
+  </g>
+  <path d="M935 340 L995 380" stroke="#2D5DB5" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="935" cy="340" r="12" fill="#1F2328"/>
+</svg>

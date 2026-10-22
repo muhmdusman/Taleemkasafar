@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="cover-title">
+  <title id="cover-title">Entry Test Guides: ECAT Strategy for UET. Abstract plus four and minus one tiles.</title>
+  <rect width="1200" height="630" fill="#F6F6F3"/>
+  <rect x="74" y="74" width="1080" height="510" rx="32" fill="#2D5DB5"/>
+  <rect x="60" y="60" width="1080" height="510" rx="32" fill="#FDFDFB" stroke="#1F2328" stroke-width="3"/>
+  <g font-family="Space Grotesk, Inter, sans-serif">
+    <rect x="120" y="128" width="340" height="46" rx="23" fill="#E3EAF8"/>
+    <text x="146" y="159" font-size="22" font-weight="700" letter-spacing="2" fill="#2D5DB5">ENTRY TEST GUIDES</text>
+    <text x="120" y="268" font-size="68" font-weight="700" fill="#1F2328">ECAT Strategy</text>
+    <text x="120" y="346" font-size="68" font-weight="700" fill="#1F2328">for UET</text>
+    <rect x="120" y="384" width="96" height="10" rx="5" fill="#2D5DB5"/>
+    <circle cx="130" cy="492" r="10" fill="#2D5DB5"/>
+    <text x="152" y="501" font-size="26" font-weight="600" fill="#1F2328">Taleem ka Safar</text>
+    <rect x="800" y="150" width="170" height="170" rx="32" fill="#2D5DB5" stroke="#1F2328" stroke-width="3"/>
+    <text x="885" y="261" text-anchor="middle" font-size="76" font-weight="700" fill="#FDFDFB">+4</text>
+    <rect x="920" y="320" width="170" height="170" rx="32" fill="#E3EAF8" stroke="#1F2328" stroke-width="3"/>
+    <text x="1005" y="431" text-anchor="middle" font-size="76" font-weight="700" fill="#1F2328">−1</text>
+  </g>
+  <circle cx="1060" cy="200" r="22" fill="none" stroke="#1F2328" stroke-width="3"/>
+  <circle cx="830" cy="430" r="14" fill="#1F2328"/>
+</svg>

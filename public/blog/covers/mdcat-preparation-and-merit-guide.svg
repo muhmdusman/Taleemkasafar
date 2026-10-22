@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="cover-title">
+  <title id="cover-title">Entry Test Guides: MDCAT Prep and Merit. Abstract connected circles.</title>
+  <rect width="1200" height="630" fill="#F6F6F3"/>
+  <rect x="74" y="74" width="1080" height="510" rx="32" fill="#2D5DB5"/>
+  <rect x="60" y="60" width="1080" height="510" rx="32" fill="#FDFDFB" stroke="#1F2328" stroke-width="3"/>
+  <g font-family="Space Grotesk, Inter, sans-serif">
+    <rect x="120" y="128" width="340" height="46" rx="23" fill="#E3EAF8"/>
+    <text x="146" y="159" font-size="22" font-weight="700" letter-spacing="2" fill="#2D5DB5">ENTRY TEST GUIDES</text>
+    <text x="120" y="268" font-size="68" font-weight="700" fill="#1F2328">MDCAT Prep</text>
+    <text x="120" y="346" font-size="68" font-weight="700" fill="#1F2328">and Merit</text>
+    <rect x="120" y="384" width="96" height="10" rx="5" fill="#2D5DB5"/>
+    <circle cx="130" cy="492" r="10" fill="#2D5DB5"/>
+    <text x="152" y="501" font-size="26" font-weight="600" fill="#1F2328">Taleem ka Safar</text>
+  </g>
+  <g stroke="#1F2328" stroke-width="6" stroke-linecap="round">
+    <path d="M935 320 L830 205"/>
+    <path d="M935 320 L1045 215"/>
+    <path d="M935 320 L850 445"/>
+    <path d="M935 320 L1035 435"/>
+    <path d="M830 205 L1045 215"/>
+  </g>
+  <circle cx="935" cy="320" r="50" fill="#2D5DB5" stroke="#1F2328" stroke-width="3"/>
+  <circle cx="830" cy="205" r="30" fill="#E3EAF8" stroke="#1F2328" stroke-width="3"/>
+  <circle cx="1045" cy="215" r="34" fill="#FDFDFB" stroke="#1F2328" stroke-width="3"/>
+  <circle cx="850" cy="445" r="26" fill="#1F2328"/>
+  <circle cx="1035" cy="435" r="38" fill="#E3EAF8" stroke="#1F2328" stroke-width="3"/>
+  <circle cx="935" cy="320" r="16" fill="#FDFDFB"/>
+</svg>

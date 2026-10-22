@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="cover-title">
+  <title id="cover-title">Entry Test Guides: Punjab University Test Guide. Abstract pie split into a quarter and three quarters.</title>
+  <rect width="1200" height="630" fill="#F6F6F3"/>
+  <rect x="74" y="74" width="1080" height="510" rx="32" fill="#2D5DB5"/>
+  <rect x="60" y="60" width="1080" height="510" rx="32" fill="#FDFDFB" stroke="#1F2328" stroke-width="3"/>
+  <g font-family="Space Grotesk, Inter, sans-serif">
+    <rect x="120" y="118" width="340" height="46" rx="23" fill="#E3EAF8"/>
+    <text x="146" y="149" font-size="22" font-weight="700" letter-spacing="2" fill="#2D5DB5">ENTRY TEST GUIDES</text>
+    <text x="120" y="240" font-size="64" font-weight="700" fill="#1F2328">Punjab</text>
+    <text x="120" y="314" font-size="64" font-weight="700" fill="#1F2328">University</text>
+    <text x="120" y="388" font-size="64" font-weight="700" fill="#1F2328">Test Guide</text>
+    <rect x="120" y="420" width="96" height="10" rx="5" fill="#2D5DB5"/>
+    <circle cx="130" cy="500" r="10" fill="#2D5DB5"/>
+    <text x="152" y="509" font-size="26" font-weight="600" fill="#1F2328">Taleem ka Safar</text>
+  </g>
+  <path d="M925 330 L1075 330 A150 150 0 1 1 925 180 Z" fill="#E3EAF8" stroke="#1F2328" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M945 310 L945 160 A150 150 0 0 1 1095 310 Z" fill="#2D5DB5" stroke="#1F2328" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="925" cy="330" r="12" fill="#1F2328"/>
+</svg>

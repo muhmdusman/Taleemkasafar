@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="cover-title">
+  <title id="cover-title">Entry Test Guides: NUST NET Prep Guide. Abstract target rings.</title>
+  <rect width="1200" height="630" fill="#F6F6F3"/>
+  <rect x="74" y="74" width="1080" height="510" rx="32" fill="#2D5DB5"/>
+  <rect x="60" y="60" width="1080" height="510" rx="32" fill="#FDFDFB" stroke="#1F2328" stroke-width="3"/>
+  <g font-family="Space Grotesk, Inter, sans-serif">
+    <rect x="120" y="128" width="340" height="46" rx="23" fill="#E3EAF8"/>
+    <text x="146" y="159" font-size="22" font-weight="700" letter-spacing="2" fill="#2D5DB5">ENTRY TEST GUIDES</text>
+    <text x="120" y="268" font-size="68" font-weight="700" fill="#1F2328">NUST NET</text>
+    <text x="120" y="346" font-size="68" font-weight="700" fill="#1F2328">Prep Guide</text>
+    <rect x="120" y="384" width="96" height="10" rx="5" fill="#2D5DB5"/>
+    <circle cx="130" cy="492" r="10" fill="#2D5DB5"/>
+    <text x="152" y="501" font-size="26" font-weight="600" fill="#1F2328">Taleem ka Safar</text>
+  </g>
+  <circle cx="935" cy="320" r="160" fill="#E3EAF8"/>
+  <circle cx="935" cy="320" r="112" fill="#FDFDFB" stroke="#1F2328" stroke-width="3"/>
+  <circle cx="935" cy="320" r="66" fill="#2D5DB5"/>
+  <circle cx="935" cy="320" r="24" fill="#FDFDFB"/>
+  <g stroke="#1F2328" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M1070 180 L955 300"/>
+    <path d="M958 264 L955 300 L991 297"/>
+  </g>
+  <g fill="#2D5DB5">
+    <circle cx="800" cy="500" r="8"/>
+    <circle cx="830" cy="500" r="8"/>
+    <circle cx="860" cy="500" r="8"/>
+  </g>
+</svg>

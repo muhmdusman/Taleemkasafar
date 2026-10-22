@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="cover-title">
+  <title id="cover-title">Merit &amp; Admissions: How Merit Is Calculated. Abstract stacked weight bars.</title>
+  <defs>
+    <clipPath id="bar">
+      <rect x="0" y="0" width="300" height="52" rx="16"/>
+    </clipPath>
+  </defs>
+  <rect width="1200" height="630" fill="#F6F6F3"/>
+  <rect x="74" y="74" width="1080" height="510" rx="32" fill="#2D5DB5"/>
+  <rect x="60" y="60" width="1080" height="510" rx="32" fill="#FDFDFB" stroke="#1F2328" stroke-width="3"/>
+  <g font-family="Space Grotesk, Inter, sans-serif">
+    <rect x="120" y="128" width="360" height="46" rx="23" fill="#E3EAF8"/>
+    <text x="146" y="159" font-size="22" font-weight="700" letter-spacing="2" fill="#2D5DB5">MERIT &amp; ADMISSIONS</text>
+    <text x="120" y="268" font-size="68" font-weight="700" fill="#1F2328">How Merit Is</text>
+    <text x="120" y="346" font-size="68" font-weight="700" fill="#1F2328">Calculated</text>
+    <rect x="120" y="384" width="96" height="10" rx="5" fill="#2D5DB5"/>
+    <circle cx="130" cy="492" r="10" fill="#2D5DB5"/>
+    <text x="152" y="501" font-size="26" font-weight="600" fill="#1F2328">Taleem ka Safar</text>
+  </g>
+  <g transform="translate(790 160)" clip-path="url(#bar)">
+    <rect width="225" height="52" fill="#2D5DB5"/>
+    <rect x="225" width="45" height="52" fill="#E3EAF8"/>
+    <rect x="270" width="30" height="52" fill="#1F2328"/>
+  </g>
+  <rect x="790" y="160" width="300" height="52" rx="16" fill="none" stroke="#1F2328" stroke-width="3"/>
+  <g transform="translate(790 248)" clip-path="url(#bar)">
+    <rect width="99" height="52" fill="#2D5DB5"/>
+    <rect x="99" width="150" height="52" fill="#E3EAF8"/>
+    <rect x="249" width="51" height="52" fill="#1F2328"/>
+  </g>
+  <rect x="790" y="248" width="300" height="52" rx="16" fill="none" stroke="#1F2328" stroke-width="3"/>
+  <g transform="translate(790 336)" clip-path="url(#bar)">
+    <rect width="75" height="52" fill="#2D5DB5"/>
+    <rect x="75" width="225" height="52" fill="#E3EAF8"/>
+  </g>
+  <rect x="790" y="336" width="300" height="52" rx="16" fill="none" stroke="#1F2328" stroke-width="3"/>
+  <circle cx="940" cy="470" r="44" fill="#E3EAF8" stroke="#1F2328" stroke-width="3"/>
+  <text x="940" y="482" text-anchor="middle" font-family="Space Grotesk, Inter, sans-serif" font-size="32" font-weight="700" fill="#1F2328">100</text>
+</svg>
