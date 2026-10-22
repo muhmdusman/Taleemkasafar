@@ -35,7 +35,7 @@ Split data by who it belongs to:
 
 ## Invalidating the cache
 When the question bank / catalog changes (e.g. after a CSV import or admin edit),
-call `revalidateCatalog()` (in `app/(dashboard)/actions.ts`) which does
+call `revalidateCatalog()` (in `app/dashboard/actions.ts`) which does
 `revalidateTag(CATALOG_TAG, "max")`. Selecting a different entry test does NOT
 need a catalog revalidation (catalog is shared across tests, keyed by slug).
 

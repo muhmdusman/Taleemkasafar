@@ -36,8 +36,11 @@ folder.
 ## Auth conventions
 - Prefer `supabase.auth.getClaims()` over `getUser()` for speed where claims
   suffice.
-- Protected routes live under `app/protected/` and are guarded by `proxy.ts`
-  redirect logic.
+- The authenticated app lives under `app/dashboard/` (`/dashboard/*`). The
+  guard in `proxy.ts` → `lib/supabase/proxy.ts` is deny-by-default: only paths
+  in the `isPublicPath` allowlist (`lib/routes.ts`) are public. New public
+  pages must be added there. Build internal URLs with `routes.*` from
+  `lib/routes.ts`; validate any `next` redirect param with `safeNextPath`.
 - OAuth callback handled at `app/auth/callback/route.ts` (PKCE code exchange).
 - Email confirmation handled at `app/auth/confirm/route.ts`.
 

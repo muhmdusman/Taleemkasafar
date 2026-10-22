@@ -563,3 +563,228 @@ that don't match calculated answers — original Dogar source pages required).
 Remaining flagged: pu-maths 143, pu-quant 109, pu-physics 90,
 pu-verbal 6 (unresolvable), pu-cs 1 (unresolvable).
 pu_import.sql still not applied to DB — regenerate then load via psql.
+
+
+## 2026-10-22 — Phase kickoff: calm palette, landing, SEO (roadmap reset)
+
+### State check (read this first)
+- PU dataset IS loaded in the DB (see "PU dataset loaded into DB ✅" above).
+  The trailing "Manual review: verbal + CS" entry above is older and out of
+  order; ignore its "not applied" line.
+- App is live at `entrytest.taleemkasafar.com`; will move to apex
+  `taleemkasafar.com` alongside a landing page in this same project.
+
+### Done
+- **`DESIGN.md` (repo root, committed)** — new design source of truth.
+  The old `ui_design/design_scheme/DESIGN.md` is gitignored, so it couldn't
+  serve as shared agent memory. v2 "Calm Edition": same shapes/type, softer
+  palette (charcoal `#1F2328` instead of black, paper `#F6F6F3`, blue
+  `#2D5DB5`), contrast targets measured (body ≥12:1, muted ≥4.5:1). Palette is
+  an INTERIM proposal pending the user's color schemes.
+- Steering refreshed: `product.md` (roadmap + goals: 500 users, SEO-first,
+  agents-first), `structure.md` (real `(dashboard)` layout, no `protected/`),
+  `design-system.md` (tokens-only rule, points at `DESIGN.md`).
+
+### Roadmap (user-set order)
+1. Calm palette (token refactor → apply user's scheme).
+2. Landing page + apex domain move + SEO foundation.
+3. Dashboard UI/UX fixes (user will list).
+4. Remaining basic features.
+5. Blog + content SEO.
+
+### Next
+- Token refactor: replace raw `black`/`white`/hex in components with semantic
+  tokens backed by CSS variables (no visual change), so the palette swap is a
+  one-file edit.
+- Waiting on user: color schemes; landing route layout decision.
+
+
+## 2026-10-22 — Color token refactor
+
+### Done
+- `app/globals.css` `:root` now holds RGB-channel vars for every Soft Brutalism
+  token (v1 values): ink, on-ink, surface*, on-surface*, outline*, brand*,
+  on-brand, success (#16A34A), success-fixed (#DCFCE7), danger, danger-fixed
+  (#FEE2E2, not used yet). shadcn HSL vars untouched; no `.dark` palette yet.
+- `tailwind.config.ts`: tokens are `rgb(var(--x) / <alpha-value>)` (opacity
+  modifiers work); added `on-ink`, `on-brand`, `success{,-fixed}`,
+  `danger-fixed`; `shadow-hard*` read `--ink` / `--brand`.
+- 37 files in `app/` + `components/` migrated off raw colors (black/white,
+  red-500, blue-200, arbitrary hexes, SVG fills in `ts-ring-loader.tsx` →
+  `fill-*`/`stroke-*` classes). Zero raw color utilities remain; only the
+  Google logo fills in `social-buttons.tsx` keep hexes (brand-mandated).
+- Lint (0 errors), 55 tests, build all green.
+
+### Next
+- **Palette swap = edit the `:root` token block in `app/globals.css` only**
+  (v2 values in `DESIGN.md` §3), then re-measure contrast targets.
+
+
+## 2026-10-22 — Route restructure: landing at /, app at /dashboard
+
+### Done
+- `git mv app/(dashboard) app/dashboard` → app now at `/dashboard/*`.
+  Imports switched to `@/app/dashboard/{actions,quiz-actions}`.
+- New `app/(marketing)/` (layout + placeholder landing `page.tsx`): static
+  prerender (`○ /`), title/description/canonical via metadata API, CTAs to
+  sign-up / login, "full landing coming soon" note. Root `metadataBase` now
+  prefers `NEXT_PUBLIC_SITE_URL` (canonical host, not `*.vercel.app`).
+- `lib/routes.ts` (+ `routes.test.ts`, 16 tests): `routes.*` URL builders,
+  `isPublicPath` (deny-by-default allowlist: `/`, `/auth/*`, metadata/static,
+  `/_next/*`), `shouldBounceSignedIn` (`/` + auth entry pages),
+  `safeNextPath` (open-redirect guard, used by /auth/callback + /auth/confirm),
+  `isNavActive` (Home active only on `/dashboard`).
+- Proxy uses the helpers; post-auth defaults (sign-in, sign-up email, OAuth,
+  confirm, update-password, confirm-signup template) → `/dashboard`.
+- `next.config.ts` 308s legacy `/subjects*`, `/mock*`, `/performance`.
+- All internal links/redirects/revalidatePath use `routes.*`. Sidebar
+  Settings/Help placeholders moved to `/dashboard/settings` / `/dashboard/help`
+  (pages still not built).
+- Lint 0 errors, 71 tests, build green. Runtime not checked (no dev server).
+
+### Next
+- Landing page content (waiting on user instructions).
+- Apex domain move: set `NEXT_PUBLIC_SITE_URL=https://taleemkasafar.com`,
+  add the apex host to Supabase Auth Site URL / redirect URLs, 301 old host.
+  (Callback/confirm paths are unchanged; only `next=` changed, so no Supabase
+  config change is needed for this restructure itself.)
+- Hosted Supabase "Confirm signup" email template: if it was pasted from
+  `supabase/templates/confirm-signup.html`, update `next=/` → `next=/dashboard`
+  there too (old value still works: `/` bounces signed-in users to /dashboard).
+
+
+## 2026-10-22 — Merit calculator data + logic (no UI)
+
+### Done
+- `data/merit-formulas.ts`: 18 institutions / 19 formulas (FAST-NUCES has
+  NU Test + NTS routes) extracted ONLY from the merit PDF, each with PDF page
+  refs. Plain data + `getUniversities()`, `getUniversityBySlug()`,
+  `getUniversitySlugs()`. Also `IBCC_GRADE_EQUIVALENCE` (p9, reference only).
+- `lib/merit/types.ts` (DB-shaped records), `validate.ts` (field-level error
+  codes, never throws), `calculate.ts` (`calculateMerit`, per-component
+  breakdown, PDF qualifying minimums, `MERIT_DISCLAIMER`, `formatScore` 2dp).
+- Every formula is `needsReview` (the PDF states no year); 14/19 also have
+  formula-specific flags (23 total). All listed in `NOTES.md` (repo root).
+- 75 Vitest tests pass; eslint clean; tsc 0 errors in data/ + lib/merit/.
+### Next
+- User reviews `NOTES.md` (year, NED academic label, COMSATS/IST /100 totals,
+  combined-academics universities).
+- Build /merit-calculator + /merit-calculator/[university] UI on these helpers.
+## 2026-10-22 — Public site Phase 1: theme, layout, home, SEO foundation
+### Done
+- Palette v2 (DESIGN.md §3) applied to `:root` in `app/globals.css` (app-wide);
+  shadcn HSL vars aligned to brand tokens (primary = ink, ring = brand, ...);
+  `--radius` untouched. `shadow-soft` / `shadow-soft-lg` (tokenized) added.
+  DESIGN.md §11 "Public site variant" (rounded) added.
+- shadcn: `accordion`, `sheet` (+ `@esuiss/trace`, `@esuiss/code-block`
+  installed, NOT used yet; button.tsx/lib/utils.ts overwrites declined).
+  New deps pinned exact. `npm run typecheck` script added.
+- `config/site.ts`, `config/pricing.ts` (3-month trial, plans PLACEHOLDER,
+  prices "TBD"), `config/faq.ts` (feeds accordion + FAQPage JSON-LD).
+- SEO: `lib/seo/metadata.ts` (`buildMetadata`), `components/seo/json-ld.tsx`
+  (Organization/WebSite/FAQPage/BreadcrumbList, `<` escaped),
+  `lib/seo/public-routes.ts` → `app/sitemap.ts`, `app/robots.ts`, branded
+  `app/opengraph-image.tsx` + `twitter-image.tsx` (old PNGs deleted).
+- `lib/routes.ts`: public-site builders + allowlist (`/merit-calculator/*`,
+  `/blog/*`, `/contact`, `/academies`, `/sign-in`, `/register`); tests extended.
+  `next.config.ts`: `/sign-in` → `/auth/login`, `/register` → `/auth/sign-up` (307).
+- Marketing layout (skip link, sticky header w/ Sheet mobile menu + active
+  links, footer) and home page (hero, features, how it works, merit teaser,
+  pricing, FAQ, final CTA) under `components/marketing/`. `/` is ○ static.
+- Material Symbols font moved from root layout to dashboard + auth layouts
+  (`components/material-symbols-font.tsx`); unused Geist font removed.
+- Lint 0, typecheck 0, 152 tests, build green. Lighthouse `/` (local):
+  perf 77–84, a11y 100, best-practices 96, SEO 100. Evidence:
+  `.agents/tasks/marketing-phase1-verification.md`.
+### Next
+- Phase 2 pages: /merit-calculator(+[university]), /blog(+[slug]), /contact,
+  /academies (links/sitemap already point there; they 404 until built).
+- Perf: TBT is framework hydration under 4x CPU throttle; revisit after the
+  pages exist (measure on the deployed host).
+
+## 2026-10-22 — Public site Phase 2: merit pages, contact, academies + Phase 1 fixes
+### Done
+- `/merit-calculator` (card per university, explainer, disclaimer) and
+  `/merit-calculator/[university]` (18 slugs prerendered; calculator island with
+  route picker, inline errors, aria-live result, breakdown bars, qualifying
+  minimums, notes; server-rendered formula card + admission criteria).
+  `getMeritSitemapEntries()` spread into `app/sitemap.ts` (blog slot reserved).
+- `/contact` (PLACEHOLDER contact cards, form UI, honest "not sent" success,
+  `TODO(backend)`), validation in `lib/contact/validate.ts` (+ tests).
+- `/academies` (Available now / Coming soon benefits, 3 steps, academy plan from
+  `config/pricing.ts`, FAQ + FAQPage JSON-LD, CTA).
+- Phase 1 fixes: FAQ → native `<details>` (accordion.tsx deleted); lazy mobile
+  Sheet + 44px close button; coverage copy = NET + PU (ECAT/MDCAT "coming
+  soon"); `config/site.ts` canonical comment fixed; sign-up form muted text
+  class → `text-on-surface-variant`.
+- Lint 0, typecheck 0, 186 tests, build green. Lighthouse (local, loaded
+  machine): a11y/BP/SEO 100 on all 5 pages, perf 76–83 (below 90). Evidence:
+  `.agents/tasks/marketing-phase2-verification.md`.
+### Next
+- User fills `config/site.ts` `contact` placeholders and academy plan details.
+- Blog (`/blog`, `/blog/[slug]`, `getBlogSitemapEntries()`) — separate run.
+- Contact server action (backend) when ready; decide on removing @esuiss deps
+  and `@radix-ui/react-accordion`.
+- Perf: re-measure on the deployed host (TBT is framework hydration).
+
+## 2026-10-22 — Public site Phase 4: blog + final verification
+### Done
+- Blog: `lib/blog/` (types, strict frontmatter validation, server-only
+  Markdown → HTML with raw HTML dropped + unsafe URLs stripped, loader = DB
+  swap point, tests), `content/blog/README.md`, `/blog` (category-grouped
+  cards) and `/blog/[slug]` (6 static posts, article styles, related posts,
+  trial CTA, Article + BreadcrumbList JSON-LD, OG `article`). Per-post PNG
+  OG/Twitter images in `app/blog/[slug]/` (outside the route group so the URL
+  has no hash suffix). Sitemap = 29 URLs.
+- Phase 2 review fixes: PU mock claims → "full mocks for NET, PU coming soon"
+  everywhere (FAQ + JSON-LD, metas, CTA, OG image, 5 posts); emptied total =
+  `total-required`; hint list in `aria-describedby`; year notice from data
+  (`admissionYearNotice`); FAST route switch keeps shared marks
+  (`lib/merit/form-state.ts`); `@radix-ui/react-accordion` removed.
+- Lint 0, typecheck 0, 215 tests, build green. Lighthouse mobile medians
+  (loaded host, benchmarkIndex ~600): perf 67–80, a11y/BP/SEO 100 everywhere;
+  desktop home 86. No perf code changes (cost = framework runtime; see
+  `.agents/tasks/blog-phase4-verification.md`).
+### Next
+- Before launch: fill `config/site.ts` contact placeholders, pricing TBDs,
+  review FAQ/blog copy; re-measure perf with PageSpeed Insights on the
+  deployed host.
+- Decide: keep or remove the unused @esuiss files (trace, code-block,
+  collapsible, shiki, highlighter).
+## 2026-10-22 — Public site Phase 4: blog + final verification (review fixes)
+### Done
+- Blog loader hardening: YAML-only frontmatter (gray-matter JS engine
+  overridden + `---<lang>` fences rejected), quoted ISO dates only, build fails
+  on a missing cover file, test that every internal post link resolves.
+  Unknown-slug OG/Twitter images 404; post cover uses `preload`; README fixed.
+- Lint 0, typecheck 0, 218 tests, build green, sitemap 29 URLs. Lighthouse
+  mobile medians 67–83 on a loaded host (a11y/BP/SEO 100), desktop home 99;
+  cost is the framework runtime chunk. Evidence:
+  `.agents/tasks/blog-phase4-verification.md`.
+### Next
+- Before launch: PageSpeed Insights on the deployed host; fill contact
+  placeholders, pricing TBDs, review FAQ/blog copy; decide on @esuiss files.
+
+
+## 2026-10-23 — Public site polish round (direct edits, no workflow)
+
+### Done
+- `/` no longer bounces signed-in users; header/hero/final CTA/mobile menu swap
+  to Access dashboard / Start practice when a session cookie is present.
+- Free-for-students positioning across home, pricing, FAQ, academies, merit and
+  blog CTAs, OG image, meta descriptions; Rs 250 cap note; academies via WhatsApp.
+- New hero copy ("Entry test preparation that explains every mistake"), test
+  names in copy (NET, PU, UET, FAST, NAT), chips removed, wrong-answer
+  explanation shown in the hero visual.
+- Feature cards with light-blue gradients + gradient icon tiles; FAQ heading on
+  top with full-width, taller rows; shared `PracticeCta`; Parhlai-style gradient
+  banner header with logo on all inner pages; real contact details; footer
+  links NET/PU to the dashboard.
+- Palette v2.1 (lighter charcoal, brighter blue, iris violet accent).
+- Verified: typecheck + lint clean, 224 tests pass (new session-hint tests),
+  build green with all public pages static, screenshots of home (desktop +
+  mobile), merit calculator and contact checked.
+
+### Next
+- Manual check while signed in: header shows Access dashboard on `/`.
+- DESIGN.md §3 still lists v2 values; update the table to v2.1 when the palette settles.

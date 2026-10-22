@@ -300,3 +300,167 @@ every PU test (they are always part of the paper regardless of discipline).
 Standardize_pu.py enforces this in the CSV so no test — including PU-CSE
 and PU-AHS — is ever completely empty even before subject-specific data
 arrives.
+
+
+## 2026-10-22 — Design source of truth + color tokens
+
+### Decision: `DESIGN.md` lives at repo root (committed)
+`ui_design/` is gitignored (it contains a full reference Next app), so the
+original `ui_design/design_scheme/DESIGN.md` was invisible to git and to other
+machines. Agents-first means the design spec must be versioned. Root
+`DESIGN.md` is now the source of truth; the steering file
+`.kiro/steering/design-system.md` is the short always-loaded summary.
+
+### Decision: semantic color tokens via CSS variables, tokens-only in components
+An audit found ~250 raw color utilities in `app/` + `components/`
+(`border-black` 113, `bg-white` 71, `text-white` 36, `text-black` 28,
+`bg-black` 21, plus `red-500`). That makes any palette change a 40-file edit.
+Rule: components use semantic tokens only (`ink`, `on-ink`, `surface-*`,
+`on-surface*`, `brand*`, `on-brand`, `success*`, `danger*`); values are CSS
+variables in `app/globals.css` consumed by `tailwind.config.ts`. Palette swaps
+and a future dark mode become CSS-variable edits.
+
+### Decision: calm palette for long sessions (v2, interim)
+Pure `#000` on `#fff` (21:1) causes glare over multi-hour sessions. v2 keeps
+brutalist shape (0 radius, 2px borders, hard shadows) but uses charcoal ink,
+paper surfaces, and a less saturated blue. Targets: body text ≥12:1, muted
+≥4.5:1, UI borders ≥3:1. Final hexes come from the user's color schemes.
+
+
+## 2026-10-22 — URL layout: landing at `/`, app at `/dashboard/*` (user-approved)
+
+- `/` = public landing page (`app/(marketing)/`), static, no cookie reads, SEO.
+- Authenticated app moves from the root to `/dashboard/*`
+  (`/dashboard`, `/dashboard/subjects/...`, `/dashboard/mock/...`,
+  `/dashboard/performance`). Keeps the root namespace free for public SEO
+  pages (`/blog`, `/net-entry-test`, ...) without clashing with app routes.
+- Signed-in visitors to `/` and to auth entry pages are redirected to `/dashboard`
+  by the proxy. Post-login / OAuth / email-confirm defaults become `/dashboard`.
+- Old app URLs (`/subjects/*`, `/mock/*`, `/performance`) permanently redirect
+  to their `/dashboard/*` equivalents so bookmarks and shared links keep working.
+- Route guard stays **deny-by-default**: an explicit public allowlist (`/`,
+  `/auth/*`, metadata/static files) instead of "protect only /dashboard".
+  Every new public page must be added to the allowlist on purpose.
+
+
+## 2026-10-22 — Public website build (landing, merit calculator, blog, contact, academies)
+
+- **Frontend-only, no Supabase** for these pages (user instruction). Data lives
+  in typed files (`config/`, `data/`, `content/blog/`) shaped like future DB tables.
+- **Rounded public-site variant** (user override): public pages use rounded-xl/2xl,
+  soft tokenized shadows, 1px subtle borders allowed. Dashboard stays Soft
+  Brutalism for now. See `.kiro/steering/design-system.md`.
+- **Calm palette v2 applied app-wide** via the `:root` tokens in `app/globals.css`
+  (user: "black + blue, slightly lighter"; no exact hexes given). Tune there.
+- **`/sign-in` and `/register` are aliases, not new shells.** Working auth pages
+  already exist at `/auth/login` and `/auth/sign-up`; duplicate non-functional
+  shells would confuse users and create duplicate content. The aliases redirect
+  (temporary 307, so we can flip canonical later) and nav links point at the real pages.
+- **Merit formulas come only from the PDF** (`Pakistan Universities Merit
+  Formulas and Admission Criteria Guide.pdf`), with page references; anything
+  unclear goes to root `NOTES.md` for user review.
+- `@esuiss/*` shadcn items come from a third-party registry listed in the
+  official shadcn registry index (suiss.app/ui); installed source must be reviewed.
+
+## 2026-10-22 — Public site Phase 1
+- **Palette v2 applied app-wide**; shadcn HSL vars mirror brand tokens; global
+  `--radius` left alone so the dashboard stays square. Public site rounding is
+  per-class (DESIGN.md §11).
+- **Material Symbols only on dashboard + auth** (`MaterialSymbolsFont` in their
+  layouts, React-hoisted `<link precedence>`, same CSS order as before). Public
+  pages use lucide only. A client reveal effect covers client-side navigation.
+- **Marketing links to `/auth/*` don't prefetch** (`prefetchFor` in
+  `components/marketing/button-link.tsx`): prefetch pulled the Supabase client
+  bundle into every landing visit.
+- **@esuiss/trace + code-block installed but unused**: Trace is an agent-trace
+  UI and both use Tailwind v4-only classes (`in-[…]`, `ring-3`, `--spacing()`,
+  `data-open:`) that our Tailwind v3 does not compile. Code Block is a candidate
+  for formula display on merit pages once restyled. The CLI's overwrites of
+  `components/ui/button.tsx` and `lib/utils.ts` were declined; the unused `cn`
+  dep it added was removed.
+- **FAQ accordion uses `forceMount`** so answers are in the static HTML
+  (hidden while closed) and match the FAQPage JSON-LD.
+
+## 2026-10-22 — Public site Phase 2 (merit pages, contact, academies)
+- **FAQ = native `<details>/<summary>`** (`components/marketing/faq-list.tsx`),
+  supersedes the `forceMount` accordion above: zero JS, answers in HTML, no empty
+  `region` landmarks. `components/ui/accordion.tsx` deleted; the accordion
+  keyframes stay because the unused @esuiss `trace.tsx` references them.
+  `@radix-ui/react-accordion` is still in package.json (unused; remove later).
+- **Mobile menu is lazy**: `MobileNav` is a plain button (aria-expanded /
+  aria-controls); the Radix Sheet (`mobile-menu-sheet.tsx`) is loaded with
+  `next/dynamic({ ssr:false })`, preloaded on hover/focus/touch, mounted on
+  first click; focus is returned to the trigger by hand (no Radix Trigger).
+- **`/merit-calculator/[university]` has no `dynamicParams = false`**: Next 16
+  rejects that segment config with Cache Components. All 18 slugs prerender
+  fully static; unknown slugs 404 via `notFound()` (verified). The build table
+  shows ◐ for the route only because of the unknown-param fallback shell.
+- **@esuiss Code Block NOT used for formulas**: a formula is plain text; a
+  server-rendered formula card keeps it in the HTML for SEO, while Code Block
+  highlights client-side with shiki (extra JS on every university page) and
+  needs Tailwind v4 classes. Trace/Code Block stay installed until the user
+  decides to remove them.
+- **Coverage honesty**: practice/mocks copy says NUST NET + PU only;
+  ECAT/MDCAT appear only as "coming soon" (`siteConfig.entryTestsComingSoon`).
+  The merit calculator may claim all 18 institutions.
+- **Contact form has no backend**: success state says the message was NOT sent
+  and points to the contact email. Contact details are `"PLACEHOLDER"` in
+  `config/site.ts` and render as visibly marked placeholders (no fake values).
+
+## 2026-10-22 — Blog architecture
+- Posts are Markdown in `content/blog/`; `lib/blog/loader.ts` is the ONLY
+  import point (DB swap point). Sync file reads behind an async API keep pages
+  prerendered without `"use cache"`; a future DB fetch must add `"use cache"` +
+  `cacheTag("blog")`. Markdown is rendered on the server with raw HTML
+  disabled and URL sanitising, so DB/admin content stays safe.
+- Per-post OG images live in `app/blog/[slug]/` (outside `(marketing)`):
+  metadata image routes under a route group get a hash suffix
+  (`opengraph-image-<hash>`), which metadata/JSON-LD can't reference stably.
+- Merit calculator: an explicitly emptied total is `total-required` (only an
+  omitted total uses the PDF default). Obtained marks are shared across a
+  university's routes when component key + label match; totals are per formula.
+
+
+## 2026-10-23 — Public site: free-for-students, signed-in landing, palette v2.1
+
+- **Signed-in users may browse `/`** (supersedes the 2026-10-22 bounce). Only
+  auth entry pages bounce to /dashboard. The static public pages detect a
+  signed-in visitor in the browser (`lib/auth/session-hint.ts`: presence of the
+  `sb-<ref>-auth-token[.N]` cookie, never parsed or trusted) and swap CTAs via
+  `components/marketing/auth-aware-cta.tsx`: header Sign in/Register become
+  Start practice / Access dashboard; hero and CTAs go to /dashboard. Pages stay
+  static (server snapshot = signed out). Real auth is still enforced by the proxy.
+- **Pricing positioning**: "Free for students, by the students & teachers".
+  Any future fee is capped at Rs 250 (`PRICE_CAP_PKR` in config/pricing.ts),
+  only to cover technical costs. Academies contact us on WhatsApp. The
+  3-month-trial messaging is removed everywhere.
+- **Entry tests named in copy**: NET, PU, UET, FAST, NAT (owner: data is being
+  added). `siteConfig.entryTests[].dashboardLive` marks NET + PU (footer links
+  them to the dashboard).
+- **Contact**: musman@taleemkasafar.com, 0330 1358202 (WhatsApp wa.me/923301358202),
+  response within 24 hours (config/site.ts).
+- **Palette v2.1** (app-wide, globals.css): ink lighter #2B3038, brand brighter
+  #2563EB (hover #1D4ED8), brand-fixed #E1EAFF, new violet accent `iris`
+  #5B4BDB / `iris-fixed` #ECEAFF. Public-site primary buttons are brand blue;
+  inner pages open with a brand→iris gradient banner + logo (`page-header.tsx`).
+
+
+## 2026-10-23 (b) — Public brand = sky blue #009DFF, used sparingly
+
+- Owner: too much blue made the site look cheap and less trustworthy. Blue is
+  now ONLY for the main CTA per section and key highlights; black for text and
+  everything else; no blue hovers/dropdown icons/washes. The violet `iris`
+  accent was removed.
+- `.theme-public` (app/globals.css) scopes the public palette to the marketing
+  layout + mobile menu portal: brand #009DFF (fills), brand-container #0077C8
+  (blue text/links/focus/hover), brand-fixed #E5F5FF. Dashboard/auth unchanged.
+- ⚠️ Accessibility trade-off, owner's call: white text on #009DFF is 2.9:1
+  (WCAG AA needs 4.5:1 for button text, 3:1 for large text). Affects primary
+  buttons and the hero tagline bubble. Fix if needed = change `--brand` in
+  `.theme-public` to #0077C8 (4.7:1) or #0080D0 (4.2:1, large text only).
+- Hero: "Making Quality [Entry-Test|NET|FAST|PU|UET|NAT] Preparation Accessible
+  to Everyone." (CSS-only rotating word, full sentence in sr-only for SEO);
+  tagline bubble "By Students. For Students. With Teachers."
+- New "Why Taleem ka Safar" pain-points section: free/affordable for every
+  student, senior guidance (labelled COMING SOON: not built yet), no ads.
+- Inner-page banners: plain white "Taleemkasafar" wordmark, lighter sky blue.
