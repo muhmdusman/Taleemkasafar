@@ -4,31 +4,70 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    /*
+     * shadcn/ui HSL variables, ALIGNED to the brand tokens below so any
+     * shadcn component matches the palette (primary stays ink/charcoal, not
+     * blue). If you change a brand token, update its mirror here too.
+     * `--radius` is deliberately left at the shadcn default: public-site
+     * rounding is applied per component via classes, so the dashboard's
+     * 0px Soft Brutalism shapes are unaffected.
+     */
+    --background: 60 14.3% 95.9%; /* = surface */
+    --foreground: 212.7 13.3% 16.3%; /* = on-surface */
+    --card: 60 33.3% 98.8%; /* = surface-lowest */
+    --card-foreground: 213 12.7% 13.9%; /* = on-surface */
+    --popover: 60 33.3% 98.8%; /* = surface-lowest */
+    --popover-foreground: 213 12.7% 13.9%; /* = on-surface */
+    --primary: 216.9 13.1% 19.4%; /* = ink */
+    --primary-foreground: 60 33.3% 98.8%; /* = on-ink */
+    --secondary: 60 10.6% 90.8%; /* = surface-container */
+    --secondary-foreground: 213 12.7% 13.9%; /* = on-surface */
+    --muted: 60 11.8% 93.3%; /* = surface-low */
+    --muted-foreground: 212 9.8% 37.8%; /* = on-surface-variant */
+    --accent: 222 100% 94.1%; /* = brand-fixed */
+    --accent-foreground: 213 12.7% 13.9%; /* = on-surface */
+    --destructive: 4 76.5% 40%; /* = danger */
+    --destructive-foreground: 60 33.3% 98.8%; /* = on-ink */
+    --border: 222 10.2% 80.8%; /* = outline-variant */
+    --input: 222 10.2% 80.8%; /* = outline-variant */
+    --ring: 221.2 83.2% 53.3%; /* = brand */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+
+    /*
+     * Soft Brutalism palette tokens (DESIGN.md §3). RGB channels, space
+     * separated, consumed in tailwind.config.ts as
+     * `rgb(var(--token) / <alpha-value>)`. Components must use the token
+     * classes (bg-ink, text-on-surface, ...), never raw colors.
+     *
+     * v2 "Calm Edition" (applied 2026-10-22): charcoal + paper neutrals and a
+     * softened blue. v1 values are kept in DESIGN.md §3 for history.
+     * Swapping the palette = editing this block (+ the shadcn mirror above).
+     */
+    --ink: 43 48 56; /* #2B3038 lighter charcoal (v2.1) */
+    --on-ink: 253 253 251; /* #FDFDFB */
+    --surface: 246 246 243; /* #F6F6F3 paper */
+    --surface-lowest: 253 253 251; /* #FDFDFB */
+    --surface-low: 240 240 236; /* #F0F0EC */
+    --surface-container: 234 234 229; /* #EAEAE5 */
+    --surface-high: 227 227 222; /* #E3E3DE */
+    --surface-variant: 220 220 214; /* #DCDCD6 */
+    --on-surface: 36 41 47; /* #24292F */
+    --on-surface-variant: 87 96 106; /* #57606A */
+    --outline: 122 127 136; /* #7A7F88 */
+    --outline-variant: 201 204 211; /* #C9CCD3 */
+    --brand: 37 99 235; /* #2563EB bright blue (v2.1), primary actions */
+    --on-brand: 253 253 251; /* #FDFDFB */
+    --brand-container: 29 78 216; /* #1D4ED8 deeper blue, hover/pressed */
+    --brand-fixed: 225 234 255; /* #E1EAFF light blue tint */
+    --success: 31 122 77; /* #1F7A4D */
+    --success-fixed: 227 242 234; /* #E3F2EA */
+    --danger: 180 35 24; /* #B42318 */
+    --danger-fixed: 251 231 230; /* #FBE7E6 */
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -92,5 +131,126 @@
   }
   html.ms-loaded .material-symbols-outlined {
     visibility: visible;
+  }
+}
+
+/*
+ * Long-form blog article body (app/(marketing)/blog/[slug]). The HTML comes
+ * from Markdown (lib/blog/parse.ts), so it is styled by element here.
+ * Tokens only; rounded public-site variant (DESIGN.md §11).
+ */
+/*
+ * PUBLIC-SITE THEME (app/(marketing) layout + the mobile menu portal).
+ * Product owner, 2026-10-23: sky blue #009DFF is the public brand, used ONLY
+ * for primary CTAs and key highlights; black/charcoal for text and everything
+ * else. `brand` = #009DFF for fills (buttons, badges, banner);
+ * `brand-container` = #0077C8, the deeper shade for blue TEXT, links and focus
+ * rings (#009DFF text on white is only 2.7:1). The dashboard and auth pages
+ * keep the global :root brand.
+ */
+.theme-public {
+  --brand: 0 157 255; /* #009DFF sky blue (fills) */
+  --brand-container: 0 119 200; /* #0077C8 blue text, links, focus, hover */
+  --brand-fixed: 229 245 255; /* #E5F5FF light sky tint */
+  --ring: 204.3 100% 39.2%; /* = brand-container */
+  --accent: 203.1 100% 94.9%; /* = brand-fixed */
+}
+
+/*
+ * Hero rotating word (CSS only, no JS): cycles through 6 items and lands on a
+ * duplicate of the first so the loop is seamless. Each item is 1.15em tall
+ * (matches `h-[1.15em]` on the rotator window). Static for reduced motion.
+ */
+@keyframes word-rotate {
+  0%, 13% { transform: translateY(0); }
+  16.66%, 29.66% { transform: translateY(-1.15em); }
+  33.33%, 46.33% { transform: translateY(-2.3em); }
+  50%, 63% { transform: translateY(-3.45em); }
+  66.66%, 79.66% { transform: translateY(-4.6em); }
+  83.33%, 96.33% { transform: translateY(-5.75em); }
+  100% { transform: translateY(-6.9em); }
+}
+.word-rotator {
+  animation: word-rotate 12s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .word-rotator {
+    animation: none;
+  }
+}
+
+@layer components {
+  .article-body {
+    @apply max-w-[70ch] font-body text-[1.0625rem] leading-relaxed text-on-surface;
+  }
+  .article-body > * + * {
+    @apply mt-5;
+  }
+  .article-body h2 {
+    @apply mt-12 scroll-mt-24 font-headline text-2xl font-bold leading-tight tracking-tight text-on-surface sm:text-3xl;
+  }
+  .article-body h3 {
+    @apply mt-8 scroll-mt-24 font-headline text-xl font-bold leading-snug tracking-tight text-on-surface;
+  }
+  .article-body h2 + *,
+  .article-body h3 + * {
+    @apply mt-3;
+  }
+  .article-body a {
+    @apply rounded-sm font-medium text-brand-container underline decoration-brand/50 decoration-2 underline-offset-4 transition-colors hover:decoration-brand-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-container;
+  }
+  .article-body strong {
+    @apply font-semibold text-on-surface;
+  }
+  .article-body ul,
+  .article-body ol {
+    @apply flex flex-col gap-2 pl-6;
+  }
+  .article-body ul {
+    @apply list-disc;
+  }
+  .article-body ol {
+    @apply list-decimal;
+  }
+  .article-body li::marker {
+    @apply text-on-surface-variant;
+  }
+  .article-body li > ul,
+  .article-body li > ol {
+    @apply mt-2;
+  }
+  .article-body blockquote {
+    @apply rounded-xl border-l-4 border-brand bg-surface-low px-5 py-4 text-on-surface-variant;
+  }
+  .article-body code {
+    @apply rounded-md bg-surface-container px-1.5 py-0.5 font-mono text-[0.9em];
+  }
+  .article-body pre {
+    @apply overflow-x-auto rounded-xl bg-surface-container p-4 text-sm;
+  }
+  .article-body pre code {
+    @apply bg-transparent p-0;
+  }
+  .article-body hr {
+    @apply my-10 border-outline-variant;
+  }
+  .article-body img {
+    @apply rounded-2xl;
+  }
+  /* Wide tables scroll inside a focusable region on small screens. */
+  .article-body .table-scroll {
+    @apply max-w-full overflow-x-auto rounded-xl border border-outline-variant bg-surface-lowest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand;
+  }
+  .article-body table {
+    @apply w-full min-w-[32rem] border-collapse text-left text-[0.9375rem];
+  }
+  .article-body thead {
+    @apply bg-surface-container;
+  }
+  .article-body th {
+    @apply px-4 py-3 font-headline font-semibold text-on-surface;
+  }
+  .article-body td {
+    @apply border-t border-outline-variant px-4 py-3 align-top text-on-surface;
   }
 }
