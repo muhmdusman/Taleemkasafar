@@ -93,4 +93,4 @@ Full-length timed PU mock tests are coming soon (they are live for NET today). U
 
 Use the [Punjab University merit calculator](/merit-calculator/punjab-university) to see how your academics and test score combine, or compare with the [QAU merit calculator](/merit-calculator/qau). For a wider view, open the full [merit calculator](/merit-calculator) or read [how university merit is calculated in Pakistan](/blog/how-university-merit-is-calculated-in-pakistan).
 
-[Start your free Taleem ka Safar trial](/auth/sign-up) and start your first PU practice set this week.
+[Create your free Taleem ka Safar account](/auth/sign-up) (free for students) and start your first PU practice set this week.

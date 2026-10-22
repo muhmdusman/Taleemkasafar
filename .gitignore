@@ -30,6 +30,10 @@
 
 # local AI-agent working memory (per-machine scratchpad; global context is committed)
 /.kiro/context/local/
+# per-run workflow artifacts (verification notes, review docs)
+/.agents/
+# competitor reference page (design inspiration only; never commit third-party content)
+/Parhlai _ Entry Test Prep in Pakistan.html
 
 # local scratch notes & pasted reference screenshots (not part of the app)
 /ux-issues.md
@@ -51,3 +55,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# My Skills: begin
+.agents/skills/caveman-help
+# .agents/skills/caveman
+# My Skills: end

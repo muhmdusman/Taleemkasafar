@@ -108,4 +108,4 @@ The [Taleem ka Safar merit calculator](/merit-calculator) covers 18 institutions
 
 For test-specific advice, read our [NUST NET preparation guide](/blog/nust-net-preparation-guide) or the [Punjab University entry test guide](/blog/punjab-university-entry-test-guide).
 
-Once you know which part of your aggregate you can still move, put your hours there. [Start your free Taleem ka Safar trial](/auth/sign-up) to practise NET and PU MCQs with explanations and take timed NET mock tests (PU mocks are coming soon).
+Once you know which part of your aggregate you can still move, put your hours there. [Create your free Taleem ka Safar account](/auth/sign-up) (free for students) to practise NET and PU MCQs with explanations and take timed NET mock tests (PU mocks are coming soon).

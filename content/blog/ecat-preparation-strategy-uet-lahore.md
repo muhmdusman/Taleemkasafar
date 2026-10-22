@@ -102,4 +102,4 @@ ECAT practice on Taleem ka Safar is coming soon. If you are also sitting NET or 
 
 Try different ECAT and FSc scores in the [UET Lahore merit calculator](/merit-calculator/uet-lahore) to see which one moves your aggregate more. To compare UET with other universities, open the full [merit calculator](/merit-calculator) or read [how university merit is calculated in Pakistan](/blog/how-university-merit-is-calculated-in-pakistan).
 
-[Sign up for a free Taleem ka Safar trial](/auth/sign-up) to start practising, and keep an eye out for ECAT practice when it launches.
+[Create your free Taleem ka Safar account](/auth/sign-up) (free for students) to start practising, and keep an eye out for ECAT practice when it launches.

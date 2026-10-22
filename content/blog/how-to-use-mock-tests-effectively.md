@@ -101,4 +101,4 @@ Mocks are tiring, and more is not always better.
 
 Pick your target test and build your mock schedule around it. Our [NUST NET preparation guide](/blog/nust-net-preparation-guide) has a week-by-week plan, and the [Punjab University entry test guide](/blog/punjab-university-entry-test-guide) includes a four-week rhythm. Preparing for medicine? Read the [MDCAT preparation and merit guide](/blog/mdcat-preparation-and-merit-guide). To see how much a better test score could lift your aggregate, try the [NUST merit calculator](/merit-calculator/nust) or browse all institutions in the [merit calculator](/merit-calculator).
 
-[Start your free Taleem ka Safar trial](/auth/sign-up) to take a timed NET mock test, then practise your weak chapters with explanations. PU mock tests are coming soon; PU practice MCQs and past papers are live now.
+[Create your free Taleem ka Safar account](/auth/sign-up) (free for students) to take a timed NET mock test, then practise your weak chapters with explanations. PU mock tests are coming soon; PU practice MCQs and past papers are live now.
