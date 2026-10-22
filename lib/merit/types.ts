@@ -59,7 +59,7 @@ export type MeritComponent = {
   notes?: string[];
 };
 
-/** Machine-readable reasons a formula needs human review. See NOTES.md. */
+/** Machine-readable reasons a formula needs human review. See docs/NOTES.md. */
 export type ReviewCode =
   /** The PDF never states the admission year/session a formula applies to. */
   | "year-not-stated"

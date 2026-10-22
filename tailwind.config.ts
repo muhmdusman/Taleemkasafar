@@ -18,7 +18,7 @@ export default {
         sans: ["var(--font-inter)", "sans-serif"],
       },
       colors: {
-        // --- Soft Brutalism design-system palette (see DESIGN.md §2-3) ---
+        // --- Soft Brutalism design-system palette (see .kiro/context/DESIGN.md §2-3) ---
         // Values are RGB-channel CSS variables in app/globals.css, so a palette
         // swap is a globals.css edit and opacity modifiers (`/50`) still work.
         ink: "rgb(var(--ink) / <alpha-value>)",

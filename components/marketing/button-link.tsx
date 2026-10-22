@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /**
- * Public-site button styles (DESIGN.md §11: rounded-xl, tokens only, brand
+ * Public-site button styles (.kiro/context/DESIGN.md §11: rounded-xl, tokens only, brand
  * focus ring). Use `ButtonLink` for navigation and `marketingButton()` for
  * <button>s. The dashboard keeps the Soft Brutalism buttons.
  */

@@ -39,13 +39,13 @@
     --radius: 0.5rem;
 
     /*
-     * Soft Brutalism palette tokens (DESIGN.md §3). RGB channels, space
+     * Soft Brutalism palette tokens (.kiro/context/DESIGN.md §3). RGB channels, space
      * separated, consumed in tailwind.config.ts as
      * `rgb(var(--token) / <alpha-value>)`. Components must use the token
      * classes (bg-ink, text-on-surface, ...), never raw colors.
      *
      * v2 "Calm Edition" (applied 2026-10-22): charcoal + paper neutrals and a
-     * softened blue. v1 values are kept in DESIGN.md §3 for history.
+     * softened blue. v1 values are kept in .kiro/context/DESIGN.md §3 for history.
      * Swapping the palette = editing this block (+ the shadcn mirror above).
      */
     --ink: 43 48 56; /* #2B3038 lighter charcoal (v2.1) */
@@ -137,7 +137,7 @@
 /*
  * Long-form blog article body (app/(marketing)/blog/[slug]). The HTML comes
  * from Markdown (lib/blog/parse.ts), so it is styled by element here.
- * Tokens only; rounded public-site variant (DESIGN.md §11).
+ * Tokens only; rounded public-site variant (.kiro/context/DESIGN.md §11).
  */
 /*
  * PUBLIC-SITE THEME (app/(marketing) layout + the mobile menu portal).

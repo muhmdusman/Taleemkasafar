@@ -50,8 +50,8 @@ lib/
   utils.ts            cn() + hasEnvVars helpers
   database.types.ts   generated DB types (after schema changes)
 public/blog/covers/   Blog cover SVGs (<slug>.svg, 1200x630)
-DESIGN.md             Design system source of truth (palette, tokens)
-NOTES.md              Merit PDF inconsistencies for owner review
+docs/                 LOCAL-ONLY notes (gitignored): NOTES.md (merit review), DATA_ACCESS_PATTERNS.md, ux-issues.md
+mcq_csv/              LOCAL-ONLY raw MCQ CSVs (gitignored)
 mcqs/                 Source MCQ data (CSV/JSON) + data-prep + import scripts. GITIGNORED.
 supabase/             Local Supabase project (version-controlled DB)
   config.toml         project config
@@ -60,7 +60,9 @@ proxy.ts              Next.js middleware entry → session refresh + route guard
 .kiro/
   steering/           AI agent guidance (product, tech, structure, workflow)
   skills/             installed agent skills (supabase, react, design, next)
-  context/            project memory / decision log for AI agents
+  context/            project memory / decision log for AI agents, plus
+                      DESIGN.md (design system source of truth) and
+                      PROJECT_MAP.md (what lives where)
   specs/              feature specs (design/requirements/tasks)
   settings/mcp.json   MCP server config (Supabase)
 ```

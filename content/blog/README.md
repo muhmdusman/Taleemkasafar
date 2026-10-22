@@ -47,7 +47,7 @@ Frontmatter is YAML only; JavaScript frontmatter is never evaluated.
 ## Cover images
 
 - `public/blog/covers/<slug>.svg`, 1200×630, using the brand palette (see
-  `DESIGN.md`). Give it a `<title>`. Use no external fonts or images.
+  `.kiro/context/DESIGN.md`). Give it a `<title>`. Use no external fonts or images.
 - Covers appear on cards and the post page. Social cards (Open Graph and
   Twitter) don't use them: they're PNGs generated per post by
   `app/blog/[slug]/opengraph-image.tsx` and `app/blog/[slug]/twitter-image.tsx`.

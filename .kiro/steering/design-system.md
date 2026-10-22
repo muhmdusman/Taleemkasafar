@@ -1,7 +1,7 @@
 # Design System — "Soft Brutalism, Calm Edition"
 
 ALWAYS follow this when building or reviewing UI. Source of truth:
-**`DESIGN.md` (repo root, committed)** — palette, contrast targets, components.
+**`.kiro/context/DESIGN.md` (committed)** — palette, contrast targets, components.
 Layout references: `ui_design/<screen>/screen.png` + `code.html` (gitignored,
 desktop + mobile variants). Port to React/Next components — never copy raw HTML.
 
@@ -11,7 +11,7 @@ desktop + mobile variants). Port to React/Next components — never copy raw HTM
   `white`, Tailwind palette colors (`red-500`), or hex/arbitrary values. Token
   values live as CSS variables in `app/globals.css`; palette changes happen there.
 - **Calm palette**: no pure #000 / #fff. Students read for hours; keep body
-  text contrast high (≥12:1) but below max glare. Targets in `DESIGN.md` §3.
+  text contrast high (≥12:1) but below max glare. Targets in `.kiro/context/DESIGN.md` §3.
 - **0px border-radius** everywhere (buttons, cards, inputs). Exception: `rounded-full`
   only for pills/avatars if explicitly needed.
 - **2px solid borders in `ink`** (`border-2 border-ink`) on interactive elements
@@ -46,8 +46,8 @@ The public website (landing, merit calculator, blog, contact, academies) uses a
 - The dashboard keeps Soft Brutalism until the dashboard UI/UX phase decides.
 
 ## Colors
-See `DESIGN.md` §3 for the token table (v2 calm palette applied 2026-10-22;
-v1 kept for history). Public-site rounded variant: `DESIGN.md` §11.
+See `.kiro/context/DESIGN.md` §3 for the token table (v2 calm palette applied 2026-10-22;
+v1 kept for history). Public-site rounded variant: `.kiro/context/DESIGN.md` §11.
 Palette is charcoal/paper neutrals + one blue accent; `success`/`danger` only
 for status and quiz feedback.
 

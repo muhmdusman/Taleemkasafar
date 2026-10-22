@@ -34,6 +34,9 @@
 /.agents/
 # competitor reference page (design inspiration only; never commit third-party content)
 /Parhlai _ Entry Test Prep in Pakistan.html
+# local-only docs/notes (merit review notes, audits, UX scratch) and raw MCQ CSVs
+/docs/
+/mcq_csv/
 
 # local scratch notes & pasted reference screenshots (not part of the app)
 /ux-issues.md

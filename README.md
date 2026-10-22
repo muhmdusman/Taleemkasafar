@@ -5,7 +5,7 @@ An entry-test preparation platform. Students choose an entry test (starting with
 timed mock tests, and performance analytics.
 
 > Built AI-agents-first: see `.kiro/` for the agent steering, skills, and memory
-> that drive development. New here? Read **`PROJECT_MAP.md`** for a "what lives
+> that drive development. New here? Read **`.kiro/context/PROJECT_MAP.md`** for a "what lives
 > where" tour of the codebase.
 
 ---
@@ -43,7 +43,7 @@ ui_design/      Reference mockups + the design system spec
 .kiro/          AI agent steering, skills, context/memory, specs
 ```
 
-Full file-by-file map: **`PROJECT_MAP.md`**.
+Full file-by-file map: **`.kiro/context/PROJECT_MAP.md`**.
 Schema design: **`.kiro/specs/mcq-platform-schema/design.md`**.
 
 ## Getting started (local)

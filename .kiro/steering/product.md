@@ -25,7 +25,7 @@ Dashboard MVP is live at `entrytest.taleemkasafar.com`: auth (email + Google),
 NET + 8 PU entry tests, practice/past-paper, mock tests, performance analytics.
 
 ## Roadmap (in order)
-1. **Calm palette** — soften colors for long sessions (see `DESIGN.md`).
+1. **Calm palette** — soften colors for long sessions (see `.kiro/context/DESIGN.md`).
 2. **Landing page** in this same Next.js project; move the app from
    `entrytest.taleemkasafar.com` to the apex `taleemkasafar.com` (301 old host).
 3. **Dashboard UI/UX fixes** (user-reported, iterative).
@@ -38,7 +38,7 @@ NET + 8 PU entry tests, practice/past-paper, mock tests, performance analytics.
 - **SEO is a first-class requirement** on every public page: metadata API,
   canonical URLs on `taleemkasafar.com`, sitemap/robots, structured data,
   fast static rendering. Public pages must not depend on cookies.
-- **Agents-first development**: every change keeps steering, `DESIGN.md`, and
+- **Agents-first development**: every change keeps steering, `.kiro/context/DESIGN.md`, and
   `.kiro/context/` memory current so any agent session can pick up cheaply.
 - Keep the Soft Brutalism brand; reduce visual harshness, not personality.
 

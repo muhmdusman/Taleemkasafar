@@ -5,7 +5,7 @@
  * Guide" (PDF, 11 pages, repo root). Every number below comes from that PDF;
  * nothing is filled in from memory or third-party sites. Each record lists the
  * PDF page(s) it came from. Anything unclear/inconsistent is flagged via
- * `reviewFlags` (=> `needsReview: true`) and explained in NOTES.md.
+ * `reviewFlags` (=> `needsReview: true`) and explained in docs/NOTES.md.
  *
  * Page map of the PDF:
  *   p1-2  Master Summary Comparison Table (weightages)
@@ -930,7 +930,7 @@ const universities: University[] = [
  * IBCC O/A-Level grade equivalence table (PDF p9). Reference data only: the
  * PDF does not define how grades are aggregated (it only says "top 8 subjects"
  * for O-Level and "3 main elective subjects" for A-Level), so no converter is
- * wired into the calculator. See NOTES.md.
+ * wired into the calculator. See docs/NOTES.md.
  */
 export const IBCC_GRADE_EQUIVALENCE: readonly GradeEquivalence[] = [
   { grade: "A*", percent: 90 },
