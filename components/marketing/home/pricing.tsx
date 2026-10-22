@@ -40,10 +40,9 @@ export function Pricing() {
             <li
               key={plan.id}
               className={cn(
-                "relative flex flex-col rounded-2xl bg-surface-lowest p-6 sm:p-8",
-                plan.highlighted
-                  ? "border-2 border-ink shadow-soft-lg"
-                  : "border border-outline-variant shadow-soft",
+                // Brutalist cards (2px border + hard offset shadow), softened corners.
+                "relative flex flex-col rounded-xl border-2 bg-surface-lowest p-6 sm:p-8",
+                plan.highlighted ? "border-brand shadow-hard-primary" : "border-ink shadow-hard",
               )}
             >
               {plan.highlighted ? (

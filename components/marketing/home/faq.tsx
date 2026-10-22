@@ -1,5 +1,5 @@
 import { homeFaq } from "@/config/faq";
-import { Container, SectionHeading } from "@/components/marketing/container";
+import { Container } from "@/components/marketing/container";
 import { FaqList } from "@/components/marketing/faq-list";
 import { JsonLd, faqPageJsonLd } from "@/components/seo/json-ld";
 
@@ -11,14 +11,19 @@ export function Faq() {
   return (
     <section aria-labelledby="faq-heading" className="py-16 md:py-24">
       <JsonLd data={faqPageJsonLd(homeFaq)} />
-      {/* Heading on top, questions full width below (user layout request). */}
+      {/* Centered heading on top, questions full width below (owner layout request). */}
       <Container className="flex flex-col gap-10">
-        <SectionHeading
-          id="faq-heading"
-          eyebrow="FAQ"
-          title="Questions students ask us"
-          description="Can't find your answer? Reach out through the contact page."
-        />
+        <div className="mx-auto max-w-2xl text-center">
+          <h2
+            id="faq-heading"
+            className="font-headline text-3xl font-bold tracking-tight text-on-surface sm:text-4xl"
+          >
+            Questions students ask us
+          </h2>
+          <p className="mt-4 text-lg leading-relaxed text-on-surface-variant">
+            Can&apos;t find your answer? Reach out through the contact page.
+          </p>
+        </div>
         <FaqList items={homeFaq} />
       </Container>
     </section>

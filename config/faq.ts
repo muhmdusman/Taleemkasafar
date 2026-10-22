@@ -41,6 +41,12 @@ export const academiesFaq: FaqItem[] = [
 
 export const homeFaq: FaqItem[] = [
   {
+    // Neutral comparison: no claims about other platforms, only what we do.
+    id: "why-taleem-ka-safar",
+    question: "Why Taleem ka Safar when Maqsad, Chaajao and other platforms already exist?",
+    answer: `Those platforms cover a lot of school and exam content. Taleem ka Safar is built only for university entry tests, by students and teachers who have been through them. It is free for students (never more than Rs ${PRICE_CAP_PKR} if a fee is ever added), every wrong answer comes with an explanation, and there are no ads while you practise.`,
+  },
+  {
     id: "tests-covered",
     question: "Which entry tests can I prepare for?",
     answer: TESTS_ANSWER,
@@ -48,7 +54,19 @@ export const homeFaq: FaqItem[] = [
   {
     id: "is-it-free",
     question: "Is Taleem ka Safar really free for students?",
-    answer: `Yes. Taleem ka Safar is built for students, by students and teachers, and it is free for students. No credit card or payment method is needed. If we ever add a fee, it will never be more than Rs ${PRICE_CAP_PKR}, only to cover technical costs and keep the experience smooth.`,
+    answer: `Yes. Taleem ka Safar is built for students, by students and teachers, and it is free for students. Good preparation should not depend on your city, school or family income, so every student in Pakistan gets the same quality content. No credit card or payment method is needed. If we ever add a fee, it will never be more than Rs ${PRICE_CAP_PKR}, only to cover technical costs and keep the experience smooth.`,
+  },
+  {
+    id: "ads",
+    question: "Will I see ads while I practise?",
+    answer:
+      "No. There are no pop-ups or banner ads in the middle of a question, so your attention stays on preparing.",
+  },
+  {
+    id: "seniors",
+    question: "Can I get guidance from seniors at my dream university?",
+    answer:
+      "This is coming soon. If no cousin or elder sibling studies where you want to go, you will be able to connect with university seniors who already got admission and ask them what really works.",
   },
   {
     id: "mock-tests",

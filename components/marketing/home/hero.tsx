@@ -14,38 +14,39 @@ const testList = `${shortNames.slice(0, -1).join(", ")} and ${shortNames.at(-1)}
  * Words cycled in the headline (CSS animation `word-rotator` in globals.css,
  * tuned for exactly 6 items + a trailing duplicate of the first).
  */
-const ROTATING = ["Entry-Test", "NET", "FAST", "PU", "UET", "NAT"];
-
-const HIGHLIGHTS = [studentOffer.short, "Explanation for every wrong answer", "No ads"];
+const ROTATING = ["Entry Tests,", "NET,", "FAST,", "PU,", "UET,", "NAT,"];
 
 export function Hero() {
   return (
     <section aria-labelledby="hero-heading" className="overflow-hidden">
       <Container className="grid items-center gap-12 py-14 md:py-20 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:py-24">
         <div className="max-w-2xl">
-          <p className="inline-flex items-center rounded-full bg-brand px-4 py-1.5 font-headline text-sm font-semibold tracking-tight text-on-brand">
+          <p className="inline-flex items-center gap-2 rounded-full border border-outline-variant bg-surface-lowest px-4 py-1.5 font-headline text-sm font-semibold tracking-tight text-on-surface shadow-soft">
+            <span className="size-2 rounded-full bg-brand" aria-hidden="true" />
             {studentOffer.tagline}
           </p>
           <h1
             id="hero-heading"
-            className="mt-6 font-headline text-4xl font-bold leading-[1.1] tracking-tight text-on-surface sm:text-5xl lg:text-6xl"
+            className="mt-6 font-headline text-5xl font-bold leading-[1.15] tracking-tighter text-on-surface [-webkit-text-stroke:0.012em_currentColor] sm:text-6xl lg:text-7xl"
           >
             {/* Full sentence for search engines and screen readers. */}
             <span className="sr-only">
-              Making Quality Entry-Test Preparation Accessible to Everyone: {testList}
+              Your Entry Tests, Finally Simplified: entry test preparation for {testList}
             </span>
             <span aria-hidden="true" className="block">
-              Making Quality
-              <span className="block h-[1.15em] overflow-hidden text-brand-container">
-                <span className="word-rotator flex flex-col">
-                  {[...ROTATING, ROTATING[0]].map((word, i) => (
-                    <span key={`${word}-${i}`} className="block h-[1.15em] leading-[1.15]">
-                      {word}
-                    </span>
-                  ))}
+              <span className="flex flex-wrap gap-x-[0.25em]">
+                <span>Your</span>
+                <span className="inline-block h-[1.15em] overflow-hidden text-brand">
+                  <span className="word-rotator flex flex-col">
+                    {[...ROTATING, ROTATING[0]].map((word, i) => (
+                      <span key={`${word}-${i}`} className="block h-[1.15em] whitespace-nowrap leading-[1.15]">
+                        {word}
+                      </span>
+                    ))}
+                  </span>
                 </span>
               </span>
-              Preparation Accessible to Everyone.
+              <span className="block">Finally Simplified.</span>
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-on-surface-variant">
@@ -64,14 +65,6 @@ export function Hero() {
               Try the merit calculator
             </ButtonLink>
           </div>
-          <ul className="mt-8 flex flex-col gap-2 text-sm font-medium text-on-surface sm:flex-row sm:flex-wrap sm:gap-x-6">
-            {HIGHLIGHTS.map((h) => (
-              <li key={h} className="flex items-center gap-2">
-                <CheckCircle2 className="size-4 text-brand-container" aria-hidden="true" />
-                {h}
-              </li>
-            ))}
-          </ul>
         </div>
 
         <HeroVisual />

@@ -464,3 +464,23 @@ paper surfaces, and a less saturated blue. Targets: body text ≥12:1, muted
 - New "Why Taleem ka Safar" pain-points section: free/affordable for every
   student, senior guidance (labelled COMING SOON: not built yet), no ads.
 - Inner-page banners: plain white "Taleemkasafar" wordmark, lighter sky blue.
+
+
+## 2026-10-23 (c) — Public palette v3 + landing tweaks (supersedes the #009DFF trial)
+
+- `.theme-public` palette: brand #296FBB (white text 5.1:1, passes AA), hover
+  #1F5A9C, tint #EAF2FB; white backgrounds; solid black text (#000); charcoal
+  #2B2F36 (light black) ONLY for dark banners/posters, brutalist borders and
+  hard shadows; muted text #52525B.
+- Hero h1: "Your [Entry Tests, | NET, | FAST, | PU, | UET, | NAT,] Finally
+  Simplified." (rotating, bolder via size + subtle text-stroke since Space
+  Grotesk tops out at 700). White tagline bubble with a blue dot. Check-list
+  under the CTAs removed.
+- "Why Taleem ka Safar" section paused (component kept at
+  components/marketing/home/pain-points.tsx); its points moved into the home
+  FAQ, incl. a neutral "Why us when Maqsad, Chaajao ... exist?" answer that
+  makes no claims about other platforms.
+- FAQ heading centered, no eyebrow. How-it-works: blue step numbers, blue
+  connectors between cards, light-blue 2px borders. Pricing plan cards back to
+  brutalist 2px border + hard shadow with rounded-xl corners. Final CTA banner:
+  charcoal with dot pattern + rings.

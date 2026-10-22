@@ -9,6 +9,19 @@ export function FinalCta() {
     <section aria-labelledby="cta-heading" className="pb-16 md:pb-24">
       <Container>
         <div className="relative overflow-hidden rounded-2xl bg-ink p-8 text-on-ink shadow-soft-lg sm:p-12">
+          {/* Decorative pattern: dot grid + rings (tokens only). */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgb(var(--on-ink)/0.09)_1.5px,transparent_1.5px)] bg-[length:22px_22px]"
+          />
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-20 -right-16 hidden size-72 rounded-full border-[28px] border-brand/50 md:block"
+          />
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-6 -top-14 hidden size-40 rounded-full border-2 border-on-ink/15 md:block"
+          />
           <div className="relative max-w-2xl">
             <p className="font-headline text-sm font-semibold uppercase tracking-widest text-on-ink/70">
               {studentOffer.tagline}

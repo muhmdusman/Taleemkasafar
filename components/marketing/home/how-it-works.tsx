@@ -1,3 +1,4 @@
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { Container, SectionHeading } from "@/components/marketing/container";
 
 const STEPS = [
@@ -34,14 +35,33 @@ export function HowItWorks() {
           eyebrow="How it works"
           title="From sign-up to test day in four steps"
         />
-        <ol className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-12 grid gap-8 lg:grid-cols-4">
           {STEPS.map((step, i) => (
             <li
               key={step.title}
-              className="relative rounded-2xl border border-outline-variant bg-surface-lowest p-6 shadow-soft"
+              className="relative rounded-xl border-2 border-brand/30 bg-surface-lowest p-6 shadow-soft"
             >
+              {/* Progress connector to the next step: down on mobile, right on desktop. */}
+              {i < STEPS.length - 1 ? (
+                <>
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-[42px] top-full flex h-8 flex-col items-center lg:hidden"
+                  >
+                    <span className="w-0.5 flex-1 bg-brand" />
+                    <ChevronDown className="-mt-1.5 size-4 text-brand" />
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-full top-[36px] hidden w-8 items-center lg:flex"
+                  >
+                    <span className="h-0.5 flex-1 bg-brand" />
+                    <ChevronRight className="-ml-1.5 size-4 text-brand" />
+                  </span>
+                </>
+              ) : null}
               <span
-                className="flex size-10 items-center justify-center rounded-full bg-ink font-headline text-base font-bold text-on-ink"
+                className="flex size-10 items-center justify-center rounded-full bg-brand font-headline text-base font-bold text-on-brand"
                 aria-hidden="true"
               >
                 {i + 1}

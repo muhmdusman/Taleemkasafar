@@ -31,14 +31,13 @@ The public website (landing, merit calculator, blog, contact, academies) uses a
   (subtle, tokenized), gentle hover lift. Emphasis cards (featured pricing,
   final CTA) may use a 2px `ink`/`brand` border + `shadow-hard` as a brand accent.
 - Same color tokens, same fonts (Space Grotesk headlines, Inter body), lucide icons.
-- **Sky blue #009DFF is the public brand** (scoped via `.theme-public` in
-  app/globals.css). Use blue ONLY for the main CTA of a section and key
-  highlights (tagline bubble, the one highlighted offer, icon tiles, banners).
-  Everything else is black/charcoal text on white/paper. NO blue hover
-  effects, no blue dropdown icons, no blue section washes or gradients on
-  cards. Hover = same element slightly deeper/neutral, nothing decorative.
-- Blue TEXT, links and focus rings use `brand-container` (#0077C8); `brand`
-  (#009DFF) is too light for text on white (2.7:1).
+- **Public palette (`.theme-public` in app/globals.css): blue #296FBB,
+  white backgrounds, solid black text, charcoal #2B2F36 only for dark
+  banners/posters.** Use blue ONLY for the main CTA of a section and key
+  highlights (the one highlighted offer, icon tiles, step markers, banners).
+  NO blue hover effects, no blue dropdown icons, no blue washes or gradients
+  on cards. Hover = same element slightly deeper/neutral, nothing decorative.
+- Pricing cards use brutalist 2px borders + hard shadows with `rounded-xl`.
 - Inner pages start with `PageHeader`: sky-blue banner, big white
   "Taleemkasafar" wordmark + h1.
 - CTAs that should change for signed-in visitors use `AuthAwareButton`

@@ -141,24 +141,41 @@
  */
 /*
  * PUBLIC-SITE THEME (app/(marketing) layout + the mobile menu portal).
- * Product owner, 2026-10-23: sky blue #009DFF is the public brand, used ONLY
- * for primary CTAs and key highlights; black/charcoal for text and everything
- * else. `brand` = #009DFF for fills (buttons, badges, banner);
- * `brand-container` = #0077C8, the deeper shade for blue TEXT, links and focus
- * rings (#009DFF text on white is only 2.7:1). The dashboard and auth pages
- * keep the global :root brand.
+ * Product owner, 2026-10-23 (v3): blue #296FBB, used ONLY for primary CTAs and
+ * key highlights; white backgrounds; solid black text; charcoal (#2B2F36,
+ * a light black) only where a dark banner/poster is needed, plus brutalist
+ * borders and hard shadows. White on #296FBB is 5.1:1 (passes WCAG AA).
+ * The dashboard and auth pages keep :root.
  */
 .theme-public {
-  --brand: 0 157 255; /* #009DFF sky blue (fills) */
-  --brand-container: 0 119 200; /* #0077C8 blue text, links, focus, hover */
-  --brand-fixed: 229 245 255; /* #E5F5FF light sky tint */
-  --ring: 204.3 100% 39.2%; /* = brand-container */
-  --accent: 203.1 100% 94.9%; /* = brand-fixed */
+  --brand: 41 111 187; /* #296FBB primary blue */
+  --brand-container: 31 90 156; /* #1F5A9C hover / pressed */
+  --brand-fixed: 234 242 251; /* #EAF2FB light blue tint */
+  --on-brand: 255 255 255; /* #FFFFFF */
+  --ink: 43 47 54; /* #2B2F36 charcoal: dark banners/posters, borders, hard shadows */
+  --on-ink: 255 255 255; /* #FFFFFF */
+  --surface: 255 255 255; /* #FFFFFF page background */
+  --surface-lowest: 255 255 255; /* #FFFFFF cards */
+  --surface-low: 246 247 249; /* #F6F7F9 alternate sections */
+  --surface-container: 238 239 242; /* #EEEFF2 */
+  --surface-high: 228 228 231; /* #E4E4E7 progress tracks */
+  --on-surface: 0 0 0; /* #000000 solid black text */
+  --on-surface-variant: 82 82 91; /* #52525B muted text (7.7:1 on white) */
+  --outline: 138 143 152; /* #8A8F98 */
+  --outline-variant: 228 228 231; /* #E4E4E7 hairline card borders */
+  /* shadcn mirrors */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --primary: 218.2 11.3% 19%; /* = ink */
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 211.2 64% 44.7%; /* = brand */
+  --accent: 211.8 68% 95.1%; /* = brand-fixed */
 }
 
 /*
- * Hero rotating word (CSS only, no JS): cycles through 6 items and lands on a
- * duplicate of the first so the loop is seamless. Each item is 1.15em tall
+ * Hero rotating words (CSS only, no JS): cycles through 6 items and lands on
+ * a duplicate of the first so the loop is seamless. Each item is 1.15em tall
  * (matches `h-[1.15em]` on the rotator window). Static for reduced motion.
  */
 @keyframes word-rotate {
