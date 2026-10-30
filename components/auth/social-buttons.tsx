@@ -1,8 +1,12 @@
 "use client";
 
+import { Terminal } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { appButton } from "@/components/dashboard/styles";
 import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { FormError } from "./auth-ui";
 
 /**
  * Social sign-in row (Google + GitHub). Google is wired via Supabase OAuth;
@@ -37,14 +41,14 @@ export function SocialButtons({ next = routes.dashboard }: { next?: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
           onClick={handleGoogle}
           disabled={isLoading}
-          className="flex items-center justify-center gap-2 border-2 border-ink bg-surface-lowest p-3 font-headline text-sm font-bold uppercase tracking-tight transition-all hover:-translate-y-[2px] hover:shadow-hard disabled:opacity-60"
+          className={cn(appButton({ variant: "secondary" }), "w-full")}
         >
-          <svg className="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24">
+          <svg className="size-5" aria-hidden="true" viewBox="0 0 24 24">
             <path
               fill="#4285F4"
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -62,19 +66,21 @@ export function SocialButtons({ next = routes.dashboard }: { next?: string }) {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          Google
+          {isLoading ? "Opening…" : "Google"}
         </button>
         <button
           type="button"
           disabled
-          title="Coming soon"
-          className="flex cursor-not-allowed items-center justify-center gap-2 border-2 border-ink bg-surface-lowest p-3 font-headline text-sm font-bold uppercase tracking-tight opacity-50"
+          className="flex h-11 w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-dashed border-outline-variant bg-surface-low font-headline text-sm font-semibold tracking-tight text-on-surface-variant"
         >
-          <span className="material-symbols-outlined text-lg">terminal</span>
+          <Terminal className="size-5" aria-hidden="true" />
           GitHub
+          <span className="rounded-full bg-surface-container px-2 py-0.5 text-[11px] font-semibold">
+            Soon
+          </span>
         </button>
       </div>
-      {error && <p className="text-sm font-medium text-danger">{error}</p>}
+      {error && <FormError>{error}</FormError>}
     </div>
   );
 }

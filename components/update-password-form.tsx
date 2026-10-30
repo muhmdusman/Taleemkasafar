@@ -2,16 +2,14 @@
 
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+  AuthCard,
+  AuthHeading,
+  FormError,
+  authLabel,
+} from "@/components/auth/auth-ui";
+import { PasswordInput } from "@/components/auth/password-input";
+import { appButton } from "@/components/dashboard/styles";
 import { routes } from "@/lib/routes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -45,35 +43,41 @@ export function UpdatePasswordForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-          <CardDescription>
-            Please enter your new password below.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleForgotPassword}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="password">New password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="New password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              {error && <p className="text-sm text-danger">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save new password"}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+      <AuthHeading
+        title="Choose a new password"
+        description="Please enter your new password below."
+      />
+      <AuthCard>
+        <form onSubmit={handleForgotPassword} className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="password" className={authLabel}>
+              New password
+            </label>
+            <PasswordInput
+              id="password"
+              autoComplete="new-password"
+              placeholder="At least 8 characters"
+              required
+              minLength={8}
+              aria-describedby="password-hint"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {/* Same rule as sign-up (app/auth/actions.ts). */}
+            <p id="password-hint" className="text-xs text-on-surface-variant">
+              Use at least 8 characters.
+            </p>
+          </div>
+          {error && <FormError>{error}</FormError>}
+          <button
+            type="submit"
+            className={cn(appButton({ size: "lg" }), "w-full")}
+            disabled={isLoading}
+          >
+            {isLoading ? "Saving…" : "Save new password"}
+          </button>
+        </form>
+      </AuthCard>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
+import { appButton } from "@/components/dashboard/styles";
 import { useRouter } from "next/navigation";
 
 export function LogoutButton() {
@@ -14,8 +15,9 @@ export function LogoutButton() {
 
   return (
     <button
+      type="button"
       onClick={logout}
-      className="border-2 border-ink bg-surface-lowest px-4 py-2 font-headline text-sm font-bold uppercase tracking-tight transition-all hover:bg-surface-container active:translate-x-[2px] active:translate-y-[2px]"
+      className={appButton({ variant: "secondary", size: "sm" })}
     >
       Logout
     </button>

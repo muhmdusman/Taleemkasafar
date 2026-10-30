@@ -1,127 +1,96 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
+import { ArrowRight } from "lucide-react";
 import { signInAction, type AuthState } from "@/app/auth/actions";
+import { appButton, focusRing } from "@/components/dashboard/styles";
+import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
+import { AuthCard, AuthHeading, FormError, OrDivider, authInput, authLabel } from "./auth-ui";
+import { PasswordInput } from "./password-input";
 import { SocialButtons } from "./social-buttons";
 
 const initialState: AuthState = { error: null };
 
+const textLink = cn(
+  "rounded font-semibold text-brand underline-offset-4 hover:text-brand-container hover:underline",
+  focusRing,
+);
+
 export function SignInForm() {
-  const [showPassword, setShowPassword] = useState(false);
   const [state, formAction, isPending] = useActionState(
     signInAction,
     initialState,
   );
 
-  const inputClass =
-    "w-full border-2 border-ink p-4 font-body text-on-surface transition-all placeholder:text-outline-variant focus:border-brand focus:shadow-hard-primary focus:outline-none";
-
   return (
-    <div className="flex w-full flex-col gap-8">
-      <div className="space-y-2">
-        <h1 className="font-headline text-5xl font-bold uppercase leading-none tracking-tighter text-on-surface md:text-6xl">
-          Sign In
-        </h1>
-        <p className="text-lg font-medium tracking-tight text-on-surface-variant">
-          Enter your credentials to access your dashboard.
-        </p>
-      </div>
+    <div className="flex w-full flex-col gap-6">
+      <AuthHeading
+        title="Sign in"
+        description="Welcome back. Pick up your preparation where you left off."
+      />
 
-      <div className="flex flex-col gap-6 border-2 border-ink bg-surface-lowest p-8 shadow-hard">
-        <form action={formAction} className="flex flex-col gap-6">
+      <AuthCard>
+        <form action={formAction} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <label
-              htmlFor="email"
-              className="font-headline text-sm font-bold uppercase tracking-wider text-on-surface"
-            >
-              Email Address
+            <label htmlFor="email" className={authLabel}>
+              Email address
             </label>
             <input
               id="email"
               name="email"
               type="email"
+              autoComplete="email"
+              inputMode="email"
+              spellCheck={false}
               required
               placeholder="you@example.com"
-              className={inputClass}
+              className={authInput}
             />
           </div>
 
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="font-headline text-sm font-bold uppercase tracking-wider text-on-surface"
-              >
+              <label htmlFor="password" className={authLabel}>
                 Password
               </label>
-              <Link
-                href="/auth/forgot-password"
-                className="text-xs font-bold uppercase text-brand hover:underline"
-              >
-                Forgot?
+              <Link href="/auth/forgot-password" className={cn(textLink, "text-sm")}>
+                Forgot password?
               </Link>
             </div>
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                placeholder="••••••••"
-                className={inputClass}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                <span className="material-symbols-outlined">
-                  {showPassword ? "visibility_off" : "visibility"}
-                </span>
-              </button>
-            </div>
+            <PasswordInput
+              id="password"
+              name="password"
+              autoComplete="current-password"
+              required
+              placeholder="Your password"
+            />
           </div>
 
-          {state.error && (
-            <p className="text-sm font-medium text-danger">{state.error}</p>
-          )}
+          {state.error && <FormError>{state.error}</FormError>}
 
           <button
             type="submit"
             disabled={isPending}
-            className="flex w-full items-center justify-center gap-3 border-2 border-ink bg-ink py-5 font-headline text-xl font-bold uppercase tracking-tight text-on-ink shadow-hard transition-all hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-70"
+            className={cn(appButton({ size: "lg" }), "w-full")}
           >
-            {isPending ? "Authenticating…" : "Authenticate"}
-            {!isPending && (
-              <span className="material-symbols-outlined">arrow_forward</span>
-            )}
+            {isPending ? "Signing in…" : "Sign in"}
+            {!isPending && <ArrowRight className="size-5" aria-hidden="true" />}
           </button>
         </form>
 
-        <div className="relative flex items-center py-2">
-          <div className="flex-grow border-t-2 border-surface-variant" />
-          <span className="mx-4 flex-shrink font-headline text-xs font-bold uppercase text-outline">
-            Or continue with
-          </span>
-          <div className="flex-grow border-t-2 border-surface-variant" />
-        </div>
+        <OrDivider label="or continue with" />
 
         <SocialButtons />
 
-        <div className="flex items-center justify-center gap-2 font-headline">
-          <span className="text-xs font-bold uppercase text-on-surface-variant">
-            New to the platform?
-          </span>
-          <Link
-            href="/auth/sign-up"
-            className="text-xs font-bold uppercase text-brand underline-offset-4 hover:underline"
-          >
-            Create an account
+        <p className="text-center text-sm text-on-surface-variant">
+          New to Taleem ka Safar?{" "}
+          <Link href={routes.signUp} className={textLink}>
+            Create a free account
           </Link>
-        </div>
-      </div>
+        </p>
+      </AuthCard>
     </div>
   );
 }

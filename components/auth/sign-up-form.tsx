@@ -1,204 +1,170 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
+import { ArrowRight, BadgeCheck, Gauge } from "lucide-react";
 import { signUpAction, type AuthState } from "@/app/auth/actions";
+import { appButton, focusRing } from "@/components/dashboard/styles";
+import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
+import { FormError, OrDivider, authInput, authLabel } from "./auth-ui";
+import { PasswordInput } from "./password-input";
 import { SocialButtons } from "./social-buttons";
 
 const initialState: AuthState = { error: null };
 
+const textLink = cn(
+  "rounded font-semibold text-brand underline-offset-4 hover:text-brand-container hover:underline",
+  focusRing,
+);
+
+const PERKS = [
+  { icon: BadgeCheck, label: "An explanation for every mistake" },
+  { icon: Gauge, label: "Progress you can track" },
+];
+
 export function SignUpForm() {
-  const [showPassword, setShowPassword] = useState(false);
   const [state, formAction, isPending] = useActionState(
     signUpAction,
     initialState,
   );
 
-  const inputClass =
-    "w-full border-2 border-ink bg-surface-lowest p-4 font-body text-on-surface transition-all placeholder:text-outline focus:border-brand focus:shadow-hard-primary focus:outline-none";
-
   return (
-    <div className="grid w-full max-w-2xl grid-cols-1 border-2 border-ink bg-surface-lowest shadow-hard md:grid-cols-12">
+    <div className="grid w-full max-w-3xl grid-cols-1 overflow-hidden rounded-2xl border border-outline-variant bg-surface-lowest shadow-soft-lg md:grid-cols-12">
       {/* Branding side */}
-      <aside className="relative flex flex-col justify-between overflow-hidden border-b-2 border-ink bg-brand-fixed p-8 md:col-span-5 md:border-b-0 md:border-r-2">
+      <aside className="relative flex flex-col justify-between overflow-hidden border-b border-brand/10 bg-brand-fixed p-8 md:col-span-5 md:border-b-0 md:border-r">
         <div className="relative z-10">
-          <h1 className="mb-6 font-headline text-4xl font-bold uppercase leading-none tracking-tighter text-on-surface">
-            Build Your
-            <br />
-            Future.
+          <h1 className="mb-4 font-headline text-3xl font-bold leading-tight tracking-tight text-on-surface sm:text-4xl">
+            Build your future.
           </h1>
-          <p className="font-body font-medium leading-relaxed text-brand">
-            Join the journey of high-performance entry-test preparation.
-            Precise, focused, and built for success.
+          <p className="leading-relaxed text-on-surface-variant">
+            Join students preparing for NET, PU and more. Free for students,
+            built by students and teachers.
           </p>
         </div>
-        <div className="relative z-10 mt-12 space-y-4">
-          <div className="flex items-center gap-2">
-            <span
-              className="material-symbols-outlined text-brand"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              verified
-            </span>
-            <span className="font-headline text-sm font-bold uppercase tracking-wider">
-              Premium Content
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span
-              className="material-symbols-outlined text-brand"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              speed
-            </span>
-            <span className="font-headline text-sm font-bold uppercase tracking-wider">
-              Real-time Analysis
-            </span>
-          </div>
-        </div>
-        <div className="absolute -bottom-10 -right-10 h-40 w-40 rotate-12 border-4 border-ink bg-brand opacity-10" />
+        <ul className="relative z-10 mt-10 space-y-3">
+          {PERKS.map(({ icon: PerkIcon, label }) => (
+            <li key={label} className="flex items-center gap-3">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface-lowest text-brand-container shadow-soft">
+                <PerkIcon className="size-5" aria-hidden="true" />
+              </span>
+              <span className="font-headline text-sm font-semibold text-on-surface">{label}</span>
+            </li>
+          ))}
+        </ul>
+        {/* Decorative soft circle. */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-12 -right-12 size-44 rounded-full bg-brand/10"
+        />
       </aside>
 
       {/* Form side */}
-      <div className="p-8 md:col-span-7 md:p-12">
-        <div className="mb-8">
-          <h2 className="mb-2 font-headline text-3xl font-extrabold uppercase tracking-tight text-on-surface">
-            Create Account
+      <div className="p-6 sm:p-8 md:col-span-7 md:p-10">
+        <div className="mb-6">
+          <h2 className="font-headline text-2xl font-bold tracking-tight text-on-surface">
+            Create your account
           </h2>
-          <p className="font-medium text-on-surface-variant">
-            Enter your details to start your journey.
+          <p className="mt-1 text-on-surface-variant">
+            It takes a minute. No card or payment needed.
           </p>
         </div>
 
-        <form action={formAction} className="space-y-6">
-          <div className="space-y-2">
-            <label
-              htmlFor="name"
-              className="block font-headline text-xs font-bold uppercase tracking-widest text-on-surface"
-            >
-              Full Name
+        <form action={formAction} className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="name" className={authLabel}>
+              Full name
             </label>
             <input
               id="name"
               name="name"
               type="text"
+              autoComplete="name"
               required
-              placeholder="John Doe"
-              className={inputClass}
+              placeholder="e.g. Ayesha Khan"
+              className={authInput}
             />
           </div>
 
-          <div className="space-y-2">
-            <label
-              htmlFor="email"
-              className="block font-headline text-xs font-bold uppercase tracking-widest text-on-surface"
-            >
-              Email Address
+          <div className="flex flex-col gap-2">
+            <label htmlFor="email" className={authLabel}>
+              Email address
             </label>
             <input
               id="email"
               name="email"
               type="email"
+              autoComplete="email"
+              inputMode="email"
+              spellCheck={false}
               required
               placeholder="you@example.com"
-              className={inputClass}
+              className={authInput}
             />
           </div>
 
-          <div className="space-y-2">
-            <label
-              htmlFor="password"
-              className="block font-headline text-xs font-bold uppercase tracking-widest text-on-surface"
-            >
+          <div className="flex flex-col gap-2">
+            <label htmlFor="password" className={authLabel}>
               Password
             </label>
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                required
-                minLength={8}
-                placeholder="••••••••"
-                className={inputClass}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                <span className="material-symbols-outlined">
-                  {showPassword ? "visibility_off" : "visibility"}
-                </span>
-              </button>
-            </div>
-            <p className="text-[10px] font-bold uppercase tracking-tight text-on-surface-variant">
-              Minimum 8 characters.
+            <PasswordInput
+              id="password"
+              name="password"
+              autoComplete="new-password"
+              required
+              minLength={8}
+              placeholder="At least 8 characters"
+              aria-describedby="password-hint"
+            />
+            <p id="password-hint" className="text-xs text-on-surface-variant">
+              Use at least 8 characters.
             </p>
           </div>
 
-          <div className="flex items-start gap-3 py-2">
+          <div className="flex items-start gap-3">
             <input
               id="terms"
               name="terms"
               type="checkbox"
-              className="mt-0.5 h-5 w-5 rounded-none border-2 border-ink text-brand focus:ring-0"
+              required
+              className="mt-0.5 size-5 shrink-0 cursor-pointer rounded accent-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-container focus-visible:ring-offset-2"
             />
-            <label
-              htmlFor="terms"
-              className="text-xs font-medium leading-tight text-on-surface-variant"
-            >
+            <label htmlFor="terms" className="text-sm leading-snug text-on-surface-variant">
               I agree to the{" "}
-              <a href="#" className="font-bold text-brand underline">
+              <a href="#" className={textLink}>
                 Terms of Service
               </a>{" "}
               and{" "}
-              <a href="#" className="font-bold text-brand underline">
+              <a href="#" className={textLink}>
                 Privacy Policy
               </a>
               .
             </label>
           </div>
 
-          {state.error && (
-            <p className="text-sm font-medium text-danger">{state.error}</p>
-          )}
+          {state.error && <FormError>{state.error}</FormError>}
 
           <button
             type="submit"
             disabled={isPending}
-            className="flex w-full items-center justify-center gap-3 border-2 border-ink bg-ink px-8 py-5 font-headline text-xl font-bold uppercase tracking-tighter text-on-ink transition-colors hover:bg-brand disabled:opacity-70"
+            className={cn(appButton({ size: "lg" }), "w-full")}
           >
-            <span>{isPending ? "Creating…" : "Create Account"}</span>
-            {!isPending && (
-              <span className="material-symbols-outlined">arrow_forward</span>
-            )}
+            {isPending ? "Creating your account…" : "Create account"}
+            {!isPending && <ArrowRight className="size-5" aria-hidden="true" />}
           </button>
         </form>
 
-        <div className="mt-8">
-          <div className="relative mb-6 flex items-center">
-            <div className="flex-grow border-t-2 border-surface-variant" />
-            <span className="mx-4 flex-shrink font-headline text-[10px] font-bold uppercase tracking-[0.2em] text-outline">
-              Or join with
-            </span>
-            <div className="flex-grow border-t-2 border-surface-variant" />
-          </div>
+        <div className="mt-6 flex flex-col gap-6">
+          <OrDivider label="or sign up with" />
           <SocialButtons />
         </div>
 
-        <div className="mt-8 flex items-center justify-center gap-2 font-headline">
-          <span className="text-xs font-bold uppercase text-on-surface-variant">
-            Already have an account?
-          </span>
-          <Link
-            href="/auth/login"
-            className="text-xs font-bold uppercase text-brand underline-offset-4 hover:underline"
-          >
-            Sign In
+        <p className="mt-6 text-center text-sm text-on-surface-variant">
+          Already have an account?{" "}
+          <Link href={routes.login} className={textLink}>
+            Sign in
           </Link>
-        </div>
+        </p>
       </div>
     </div>
   );

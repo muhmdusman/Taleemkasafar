@@ -1,5 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Suspense } from "react";
+import Link from "next/link";
+import { AuthCard, AuthHeading } from "@/components/auth/auth-ui";
+import { appButton } from "@/components/dashboard/styles";
+import { routes } from "@/lib/routes";
 
 async function ErrorContent({
   searchParams,
@@ -9,17 +12,9 @@ async function ErrorContent({
   const params = await searchParams;
 
   return (
-    <>
-      {params?.error ? (
-        <p className="text-sm text-muted-foreground">
-          Code error: {params.error}
-        </p>
-      ) : (
-        <p className="text-sm text-muted-foreground">
-          An unspecified error occurred.
-        </p>
-      )}
-    </>
+    <p className="text-sm leading-relaxed text-on-surface-variant">
+      {params?.error ? `Code error: ${params.error}` : "An unspecified error occurred."}
+    </p>
   );
 }
 
@@ -29,23 +24,21 @@ export default function Page({
   searchParams: Promise<{ error: string }>;
 }) {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                Sorry, something went wrong.
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Suspense>
-                <ErrorContent searchParams={searchParams} />
-              </Suspense>
-            </CardContent>
-          </Card>
+    <div className="flex w-full max-w-md flex-col gap-6">
+      <AuthHeading title="Sorry, something went wrong." />
+      <AuthCard>
+        <Suspense>
+          <ErrorContent searchParams={searchParams} />
+        </Suspense>
+        <div className="flex flex-wrap gap-3">
+          <Link href={routes.login} className={appButton()}>
+            Back to sign in
+          </Link>
+          <Link href={routes.contact} className={appButton({ variant: "secondary" })}>
+            Get help
+          </Link>
         </div>
-      </div>
+      </AuthCard>
     </div>
   );
 }
