@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 import { Icon } from "./icon";
+import { SectionHeading } from "./section-heading";
+import { cardInteractive } from "./styles";
 
 const CHALLENGES = [
   {
@@ -27,36 +30,29 @@ const CHALLENGES = [
 export function ChallengeSection() {
   return (
     <section>
-      <div className="mb-8 flex items-center gap-4">
-        <h2 className="font-headline text-4xl font-bold uppercase tracking-tight">
-          Choose Your Challenge
-        </h2>
-        <div className="h-1 flex-grow bg-ink" />
-      </div>
+      <SectionHeading>Choose Your Challenge</SectionHeading>
 
       <div className="flex flex-col gap-4">
         {CHALLENGES.map((c) => (
           <Link
             key={c.title}
             href={c.href}
-            className="flex cursor-pointer items-center justify-between border-4 border-ink bg-surface-lowest p-6 shadow-hard transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+            className={cn(cardInteractive, "group flex items-center justify-between gap-4 p-5 md:p-6")}
           >
-            <div className="flex items-center gap-6">
-              <div className="flex h-16 w-16 items-center justify-center bg-ink">
-                <Icon name={c.icon} className="text-3xl text-on-ink" />
-              </div>
+            <div className="flex items-center gap-4 md:gap-5">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-brand-fixed text-brand-container">
+                <Icon name={c.icon} className="text-3xl" />
+              </span>
               <div>
-                <p className="font-headline text-2xl font-bold uppercase leading-none">
+                <p className="font-headline text-lg font-bold leading-tight tracking-tight text-on-surface md:text-xl">
                   {c.title}
                 </p>
-                <p className="mt-1 font-body text-sm font-bold opacity-60">
-                  {c.subtitle}
-                </p>
+                <p className="mt-1 text-sm text-on-surface-variant">{c.subtitle}</p>
               </div>
             </div>
-            <div className="flex h-12 w-12 items-center justify-center border-2 border-ink bg-brand text-on-brand">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-container text-on-surface transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none">
               <Icon name="arrow_forward" />
-            </div>
+            </span>
           </Link>
         ))}
       </div>

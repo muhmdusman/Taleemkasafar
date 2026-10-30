@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 /**
  * Full-screen overlay loader for longer operations (e.g. generating a mock
- * test). Shows a square progress bar that fills and cycles through step
+ * test). Shows an indeterminate progress bar and cycles through step
  * messages so the wait feels intentional.
  */
 export function FullscreenLoader({
@@ -30,20 +30,20 @@ export function FullscreenLoader({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-surface/80 backdrop-blur-[2px]"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-surface/80 backdrop-blur-sm"
       role="status"
       aria-live="polite"
     >
-      <div className="w-[min(90vw,420px)] border-2 border-ink bg-surface-lowest p-8 shadow-hard">
-        <div className="mb-2 font-headline text-2xl font-bold uppercase tracking-tighter text-on-surface">
+      <div className="w-[min(90vw,420px)] rounded-2xl border border-outline-variant bg-surface-lowest p-8 shadow-soft-lg">
+        <div className="mb-2 font-headline text-2xl font-bold tracking-tight text-on-surface">
           {title}
         </div>
         <div className="mb-6 h-5 font-body text-sm text-on-surface-variant">
           {steps[step]}
         </div>
-        {/* Indeterminate square progress bar: black track, electric-blue sweep. */}
-        <div className="h-4 w-full overflow-hidden border-2 border-ink bg-surface-lowest">
-          <div className="h-full w-1/3 animate-[loaderSweep_1.1s_ease-in-out_infinite] bg-brand" />
+        {/* Indeterminate progress bar: light track, brand-blue sweep. */}
+        <div className="h-2 w-full overflow-hidden rounded-full bg-surface-high">
+          <div className="h-full w-1/3 animate-[loaderSweep_1.1s_ease-in-out_infinite] rounded-full bg-brand" />
         </div>
       </div>
     </div>

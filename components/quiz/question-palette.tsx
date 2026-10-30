@@ -1,14 +1,24 @@
 "use client";
 
+import { focusRing } from "@/components/dashboard/styles";
 import { paletteStatus, type PaletteStatus, type AnswerState } from "@/lib/quiz/session";
 import { cn } from "@/lib/utils";
 
 const STYLES: Record<PaletteStatus, string> = {
-  current: "bg-brand text-on-brand border-ink",
-  saved: "bg-success text-on-brand border-ink",
-  selected: "bg-brand-fixed text-on-surface border-ink",
-  review: "bg-surface-lowest text-danger border-danger ring-2 ring-danger",
-  unattempted: "bg-surface-lowest text-on-surface border-ink",
+  current: "border-brand bg-brand text-on-brand",
+  saved: "border-success/40 bg-success-fixed text-success",
+  selected: "border-brand/40 bg-brand-fixed text-brand-container",
+  review: "border-danger bg-danger-fixed text-danger",
+  unattempted: "border-outline-variant bg-surface-lowest text-on-surface hover:border-outline",
+};
+
+/** Spoken status, so the palette doesn't rely on color alone. */
+const STATUS_LABEL: Record<PaletteStatus, string> = {
+  current: "current",
+  saved: "answered",
+  selected: "selected",
+  review: "marked for review",
+  unattempted: "not answered",
 };
 
 /** Grid of question chips reflecting each question's state (mock palette). */
@@ -32,8 +42,11 @@ export function QuestionPalette({
             key={i}
             type="button"
             onClick={() => onNavigate(i)}
+            aria-label={`Question ${i + 1}, ${STATUS_LABEL[status]}`}
+            aria-current={status === "current" ? "step" : undefined}
             className={cn(
-              "flex h-9 w-9 items-center justify-center border-2 font-headline text-xs font-bold transition-transform active:translate-x-[1px] active:translate-y-[1px]",
+              "flex size-9 items-center justify-center rounded-lg border font-headline text-xs font-semibold tabular-nums transition-[background-color,border-color,transform] duration-150 active:translate-y-px motion-reduce:transition-none",
+              focusRing,
               STYLES[status],
             )}
           >

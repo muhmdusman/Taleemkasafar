@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { Icon } from "./icon";
+import { SectionHeading } from "./section-heading";
+import { card, cardInteractive } from "./styles";
 import type { SubjectOverview } from "@/lib/queries/dashboard";
 import { cardIndex } from "@/lib/queries/dashboard-helpers";
 import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 // Map known subjects to an icon + tagline. Falls back gracefully for new ones.
 const SUBJECT_META: Record<string, { icon: string; tagline: string }> = {
@@ -24,49 +27,46 @@ export function SubjectsSection({
 }) {
   return (
     <div>
-      {heading && (
-        <div className="mb-8 flex items-center gap-4">
-          <h2 className="font-headline text-4xl font-bold uppercase tracking-tight">
-            Subjects
-          </h2>
-          <div className="h-1 flex-grow bg-ink" />
-        </div>
-      )}
+      {heading && <SectionHeading>Subjects</SectionHeading>}
       {subjects.length === 0 ? (
-        <div className="border-2 border-ink bg-surface-lowest p-8 shadow-hard">
+        <div className={cn(card, "p-8")}>
           <p className="font-body text-on-surface-variant">
             No subjects available for this test yet.
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {subjects.map((s, i) => {
             const m = meta(s.subject_slug ?? "");
             return (
               <Link
                 key={s.subject_id ?? i}
                 href={routes.subject(s.subject_slug ?? "")}
-                className="group flex cursor-pointer flex-col gap-6 border-[3px] border-ink bg-surface-lowest p-6 transition-colors hover:bg-brand-fixed"
+                className={cn(cardInteractive, "group flex flex-col gap-6 p-6")}
               >
                 <div className="flex items-start justify-between">
-                  <Icon name={m.icon} className="text-4xl" />
-                  <span className="font-headline text-xl font-bold">
+                  <span className="flex size-12 items-center justify-center rounded-xl bg-brand-fixed text-brand-container">
+                    <Icon name={m.icon} className="text-2xl" />
+                  </span>
+                  <span className="font-headline text-sm font-semibold tabular-nums text-on-surface-variant">
                     {cardIndex(i)}
                   </span>
                 </div>
                 <div>
-                  <h3 className="font-headline text-3xl font-bold uppercase">
+                  <h3 className="font-headline text-2xl font-bold tracking-tight text-on-surface">
                     {s.subject_name}
                   </h3>
-                  <p className="mt-2 font-bold opacity-70">{m.tagline}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">
+                    {m.tagline}
+                  </p>
                 </div>
-                <div className="mt-4 flex items-center justify-between border-t-2 border-ink pt-4">
-                  <span className="font-headline text-sm font-bold uppercase">
+                <div className="mt-auto flex items-center justify-between border-t border-outline-variant pt-4">
+                  <span className="text-sm font-medium text-on-surface-variant">
                     {s.chapter_count ?? 0} Chapters · {s.question_count ?? 0} MCQs
                   </span>
                   <Icon
                     name="arrow_forward"
-                    className="transition-transform group-hover:translate-x-2"
+                    className="text-on-surface transition-transform group-hover:translate-x-1 motion-reduce:transition-none"
                   />
                 </div>
               </Link>

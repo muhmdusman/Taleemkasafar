@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/dashboard/icon";
+import { appButton } from "@/components/dashboard/styles";
 import { FullscreenLoader } from "./quiz-loader";
 import { startMock } from "@/app/dashboard/quiz-actions";
 import { routes } from "@/lib/routes";
@@ -42,10 +43,10 @@ export function StartMockButton({ blueprintId }: { blueprintId: string }) {
         type="button"
         onClick={handleStart}
         disabled={loading}
-        className="flex items-center gap-2 border-2 border-on-ink bg-surface-lowest px-6 py-3 font-headline text-sm font-bold uppercase tracking-tight text-on-surface shadow-hard-primary transition-colors hover:bg-brand-fixed active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-70"
+        className={appButton({ size: "lg" })}
       >
         {loading ? "Creating..." : "Start Mock Test"}
-        <Icon name="play_arrow" className="text-lg" />
+        <Icon name="play_arrow" className="text-xl" />
       </button>
     </>
   );

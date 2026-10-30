@@ -8,6 +8,10 @@ Short rules for agents live in `.kiro/steering/design-system.md`.
 > (app-wide). It is the agreed baseline; it may still be tuned from the user's
 > color schemes. Structure, shape, type, and token architecture are final.
 > The public website uses a rounded variant of the brand (§11).
+>
+> **Update (2026-10-30):** the dashboard now uses the same rounded variant and
+> the public palette (`.theme-public`), see §12. Soft Brutalism (§5–6) only
+> applies to the auth pages (`app/auth/`, `components/auth/`).
 
 ---
 
@@ -123,9 +127,9 @@ Product name in UI is **"Taleem ka Safar"** (never "TEST_ARCHITECT" from the
 mockups). Logo mark: the geometric "TS" (`app/icon.svg`).
 
 ## 11. Public site variant (rounded) — user override 2026-10-22
-Applies ONLY to the public website: `app/(marketing)/` + `components/marketing/`
-(landing, merit calculator, blog, contact, academies). The dashboard keeps
-Soft Brutalism (§5–6) until the dashboard UI/UX phase decides.
+Applies to the public website: `app/(marketing)/` + `components/marketing/`
+(landing, merit calculator, blog, contact, academies). Since 2026-10-30 the
+dashboard uses it too (§12).
 - **Radius**: cards `rounded-2xl`, buttons/inputs `rounded-xl`, pills/avatars
   `rounded-full`. No sharp corners. (Global `--radius` is NOT changed; rounding
   is applied by class so the dashboard stays square.)
@@ -138,3 +142,34 @@ Soft Brutalism (§5–6) until the dashboard UI/UX phase decides.
 - **Focus**: visible `focus-visible` ring in `brand` on every interactive element.
 - Same color tokens, same fonts (Space Grotesk headlines, Inter body), lucide
   icons only (no Material Symbols on public pages).
+
+## 12. Dashboard variant (rounded, public palette) — user override 2026-10-30
+Applies to `app/dashboard/` + `components/dashboard/` + `components/quiz/`
+(home, subjects, chapters, practice/past-paper runner, mocks, results,
+performance). Owner: the brutalist dashboard (sharp corners, solid charcoal
+and blue blocks) felt harsh; match the landing page instead.
+- **Palette**: `app/dashboard/layout.tsx` sets `theme-public`, so the
+  dashboard uses the exact landing tokens (blue #0768D0, charcoal #2B2F36,
+  white cards, black text). Canvas is `bg-surface-low` (#F6F7F9) so white
+  cards separate without heavy borders; practice/past-paper screens too.
+- **Shared styles** live in `components/dashboard/styles.ts`: `card`,
+  `cardInteractive`, `skeleton`, `focusRing` and the `appButton()` cva
+  (`primary` blue, `secondary` neutral, `ghost`; sizes `sm`/`md`/`lg`). Use
+  these instead of hand-writing card/button classes.
+- **Radius**: cards/panels `rounded-2xl`; buttons, inputs, options, tiles
+  `rounded-xl`/`rounded-lg`; chips, avatars, progress bars `rounded-full`.
+- **Borders/depth**: 1px `border-outline-variant` + `shadow-soft`; hover lift
+  `shadow-soft-lg`. No `shadow-hard`, no 2px `ink` borders, no `bg-ink`
+  blocks. Controls that need a visible edge (MCQ options) use `border-outline`
+  (≥3:1).
+- **Blue**: primary action of a screen/bar, active nav (`bg-brand-fixed
+  text-brand-container`), icon tiles, key numbers, progress fills, the
+  current question chip. Hover on neutral elements stays neutral.
+- **Quiz feedback**: tinted fills with a solid icon badge, never solid
+  green/red blocks: correct `border-success bg-success-fixed`, wrong
+  `border-danger bg-danger-fixed`, missed correct answer `border-success` on
+  white. Status chips and palette chips follow the same tints.
+- **Type**: headings in sentence/title case (no all-caps), Space Grotesk
+  bold; small eyebrow labels may stay `uppercase tracking-widest`.
+- **A11y**: `focusRing` on every interactive element; `motion-reduce:` guards
+  on hover lifts/transitions; icon-only buttons keep an `sr-only` label.

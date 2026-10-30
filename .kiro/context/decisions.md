@@ -484,3 +484,20 @@ paper surfaces, and a less saturated blue. Targets: body text ≥12:1, muted
   connectors between cards, light-blue 2px borders. Pricing plan cards back to
   brutalist 2px border + hard shadow with rounded-xl corners. Final CTA banner:
   charcoal with dot pattern + rings.
+
+
+## 2026-10-30 — Dashboard adopts the landing palette + rounded variant
+
+- Owner: the dashboard's sharp corners and solid charcoal/blue blocks felt
+  harsh; it should match the landing page. Supersedes "dashboard keeps Soft
+  Brutalism" (2026-10-22 §11 note).
+- **How**: reuse `.theme-public` on `app/dashboard/layout.tsx` instead of a
+  new theme class, so landing and app can't drift. Trade-off: the landing
+  palette uses pure black text on white (21:1), which the v2 calm palette
+  avoided for long reading. Mitigation: light grey `surface-low` canvas
+  behind white cards. If students report glare, override `--on-surface` for
+  the dashboard only.
+- **Shared styles** in `components/dashboard/styles.ts` (cva `appButton` +
+  card/focus constants) rather than importing `marketingButton`, so the
+  public site and the app can evolve separately while sharing tokens.
+- Soft Brutalism now only covers auth pages.

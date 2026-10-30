@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Icon } from "@/components/dashboard/icon";
+import { appButton } from "@/components/dashboard/styles";
 import { toggleBookmark } from "@/app/dashboard/quiz-actions";
 import { cn } from "@/lib/utils";
 
@@ -32,8 +33,10 @@ export function BookmarkButton({
       disabled={isPending}
       aria-pressed={saved}
       className={cn(
-        "flex items-center gap-2 border-2 border-ink px-3 py-2 font-headline text-xs font-bold uppercase tracking-tight transition-colors",
-        saved ? "bg-ink text-on-ink" : "bg-surface-lowest text-on-surface hover:bg-brand-fixed",
+        appButton({ variant: "secondary", size: "sm" }),
+        // Keep full opacity while the toggle is in flight (it's optimistic).
+        "disabled:opacity-100",
+        saved && "border-brand/40 bg-brand-fixed text-brand-container hover:border-brand/60 hover:bg-brand-fixed",
       )}
     >
       <Icon name="bookmark" filled={saved} className="text-lg" />

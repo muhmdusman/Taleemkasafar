@@ -4,9 +4,11 @@ import { getMockAttempt } from "@/lib/queries/mock";
 import { getActiveEntryTest } from "@/lib/queries/entry-test";
 import { getEntryTestsCached } from "@/lib/queries/catalog";
 import { getDisplayName } from "@/lib/queries/profile";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { DashboardHeader, DashboardHeaderFallback } from "@/components/dashboard/header";
+import { skeleton } from "@/components/dashboard/styles";
 import { MockRunner } from "@/components/quiz/mock-runner";
 import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 export default function MockAttemptPage({
   params,
@@ -61,11 +63,11 @@ async function MockAttemptView({
 function MockRunSkeleton() {
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-ink bg-surface-lowest md:left-64" />
+      <DashboardHeaderFallback />
       <main className="px-4 pb-24 pt-28 md:px-12">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
-          <div className="h-96 w-full animate-pulse border-2 border-ink bg-surface-container" />
-          <div className="h-96 w-full animate-pulse border-2 border-ink bg-surface-high" />
+          <div className={cn(skeleton, "h-96 w-full")} />
+          <div className={cn(skeleton, "h-96 w-full")} />
         </div>
       </main>
     </>

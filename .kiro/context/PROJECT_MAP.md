@@ -65,6 +65,7 @@ Client Components only where interactivity is needed; otherwise presentational.
 | `components/marketing/merit/` | `university-card`, `weight-chips`, `formula-card` (server, formula in HTML), `merit-disclaimer`, `merit-calculator-form` (client: route picker, fieldsets, inline errors, aria-live result + breakdown). |
 | `components/marketing/blog/` | `post-card` (server: cover via next/image, category badge, title link with whole-card overlay, date, reading time, tags), `post-meta` (`CategoryBadge`). |
 | `components/marketing/contact/contact-form.tsx` | Client contact form: inline errors, focus first invalid, honeypot, honest "not sent yet" success state, `TODO(backend)` for the server action. |
+| `components/dashboard/` | Dashboard shell + home sections (rounded variant + public palette, DESIGN.md §12): `sidebar`, `bottom-nav`, `header` (`DashboardHeader`, `DashboardHeaderFallback`), `entry-test-selector`, `hero-section`, `subjects-section`, `chapter-list`, `challenge-section`, `section-heading`, `icon` (Material Symbols), `styles.ts` (`card`, `cardInteractive`, `skeleton`, `focusRing`, `appButton` cva). |
 | `components/seo/json-ld.tsx` | `<JsonLd>` (escapes `<`) + Organization / WebSite / FAQPage / BreadcrumbList / Article helpers. |
 | `components/material-symbols-font.tsx` | Material Symbols `<link>`s + reveal script, rendered by dashboard + auth layouts only. |
 | `components/ui/sheet.tsx` | shadcn Sheet (mobile menu); close button 44x44px with brand focus ring. (`accordion.tsx` removed: FAQ uses `<details>`.) |

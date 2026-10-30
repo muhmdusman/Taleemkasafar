@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { isNavActive, routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 import { Icon } from "./icon";
+import { focusRing } from "./styles";
 
 type NavItem = { href: string; label: string; icon: string };
 
@@ -16,6 +18,14 @@ const NAV: NavItem[] = [
   { href: routes.performance, label: "Performance", icon: "insights" },
   { href: routes.settings, label: "Settings", icon: "settings" },
 ];
+
+const itemBase = cn(
+  "flex items-center gap-3 rounded-xl px-3 py-2.5 font-headline text-[15px] font-semibold tracking-tight transition-colors motion-reduce:transition-none",
+  focusRing,
+);
+const itemIdle = "text-on-surface-variant hover:bg-surface-container hover:text-on-surface";
+/** Active page: light blue tint, the sidebar's one blue highlight. */
+const itemActive = "bg-brand-fixed text-brand-container";
 
 /** Fixed left sidebar (desktop). Brand = Taleem ka Safar. */
 export function Sidebar() {
@@ -29,17 +39,17 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col gap-4 border-r-2 border-ink bg-surface-lowest p-4 md:flex">
-      <div className="mb-6 flex flex-col gap-1">
-        <span className="font-headline text-xl font-bold tracking-tighter text-on-surface">
+    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 flex-col gap-4 border-r border-outline-variant bg-surface-lowest p-4 md:flex">
+      <div className="mb-6 flex flex-col gap-1 px-3 pt-2">
+        <span className="font-headline text-xl font-bold tracking-tight text-on-surface">
           Taleem ka Safar
         </span>
-        <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">
+        <span className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
           Entry Test Prep
         </span>
       </div>
 
-      <nav className="flex flex-grow flex-col gap-2">
+      <nav aria-label="Dashboard" className="flex flex-grow flex-col gap-1">
         {NAV.map((item) => {
           const active = isNavActive(pathname, item.href);
           return (
@@ -47,11 +57,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={
-                active
-                  ? "flex items-center gap-3 border-2 border-ink bg-brand p-3 font-headline font-bold text-on-brand"
-                  : "flex items-center gap-3 p-3 font-headline font-bold text-on-surface transition-transform hover:translate-x-1"
-              }
+              className={cn(itemBase, active ? itemActive : itemIdle)}
             >
               <Icon name={item.icon} filled={active} />
               {item.label}
@@ -60,18 +66,15 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto flex flex-col gap-2 border-t-2 border-ink pt-4">
-        <Link
-          href={routes.help}
-          className="flex items-center gap-3 p-3 font-headline font-bold text-on-surface transition-transform hover:translate-x-1"
-        >
+      <div className="mt-auto flex flex-col gap-1 border-t border-outline-variant pt-4">
+        <Link href={routes.help} className={cn(itemBase, itemIdle)}>
           <Icon name="help" />
           Help Center
         </Link>
         <button
           type="button"
           onClick={logout}
-          className="flex items-center gap-3 p-3 text-left font-headline font-bold text-on-surface transition-transform hover:translate-x-1"
+          className={cn(itemBase, itemIdle, "text-left")}
         >
           <Icon name="logout" />
           Logout

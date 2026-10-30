@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/dashboard/icon";
+import { appButton, card } from "@/components/dashboard/styles";
 import { OptionButton, type OptionVisualState } from "./option-button";
 import { MathText } from "./math-text";
 import { BookmarkButton } from "./bookmark-button";
@@ -104,9 +105,9 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
         <button
           type="button"
           onClick={() => router.push(endHref)}
-          className="inline-flex items-center gap-1 border-2 border-ink bg-surface-lowest px-4 py-2 font-headline text-xs font-bold uppercase tracking-widest text-on-surface hover:bg-brand-fixed"
+          className={appButton({ variant: "secondary" })}
         >
-          <Icon name="arrow_back" className="text-base" /> Back to chapters
+          <Icon name="arrow_back" className="text-lg" /> Back to chapters
         </button>
       </div>
     );
@@ -131,27 +132,30 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
       <CheckingOverlay active={pendingOption !== null} />
 
       {/* Slim header: logo · moving counter · end */}
-      <header className="flex h-14 shrink-0 items-center justify-between border-b-2 border-ink bg-surface-lowest px-4 md:px-6">
-        <span className="font-headline text-base font-bold tracking-tighter text-on-surface">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-outline-variant bg-surface-lowest px-4 md:px-6">
+        <span className="font-headline text-base font-bold tracking-tight text-on-surface">
           Taleem ka Safar
         </span>
         <div className="mx-4 flex flex-1 items-center gap-3">
-          <div className="h-2.5 w-full max-w-md border-2 border-ink bg-surface-high">
+          <div className="h-2 w-full max-w-md overflow-hidden rounded-full bg-surface-high">
             <div
-              className="h-full bg-brand transition-all duration-300"
+              className="h-full rounded-full bg-brand transition-[width] duration-300 motion-reduce:transition-none"
               style={{ width: `${progressPct}%` }}
             />
           </div>
-          <span className="shrink-0 font-headline text-xs font-bold uppercase tracking-tight text-on-surface-variant tabular-nums">
+          <span className="shrink-0 font-headline text-xs font-semibold tracking-tight text-on-surface-variant tabular-nums">
             {index + 1}/{questions.length}
           </span>
         </div>
         <button
           type="button"
           onClick={handleEnd}
-          className="flex items-center gap-1 border-2 border-ink bg-surface-lowest px-3 py-1.5 font-headline text-xs font-bold uppercase tracking-tight text-on-surface transition-colors hover:bg-danger hover:text-on-brand"
+          className={cn(
+            appButton({ variant: "secondary", size: "sm" }),
+            "hover:border-danger/40 hover:bg-danger-fixed hover:text-danger",
+          )}
         >
-          <Icon name="close" className="text-base" /> End
+          <Icon name="close" className="text-lg" /> End
         </button>
       </header>
 
@@ -161,12 +165,12 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
           {/* Statement panel */}
           <section className="flex flex-col">
             <div className="mb-3 flex items-center justify-between">
-              <span className="font-headline text-xs font-bold uppercase tracking-widest text-brand">
+              <span className="font-headline text-xs font-semibold uppercase tracking-widest text-brand">
                 {data.subjectName} · Q{index + 1}
               </span>
               <BookmarkButton questionId={current.id} />
             </div>
-            <div className="flex-1 border-2 border-ink bg-surface-lowest p-6 shadow-hard">
+            <div className={cn(card, "flex-1 p-6 md:p-8")}>
               <p className="font-body text-xl leading-relaxed text-on-surface">
                 <MathText>{current.statement}</MathText>
               </p>
@@ -189,23 +193,31 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
 
             {/* Explanation (toggle) */}
             {currentGrade && showExplanation && (
-              <div className="mt-1 border-2 border-ink bg-surface-lowest">
+              <div
+                className={cn(
+                  "mt-1 overflow-hidden rounded-2xl border bg-surface-lowest shadow-soft",
+                  currentGrade.isCorrect ? "border-success/40" : "border-danger/40",
+                )}
+              >
                 <div
                   className={cn(
-                    "flex items-center gap-2 p-3 text-on-brand",
-                    currentGrade.isCorrect ? "bg-success" : "bg-danger",
+                    "flex items-center gap-2 px-4 py-3",
+                    currentGrade.isCorrect
+                      ? "bg-success-fixed text-success"
+                      : "bg-danger-fixed text-danger",
                   )}
                 >
                   <Icon
                     name={currentGrade.isCorrect ? "check_circle" : "cancel"}
+                    filled
                     className="text-xl"
                   />
-                  <span className="font-headline text-sm font-bold uppercase tracking-tight">
+                  <span className="font-headline text-sm font-bold tracking-tight">
                     {currentGrade.isCorrect ? "Correct!" : "Not quite"}
                   </span>
                 </div>
                 <div className="p-4">
-                  <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                  <div className="mb-1 text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
                     Explanation
                   </div>
                   <p className="font-body text-sm leading-relaxed text-on-surface">
@@ -223,25 +235,27 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
       </div>
 
       {/* Bottom bar: Prev · Explanation · Next */}
-      <footer className="flex h-16 shrink-0 items-center justify-between gap-3 border-t-2 border-ink bg-surface-lowest px-4 md:px-8">
+      <footer className="flex h-16 shrink-0 items-center justify-between gap-3 border-t border-outline-variant bg-surface-lowest px-4 md:px-8">
+        {/* Labels are screen-reader-only on small screens, so icon-only buttons keep a name. */}
         <button
           type="button"
           onClick={() => setIndex((i) => Math.max(0, i - 1))}
           disabled={isFirst}
-          className="flex items-center gap-2 border-2 border-ink bg-surface-lowest px-4 py-2.5 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-brand-fixed disabled:opacity-40 active:translate-x-[2px] active:translate-y-[2px]"
+          className={appButton({ variant: "secondary" })}
         >
           <Icon name="arrow_back" className="text-lg" />
-          <span className="hidden sm:inline">Prev</span>
+          <span className="sr-only sm:not-sr-only">Prev</span>
         </button>
 
         <button
           type="button"
           onClick={() => setShowExplanation((s) => !s)}
           disabled={!currentGrade}
-          className="flex items-center gap-2 border-2 border-ink bg-surface-lowest px-4 py-2.5 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-brand-fixed disabled:opacity-40"
+          aria-pressed={showExplanation}
+          className={appButton({ variant: "secondary" })}
         >
           <Icon name="lightbulb" className="text-lg" />
-          <span className="hidden sm:inline">
+          <span className="sr-only sm:not-sr-only">
             {showExplanation ? "Hide" : "Explanation"}
           </span>
         </button>
@@ -250,18 +264,14 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
           <button
             type="button"
             onClick={() => setIndex((i) => Math.min(questions.length - 1, i + 1))}
-            className="flex items-center gap-2 border-2 border-ink bg-ink px-5 py-2.5 font-headline text-sm font-bold uppercase tracking-tight text-on-ink shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+            className={appButton()}
           >
-            <span className="hidden sm:inline">Next</span>
+            <span className="sr-only sm:not-sr-only">Next</span>
             <Icon name="arrow_forward" className="text-lg" />
           </button>
         ) : (
-          <button
-            type="button"
-            onClick={handleEnd}
-            className="flex items-center gap-2 border-2 border-ink bg-ink px-5 py-2.5 font-headline text-sm font-bold uppercase tracking-tight text-on-ink shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-          >
-            <span className="hidden sm:inline">Finish</span>
+          <button type="button" onClick={handleEnd} className={appButton()}>
+            <span className="sr-only sm:not-sr-only">Finish</span>
             <Icon name="flag" className="text-lg" />
           </button>
         )}
