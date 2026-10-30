@@ -167,7 +167,58 @@ export async function submitMock(
     p_answers: answers,
   });
   if (error) return null;
+  revalidatePath(routes.dashboard);
   revalidatePath(routes.performance);
   revalidatePath(routes.mocks);
   return data as string;
+}
+
+/**
+ * Pause a running mock: the server freezes its remaining time (mcq_15
+ * `pause_mock`). Returns false if pausing failed or the migration isn't
+ * applied yet; the caller then tells the student the timer keeps running.
+ * No revalidatePath: that would re-render (and re-download) the whole paper
+ * just before the student leaves; the dashboard is dynamic and refetches on
+ * navigation anyway.
+ */
+export async function pauseMock(attemptId: string): Promise<boolean> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("pause_mock", { p_attempt: attemptId });
+  return !error;
+}
+
+export type MockSync = {
+  status: Database["public"]["Enums"]["attempt_status"];
+  expiresAt: string | null;
+};
+
+/**
+ * Called whenever a mock sitting opens (including Back/Forward, which can
+ * show a cached screen): resumes the mock if it was paused and returns the
+ * authoritative status + expiry. Falls back to a plain read when the mcq_15
+ * migration isn't applied yet. Null if the attempt isn't the caller's.
+ */
+export async function syncMock(attemptId: string): Promise<MockSync | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("resume_mock", {
+    p_attempt: attemptId,
+  });
+  if (!error) {
+    const row = Array.isArray(data) ? data[0] : data;
+    return row
+      ? { status: row.current_status, expiresAt: row.current_expires_at }
+      : null;
+  }
+
+  const { data: claims } = await supabase.auth.getClaims();
+  const userId = claims?.claims?.sub as string | undefined;
+  if (!userId) return null;
+  const { data: attempt } = await supabase
+    .from("attempts")
+    .select("status, expires_at")
+    .eq("id", attemptId)
+    .eq("user_id", userId)
+    .eq("mode", "mock")
+    .maybeSingle();
+  return attempt ? { status: attempt.status, expiresAt: attempt.expires_at } : null;
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isFocusRoute,
   isNavActive,
   isPublicPath,
   routes,
@@ -206,5 +207,23 @@ describe("isNavActive", () => {
     expect(isNavActive("/dashboard/mock/a1/result", routes.mocks)).toBe(true);
     expect(isNavActive("/dashboard/mockx", routes.mocks)).toBe(false);
     expect(isNavActive("/dashboard", routes.performance)).toBe(false);
+  });
+});
+
+describe("isFocusRoute", () => {
+  it("matches practice, past paper and a mock sitting", () => {
+    expect(isFocusRoute(routes.practice("maths", "ch-1"))).toBe(true);
+    expect(isFocusRoute(routes.pastPaper("pu-physics", "waves"))).toBe(true);
+    expect(isFocusRoute(routes.mock("a1"))).toBe(true);
+    expect(isFocusRoute(`${routes.mock("a1")}/`)).toBe(true);
+  });
+
+  it("keeps the dashboard chrome everywhere else", () => {
+    expect(isFocusRoute(routes.dashboard)).toBe(false);
+    expect(isFocusRoute(routes.subjects)).toBe(false);
+    expect(isFocusRoute(routes.subject("maths"))).toBe(false);
+    expect(isFocusRoute(routes.mocks)).toBe(false);
+    expect(isFocusRoute(routes.mockResult("a1"))).toBe(false);
+    expect(isFocusRoute(routes.performance)).toBe(false);
   });
 });

@@ -118,6 +118,22 @@ export function safeNextPath(
   return next;
 }
 
+const FOCUS_ROUTES = [
+  // Practice / past paper for one chapter.
+  new RegExp(`^${DASHBOARD}/subjects/[^/]+/[^/]+/(?:practice|past-paper)/?$`),
+  // A mock sitting (NOT its /result page).
+  new RegExp(`^${DASHBOARD}/mock/[^/]+/?$`),
+];
+
+/**
+ * Full-screen study routes: the dashboard sidebar and bottom nav are not
+ * rendered there, so nothing distracts the student and keyboard focus can't
+ * land on hidden links behind the study screen.
+ */
+export function isFocusRoute(pathname: string): boolean {
+  return FOCUS_ROUTES.some((re) => re.test(pathname));
+}
+
 /**
  * Nav highlight: the dashboard home is active only on exactly `/dashboard`;
  * other items are active on their own path and anything beneath it.
