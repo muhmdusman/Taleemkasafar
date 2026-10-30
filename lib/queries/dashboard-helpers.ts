@@ -40,18 +40,105 @@ export function chapterMetaLabel(
   return t > 0 ? `${t} Topics · ${q} MCQs` : `${q} MCQs`;
 }
 
+export type OpenMockState = "running" | "paused" | "timeUp";
+
+/** How long after expiry an unsubmitted mock is still offered for scoring. */
+export const TIME_UP_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
+type MockTimes = { expires_at: string | null; paused_at?: string | null };
+
 /**
- * From in-progress mock attempts sorted newest first, the first whose timer
- * has not run out (no expiry counts as running). Null if none.
+ * The mock to surface, from in-progress mock attempts sorted newest first:
+ * the first paused or still-running one; else, if the NEWEST ran out of time
+ * within the last week without being submitted, that one as "timeUp" (so the
+ * student can still see a score). Null if none.
  */
-export function pickLiveMock<T extends { expires_at: string | null }>(
+export function pickOpenMock<T extends MockTimes>(
   mocks: T[],
   nowMs: number,
-): T | null {
-  return (
-    mocks.find((m) => m.expires_at === null || Date.parse(m.expires_at) > nowMs) ??
-    null
-  );
+): { attempt: T; state: OpenMockState } | null {
+  for (const m of mocks) {
+    if (m.paused_at) return { attempt: m, state: "paused" };
+    if (m.expires_at === null || Date.parse(m.expires_at) > nowMs) {
+      return { attempt: m, state: "running" };
+    }
+  }
+  const newest = mocks[0];
+  if (newest?.expires_at && nowMs - Date.parse(newest.expires_at) <= TIME_UP_WINDOW_MS) {
+    return { attempt: newest, state: "timeUp" };
+  }
+  return null;
+}
+
+/**
+ * Seconds left on a mock: frozen at (expiry - pause time) while paused,
+ * counting down to expiry while running, 0 once time is up. Null when the
+ * mock has no time limit.
+ */
+export function mockSecondsLeft(mock: MockTimes, nowMs: number): number | null {
+  if (!mock.expires_at) return null;
+  const end = Date.parse(mock.expires_at);
+  const from = mock.paused_at ? Date.parse(mock.paused_at) : nowMs;
+  return Math.max(0, Math.round((end - from) / 1000));
+}
+
+/** Below this accuracy (percent) a subject is suggested as a focus area. */
+export const FOCUS_BELOW_PERCENT = 70;
+/** Practice answers needed before practice accuracy counts as a signal. */
+export const FOCUS_MIN_ANSWERS = 10;
+
+export type FocusSuggestion = {
+  slug: string;
+  name: string;
+  /** mock = weakest in the latest mock; practice = low practice accuracy; new = not started. */
+  reason: "mock" | "practice" | "new";
+  percent: number | null;
+};
+
+/**
+ * One subject to suggest next, in this order:
+ *  1. weakest subject in the latest mock, if under FOCUS_BELOW_PERCENT;
+ *  2. lowest practice accuracy (with ≥ FOCUS_MIN_ANSWERS answers) under it;
+ *  3. a subject not practised yet, once at least one other subject has been.
+ * Null when nothing stands out (or there is no activity yet).
+ */
+export function pickFocusSubject(
+  subjects: { id: string; slug: string; name: string }[],
+  latestMockBySlug: Record<string, { correct: number; total: number }> | null,
+  practiceById: Record<string, { answered: number; correct: number }>,
+): FocusSuggestion | null {
+  const pct = (correct: number, total: number) => Math.round((correct / total) * 100);
+
+  if (latestMockBySlug) {
+    let worst: FocusSuggestion | null = null;
+    for (const s of subjects) {
+      const b = latestMockBySlug[s.slug];
+      if (!b || b.total === 0) continue;
+      const p = pct(b.correct, b.total);
+      if (p < FOCUS_BELOW_PERCENT && (worst === null || p < (worst.percent ?? 101))) {
+        worst = { slug: s.slug, name: s.name, reason: "mock", percent: p };
+      }
+    }
+    if (worst) return worst;
+  }
+
+  let weakest: FocusSuggestion | null = null;
+  for (const s of subjects) {
+    const p = practiceById[s.id];
+    if (!p || p.answered < FOCUS_MIN_ANSWERS) continue;
+    const accuracy = pct(p.correct, p.answered);
+    if (accuracy < FOCUS_BELOW_PERCENT && (weakest === null || accuracy < (weakest.percent ?? 101))) {
+      weakest = { slug: s.slug, name: s.name, reason: "practice", percent: accuracy };
+    }
+  }
+  if (weakest) return weakest;
+
+  const started = subjects.some((s) => (practiceById[s.id]?.answered ?? 0) > 0);
+  const untouched = subjects.find((s) => (practiceById[s.id]?.answered ?? 0) === 0);
+  if (started && untouched) {
+    return { slug: untouched.slug, name: untouched.name, reason: "new", percent: null };
+  }
+  return null;
 }
 
 /** An unfinished practice / past-paper sitting tied to a chapter. */

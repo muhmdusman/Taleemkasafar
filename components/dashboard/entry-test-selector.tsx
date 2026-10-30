@@ -1,16 +1,20 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { selectEntryTest } from "@/app/dashboard/actions";
-import { Icon } from "./icon";
-import { focusRing } from "./styles";
-import { cn } from "@/lib/utils";
+import { useEffect, useRef, useState } from "react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import type { EntryTest } from "@/lib/queries/entry-test";
+import { cn } from "@/lib/utils";
+import { Icon } from "./icon";
+import { Spinner, TopProgressBar } from "./loading-indicators";
+import { focusRing } from "./styles";
+import { useSwitchEntryTest } from "./use-switch-entry-test";
 
 /**
- * Header-center entry-test picker. Persists the choice via a Server Action,
- * then refreshes so server data re-loads for the new test.
+ * Header entry-test dropdown, on every dashboard screen and every size.
+ * Radix DropdownMenu gives keyboard navigation (arrows, Enter, Escape, type
+ * ahead), focus return and outside-click for free. While the switch is
+ * saving and the new test's data loads, the trigger shows a spinner and a
+ * bar runs along the top of the screen; the result is announced politely.
  */
 export function EntryTestSelector({
   tests,
@@ -19,83 +23,81 @@ export function EntryTestSelector({
   tests: EntryTest[];
   activeId: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
-  const router = useRouter();
-  const containerRef = useRef<HTMLDivElement>(null);
-
+  const { switchTo, isPending, pendingId } = useSwitchEntryTest(activeId);
   const active = tests.find((t) => t.id === activeId) ?? tests[0];
-  if (!active) return null;
+  const shown = tests.find((t) => t.id === pendingId) ?? active;
 
-  const choose = (id: string) => {
-    setOpen(false);
-    if (id === activeId) return;
-    startTransition(async () => {
-      await selectEntryTest(id);
-      router.refresh();
-    });
-  };
+  // Announce the change once the new test is active.
+  const [announcement, setAnnouncement] = useState("");
+  const previousId = useRef(activeId);
+  useEffect(() => {
+    if (previousId.current !== activeId) {
+      const now = tests.find((t) => t.id === activeId);
+      if (now) setAnnouncement(`Now preparing for ${now.name}.`);
+      previousId.current = activeId;
+    }
+  }, [activeId, tests]);
+
+  if (!active || !shown) return null;
 
   return (
-    <div ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        disabled={isPending}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        className={cn(
-          "flex h-10 items-center gap-2 rounded-xl border border-outline-variant bg-surface-lowest px-4 font-headline text-sm font-semibold tracking-tight text-on-surface transition-colors hover:border-outline hover:bg-surface-low disabled:opacity-60 motion-reduce:transition-none",
-          focusRing,
-        )}
-      >
-        <Icon name="school" className="text-lg text-on-surface-variant" filled />
-        <span className="max-w-[10rem] truncate">{active.name}</span>
-        <Icon
-          name="expand_more"
+    <>
+      <TopProgressBar active={isPending} label={`Switching to ${shown.name}`} />
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger
+          disabled={isPending}
+          aria-label={`Entry test: ${shown.name}. Change entry test`}
           className={cn(
-            "text-lg text-on-surface-variant transition-transform duration-200 motion-reduce:transition-none",
-            open && "rotate-180",
+            "group flex h-10 items-center gap-2 rounded-xl border border-outline-variant bg-surface-lowest px-3 font-headline text-sm font-semibold tracking-tight text-on-surface shadow-soft transition-colors hover:border-outline hover:bg-surface-low disabled:cursor-wait data-[state=open]:border-tone-blue/40 data-[state=open]:bg-tone-blue-soft motion-reduce:transition-none sm:px-4",
+            focusRing,
           )}
-        />
-      </button>
-
-      {open && (
-        <>
-          {/* click-away backdrop */}
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setOpen(false)}
-            aria-hidden="true"
+        >
+          {isPending ? (
+            <Spinner className="size-[18px] text-tone-blue" />
+          ) : (
+            <Icon name="school" filled className="text-lg text-tone-blue" />
+          )}
+          <span className="hidden font-medium text-on-surface-variant md:inline">Test:</span>
+          <span className="max-w-[7rem] truncate sm:max-w-[10rem]">{shown.name}</span>
+          <Icon
+            name="expand_more"
+            className="text-lg text-on-surface-variant transition-transform duration-200 group-data-[state=open]:rotate-180 motion-reduce:transition-none"
           />
-          <ul
-            role="listbox"
-            className="absolute left-1/2 z-20 mt-2 flex w-64 -translate-x-1/2 flex-col gap-0.5 rounded-2xl border border-outline-variant bg-surface-lowest p-1.5 shadow-soft-lg"
+        </DropdownMenu.Trigger>
+
+        <DropdownMenu.Portal>
+          {/* Portaled to <body>: re-apply the app theme classes. */}
+          <DropdownMenu.Content
+            align="end"
+            sideOffset={8}
+            className="theme-public theme-app z-[60] w-72 rounded-2xl border border-outline-variant bg-surface-lowest p-1.5 font-body text-on-surface shadow-soft-lg data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 motion-reduce:data-[state=open]:animate-none"
           >
-            {tests.map((t) => {
-              const selected = t.id === activeId;
-              return (
-                <li key={t.id} role="option" aria-selected={selected}>
-                  <button
-                    type="button"
-                    onClick={() => choose(t.id)}
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left font-headline text-sm font-semibold tracking-tight transition-colors motion-reduce:transition-none",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-container",
-                      selected
-                        ? "bg-brand-fixed text-brand-container"
-                        : "text-on-surface hover:bg-surface-low",
-                    )}
-                  >
-                    {t.name}
-                    {selected && <Icon name="check" className="text-lg" />}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </>
-      )}
-    </div>
+            <DropdownMenu.Label className="px-3 pb-1.5 pt-2 text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
+              Switch entry test
+            </DropdownMenu.Label>
+            <DropdownMenu.RadioGroup value={active.id} onValueChange={(id) => switchTo(id)}>
+              {tests.map((t) => (
+                <DropdownMenu.RadioItem
+                  key={t.id}
+                  value={t.id}
+                  className="flex cursor-pointer select-none items-center justify-between gap-3 rounded-xl px-3 py-2.5 font-headline text-sm font-semibold tracking-tight outline-none transition-colors data-[highlighted]:bg-surface-low data-[state=checked]:bg-tone-blue-soft data-[state=checked]:text-tone-blue"
+                >
+                  {t.name}
+                  <DropdownMenu.ItemIndicator>
+                    <Icon name="check" className="text-lg" />
+                  </DropdownMenu.ItemIndicator>
+                </DropdownMenu.RadioItem>
+              ))}
+            </DropdownMenu.RadioGroup>
+            <p className="px-3 pb-2 pt-2 text-xs leading-relaxed text-on-surface-variant">
+              Subjects, mock tests and progress follow the test you pick.
+            </p>
+          </DropdownMenu.Content>
+        </DropdownMenu.Portal>
+      </DropdownMenu.Root>
+      <span role="status" aria-live="polite" className="sr-only">
+        {announcement}
+      </span>
+    </>
   );
 }

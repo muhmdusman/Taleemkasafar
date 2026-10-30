@@ -5,7 +5,9 @@ import {
   cardIndex,
   sumQuestionCounts,
   chapterMetaLabel,
-  pickLiveMock,
+  pickOpenMock,
+  mockSecondsLeft,
+  pickFocusSubject,
   openPracticeFrom,
   nextChapterAfter,
 } from "./dashboard-helpers";
@@ -83,27 +85,108 @@ describe("chapterMetaLabel", () => {
   });
 });
 
-describe("pickLiveMock", () => {
+describe("pickOpenMock", () => {
   const now = Date.parse("2026-10-30T12:00:00Z");
 
-  it("skips mocks whose timer has run out", () => {
-    const picked = pickLiveMock(
+  it("prefers a running mock over an older expired one", () => {
+    const picked = pickOpenMock(
       [
-        { id: "expired", expires_at: "2026-10-30T11:00:00Z" },
         { id: "live", expires_at: "2026-10-30T13:00:00Z" },
+        { id: "expired", expires_at: "2026-10-30T11:00:00Z" },
       ],
       now,
     );
-    expect(picked?.id).toBe("live");
+    expect(picked?.attempt.id).toBe("live");
+    expect(picked?.state).toBe("running");
+  });
+
+  it("reports a paused mock even after its original expiry", () => {
+    const picked = pickOpenMock(
+      [{ id: "p", expires_at: "2026-10-30T11:00:00Z", paused_at: "2026-10-30T10:30:00Z" }],
+      now,
+    );
+    expect(picked?.state).toBe("paused");
   });
 
   it("treats a missing expiry as still running", () => {
-    expect(pickLiveMock([{ id: "open", expires_at: null }], now)?.id).toBe("open");
+    expect(pickOpenMock([{ id: "open", expires_at: null }], now)?.state).toBe("running");
   });
 
-  it("returns null when every mock has expired or there are none", () => {
-    expect(pickLiveMock([{ id: "x", expires_at: "2026-10-30T11:59:59Z" }], now)).toBeNull();
-    expect(pickLiveMock([], now)).toBeNull();
+  it("offers the newest unsubmitted mock as timeUp within a week of expiry", () => {
+    const picked = pickOpenMock([{ id: "x", expires_at: "2026-10-29T12:00:00Z" }], now);
+    expect(picked?.state).toBe("timeUp");
+  });
+
+  it("drops mocks that ran out more than a week ago", () => {
+    expect(pickOpenMock([{ id: "old", expires_at: "2026-10-01T12:00:00Z" }], now)).toBeNull();
+    expect(pickOpenMock([], now)).toBeNull();
+  });
+});
+
+describe("mockSecondsLeft", () => {
+  const now = Date.parse("2026-10-30T12:00:00Z");
+
+  it("counts down to expiry while running", () => {
+    expect(mockSecondsLeft({ expires_at: "2026-10-30T12:10:00Z" }, now)).toBe(600);
+  });
+
+  it("is frozen at expiry minus pause time while paused", () => {
+    expect(
+      mockSecondsLeft(
+        { expires_at: "2026-10-30T11:00:00Z", paused_at: "2026-10-30T10:30:00Z" },
+        now,
+      ),
+    ).toBe(1800);
+  });
+
+  it("clamps at 0 and is null without a time limit", () => {
+    expect(mockSecondsLeft({ expires_at: "2026-10-30T11:00:00Z" }, now)).toBe(0);
+    expect(mockSecondsLeft({ expires_at: null }, now)).toBeNull();
+  });
+});
+
+describe("pickFocusSubject", () => {
+  const subjects = [
+    { id: "m", slug: "maths", name: "Maths" },
+    { id: "p", slug: "physics", name: "Physics" },
+    { id: "e", slug: "english", name: "English" },
+  ];
+
+  it("picks the weakest subject of the latest mock", () => {
+    expect(
+      pickFocusSubject(
+        subjects,
+        { maths: { correct: 60, total: 100 }, physics: { correct: 24, total: 60 } },
+        {},
+      ),
+    ).toEqual({ slug: "physics", name: "Physics", reason: "mock", percent: 40 });
+  });
+
+  it("falls back to low practice accuracy with enough answers", () => {
+    expect(
+      pickFocusSubject(
+        subjects,
+        { maths: { correct: 90, total: 100 } },
+        { m: { answered: 50, correct: 45 }, p: { answered: 20, correct: 9 }, e: { answered: 4, correct: 0 } },
+      ),
+    ).toEqual({ slug: "physics", name: "Physics", reason: "practice", percent: 45 });
+  });
+
+  it("suggests an untouched subject once practice has started", () => {
+    expect(
+      pickFocusSubject(subjects, null, { m: { answered: 30, correct: 27 }, p: { answered: 12, correct: 10 } }),
+    ).toEqual({ slug: "english", name: "English", reason: "new", percent: null });
+  });
+
+  it("returns null with no activity or when everything is strong", () => {
+    expect(pickFocusSubject(subjects, null, {})).toBeNull();
+    expect(
+      pickFocusSubject(subjects, null, {
+        m: { answered: 30, correct: 27 },
+        p: { answered: 30, correct: 25 },
+        e: { answered: 30, correct: 24 },
+      }),
+    ).toBeNull();
   });
 });
 

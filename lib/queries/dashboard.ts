@@ -2,12 +2,19 @@ import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { routes } from "@/lib/routes";
 import {
+  mockSecondsLeft,
   openPracticeFrom,
-  pickLiveMock,
+  pickOpenMock,
   resolveDisplayName,
+  type OpenMockState,
   type OpenPractice,
 } from "./dashboard-helpers";
-import { getActiveEntryTest, type EntryTest } from "./entry-test";
+import {
+  getActiveEntryTest,
+  getUserTestContext,
+  hasChosenEntryTest,
+  type EntryTest,
+} from "./entry-test";
 import {
   getEntryTestsCached,
   getSubjectsCached,
@@ -28,21 +35,6 @@ export type DashboardData = {
 
 type ServerClient = Awaited<ReturnType<typeof createClient>>;
 
-/** Cookie client + signed-in user + active test, or null if either is missing. */
-async function currentUserAndTest(): Promise<{
-  supabase: ServerClient;
-  userId: string;
-  entryTestId: string;
-} | null> {
-  const supabase = await createClient();
-  const { data: claims } = await supabase.auth.getClaims();
-  const userId = claims?.claims?.sub as string | undefined;
-  if (!userId) return null;
-  const entryTest = await getActiveEntryTest();
-  if (!entryTest) return null;
-  return { supabase, userId, entryTestId: entryTest.id };
-}
-
 /**
  * Whether the signed-in user has any recorded attempts for the ACTIVE entry
  * test (same scope as `getJourney`, so the greeting and the next-step card
@@ -50,13 +42,13 @@ async function currentUserAndTest(): Promise<{
  * Suspense boundary without duplicate queries.
  */
 export const getHasActivity = cache(async (): Promise<boolean> => {
-  const ctx = await currentUserAndTest();
+  const ctx = await getUserTestContext();
   if (!ctx) return false;
   const { count } = await ctx.supabase
     .from("attempts")
     .select("id", { count: "exact", head: true })
     .eq("user_id", ctx.userId)
-    .eq("entry_test_id", ctx.entryTestId);
+    .eq("entry_test_id", ctx.entryTest.id);
   return (count ?? 0) > 0;
 });
 
@@ -103,13 +95,17 @@ export async function getDashboardData(): Promise<DashboardData | null> {
   };
 }
 
-/** A mock still running for the active test. */
+/** An unsubmitted mock for the active test: running, paused or out of time. */
 export type MockResume = {
   kind: "mock";
+  attemptId: string;
+  state: OpenMockState;
   href: string;
   title: string;
   answered: number;
   total: number;
+  /** Time left (frozen while paused, 0 once time is up); null = no limit. */
+  secondsLeft: number | null;
 };
 
 /** The practice / past-paper chapter the user last answered in, unfinished. */
@@ -117,6 +113,7 @@ export type PracticeResume = {
   kind: "practice";
   href: string;
   usage: "practice" | "past_paper";
+  subjectSlug: string;
   subjectName: string;
   chapterTitle: string;
   answered: number;
@@ -128,6 +125,8 @@ export type ResumePoint = MockResume | PracticeResume;
 /** What the dashboard home suggests next, for the active entry test. */
 export type Journey = {
   resume: ResumePoint | null;
+  /** Picked an entry test themselves (vs. the default first test). */
+  hasChosenTest: boolean;
   /** Has answered at least one practice / past-paper question. */
   hasPracticed: boolean;
   /** Has submitted at least one mock. */
@@ -135,65 +134,74 @@ export type Journey = {
 };
 
 /**
- * The newest in-progress mock whose timer hasn't run out, for the active test.
- * Used by the home card and by the mock page ("Resume mock" instead of
- * starting a second paper). Null when none, or if a read fails.
+ * The unsubmitted mock to surface for the active test (see `pickOpenMock`):
+ * paused or running first, else the newest one whose time ran out recently.
+ * Used by the home page and the mock page, where it replaces "Start" so a
+ * second paper can't orphan the first. Null when none, or if a read fails.
  */
 export const getOpenMock = cache(async (): Promise<MockResume | null> => {
-  const ctx = await currentUserAndTest();
+  const ctx = await getUserTestContext();
   if (!ctx) return null;
-  const { supabase, userId, entryTestId } = ctx;
+  const { supabase, userId, entryTest } = ctx;
 
+  // `*` (not a column list) so this still works before the mcq_15 migration
+  // adds `paused_at`: the column is simply absent.
   const { data } = await supabase
     .from("attempts")
-    .select("id, blueprint_id, expires_at")
+    .select("*")
     .eq("user_id", userId)
-    .eq("entry_test_id", entryTestId)
+    .eq("entry_test_id", entryTest.id)
     .eq("mode", "mock")
     .eq("status", "in_progress")
     .order("started_at", { ascending: false })
     .limit(5);
 
   // Request time is fine here: this runs after the cookie read above.
-  const live = pickLiveMock<{
+  const now = Date.now();
+  const open = pickOpenMock<{
     id: string;
     blueprint_id: string | null;
     expires_at: string | null;
-  }>(data ?? [], Date.now());
-  if (!live) return null;
+    paused_at?: string | null;
+  }>(data ?? [], now);
+  if (!open) return null;
+  const { attempt, state } = open;
 
   // Mock papers are frozen up front, so every question already has a row.
   const [answeredRes, totalRes, blueprintRes] = await Promise.all([
     supabase
       .from("attempt_answers")
       .select("question_id", { count: "exact", head: true })
-      .eq("attempt_id", live.id)
+      .eq("attempt_id", attempt.id)
       .not("selected_option_id", "is", null),
     supabase
       .from("attempt_answers")
       .select("question_id", { count: "exact", head: true })
-      .eq("attempt_id", live.id),
-    live.blueprint_id
+      .eq("attempt_id", attempt.id),
+    attempt.blueprint_id
       ? supabase
           .from("mock_test_blueprints")
           .select("name")
-          .eq("id", live.blueprint_id)
+          .eq("id", attempt.blueprint_id)
           .maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
 
   return {
     kind: "mock",
-    href: routes.mock(live.id),
+    attemptId: attempt.id,
+    state,
+    href: routes.mock(attempt.id),
     title: blueprintRes.data?.name ?? "Mock test",
     answered: answeredRes.count ?? 0,
     total: totalRes.count ?? 0,
+    secondsLeft: state === "timeUp" ? 0 : mockSecondsLeft(attempt, now),
   };
 });
 
 /**
  * The user's next step on the dashboard home, for the active test:
- *  - a running mock first (its timer doesn't stop),
+ *  - an unsubmitted mock first (a running timer doesn't stop),
  *  - else the chapter they most recently ANSWERED in, if that sitting is
  *    still open (ranked by `answered_at`, so recent work wins over the
  *    first-open time),
@@ -201,19 +209,25 @@ export const getOpenMock = cache(async (): Promise<MockResume | null> => {
  * degrade to "nothing to resume" rather than breaking the page.
  */
 export const getJourney = cache(async (): Promise<Journey> => {
-  const empty: Journey = { resume: null, hasPracticed: false, hasTakenMock: false };
-  const ctx = await currentUserAndTest();
+  const ctx = await getUserTestContext();
+  const empty: Journey = {
+    resume: null,
+    hasChosenTest: false,
+    hasPracticed: false,
+    hasTakenMock: false,
+  };
   if (!ctx) return empty;
-  const { supabase, userId, entryTestId } = ctx;
+  const { supabase, userId, entryTest } = ctx;
 
-  const [openMock, lastPracticeRes, submittedMockRes] = await Promise.all([
+  const [openMock, chosen, lastPracticeRes, submittedMockRes] = await Promise.all([
     getOpenMock(),
+    hasChosenEntryTest(),
     // Latest answered practice question in this test, with its sitting.
     supabase
       .from("attempt_answers")
       .select("attempt_id, attempts!inner(topic_id, usage, status, user_id, entry_test_id, mode)")
       .eq("attempts.user_id", userId)
-      .eq("attempts.entry_test_id", entryTestId)
+      .eq("attempts.entry_test_id", entryTest.id)
       .eq("attempts.mode", "practice")
       .not("selected_option_id", "is", null)
       .order("answered_at", { ascending: false })
@@ -223,7 +237,7 @@ export const getJourney = cache(async (): Promise<Journey> => {
       .from("attempts")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId)
-      .eq("entry_test_id", entryTestId)
+      .eq("entry_test_id", entryTest.id)
       .eq("mode", "mock")
       .eq("status", "submitted"),
   ]);
@@ -237,6 +251,7 @@ export const getJourney = cache(async (): Promise<Journey> => {
     resume:
       openMock ??
       (openPractice ? await describePractice(supabase, openPractice) : null),
+    hasChosenTest: chosen,
     hasPracticed: lastPractice !== null,
     hasTakenMock: (submittedMockRes.count ?? 0) > 0,
   };
@@ -276,6 +291,7 @@ async function describePractice(
         ? routes.pastPaper(subject.slug, topic.slug)
         : routes.practice(subject.slug, topic.slug),
     usage: open.usage,
+    subjectSlug: subject.slug,
     subjectName: subject.name,
     chapterTitle: topic.title,
     answered: answeredRes.count ?? 0,

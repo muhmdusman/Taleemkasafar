@@ -11,6 +11,7 @@ export type { ChapterOverview };
 export type SubjectPageData = {
   entryTestSlug: string;
   entryTestName: string;
+  subjectId: string | null;
   subjectSlug: string;
   subjectName: string;
   chapters: ChapterOverview[];
@@ -39,6 +40,7 @@ export async function getSubjectPage(
   return {
     entryTestSlug: entryTest.slug,
     entryTestName: entryTest.name,
+    subjectId: subject.subject_id,
     subjectSlug: subject.subject_slug ?? subjectSlug,
     subjectName: subject.subject_name ?? subjectSlug,
     chapters,

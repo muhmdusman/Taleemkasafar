@@ -1,11 +1,20 @@
 import Link from "next/link";
 import { Icon } from "@/components/dashboard/icon";
-import { appButton, card } from "@/components/dashboard/styles";
+import { LinkPendingIndicator } from "@/components/dashboard/link-pending";
+import { appButton, card, focusRing } from "@/components/dashboard/styles";
+import { toneClasses } from "@/components/dashboard/tone";
 import type { MockResultDetail } from "@/lib/queries/mock";
 import { routes } from "@/lib/routes";
+import { subjectTone } from "@/lib/subject-tone";
 import { cn } from "@/lib/utils";
 
-/** Post-submission mock result: overall score + per-subject breakdown. */
+/** Below this subject score the result offers "Practise <subject>". */
+const PRACTISE_BELOW = 70;
+
+/**
+ * Post-submission mock result: overall score + per-subject breakdown in each
+ * subject's tone, with a direct link to practise any weaker subject.
+ */
 export function MockResult({ result }: { result: MockResultDetail }) {
   const score = Math.round(result.scorePercent);
   return (
@@ -38,20 +47,39 @@ export function MockResult({ result }: { result: MockResultDetail }) {
         <div className="flex flex-col gap-3">
           {Object.entries(result.perSubject).map(([subject, b]) => {
             const pct = b.total === 0 ? 0 : (b.correct / b.total) * 100;
+            const tone = toneClasses[subjectTone(subject)];
+            // Keys are subject slugs; show them as words ("pu-maths" -> "maths").
+            const name = subject.replace(/^pu-/, "").replace(/-/g, " ");
             return (
-              <div key={subject} className={cn(card, "p-5")}>
-                <div className="mb-3 flex items-center justify-between font-headline text-sm font-semibold tracking-tight">
-                  <span className="capitalize text-on-surface">{subject}</span>
+              <div key={subject} className={cn(card, "border-l-4 p-5", tone.border)}>
+                <div className="mb-3 flex items-center justify-between gap-3 font-headline text-sm font-semibold tracking-tight">
+                  <span className="capitalize text-on-surface">{name}</span>
                   <span className="tabular-nums text-on-surface-variant">
-                    {b.correct} / {b.total} · {Math.round(pct)}%
+                    {b.correct} / {b.total} ·{" "}
+                    <span className={tone.text}>{Math.round(pct)}%</span>
                   </span>
                 </div>
                 <div className="h-2.5 w-full overflow-hidden rounded-full bg-surface-high">
                   <div
-                    className="h-full rounded-full bg-brand transition-[width] duration-300 motion-reduce:transition-none"
+                    className={cn("h-full rounded-full transition-[width] duration-300 motion-reduce:transition-none", tone.bar)}
                     style={{ width: `${pct}%` }}
                   />
                 </div>
+                {b.total > 0 && pct < PRACTISE_BELOW ? (
+                  <Link
+                    href={routes.subject(subject)}
+                    className={cn(
+                      "mt-3 inline-flex items-center gap-1 rounded font-headline text-sm font-semibold underline-offset-4 hover:underline",
+                      tone.text,
+                      focusRing,
+                    )}
+                  >
+                    <span className="capitalize">Practise {name}</span>
+                    <LinkPendingIndicator>
+                      <Icon name="arrow_forward" className="text-base" />
+                    </LinkPendingIndicator>
+                  </Link>
+                ) : null}
               </div>
             );
           })}
@@ -63,7 +91,10 @@ export function MockResult({ result }: { result: MockResultDetail }) {
           <Icon name="replay" className="text-lg" /> Take Another
         </Link>
         <Link href={routes.performance} className={appButton({ variant: "secondary" })}>
-          <Icon name="insights" className="text-lg" /> View Performance
+          <Icon name="insights" className="text-lg" /> View progress
+        </Link>
+        <Link href={routes.dashboard} className={appButton({ variant: "ghost" })}>
+          <Icon name="home" className="text-lg" /> Home
         </Link>
       </div>
     </div>
