@@ -11,7 +11,7 @@ const ITEMS = [
   { href: routes.dashboard, label: "Home", icon: "dashboard" },
   { href: routes.subjects, label: "Subjects", icon: "menu_book" },
   { href: routes.mocks, label: "Tests", icon: "quiz" },
-  { href: routes.performance, label: "Profile", icon: "person" },
+  { href: routes.performance, label: "Progress", icon: "insights" },
 ];
 
 /** Mobile-only bottom navigation bar. */

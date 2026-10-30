@@ -5,9 +5,10 @@ import { getMockLanding } from "@/lib/queries/mock";
 import { getActiveEntryTest } from "@/lib/queries/entry-test";
 import { getEntryTestsCached } from "@/lib/queries/catalog";
 import { getDisplayName } from "@/lib/queries/profile";
+import { getOpenMock } from "@/lib/queries/dashboard";
 import { DashboardHeader, DashboardHeaderFallback } from "@/components/dashboard/header";
 import { Icon } from "@/components/dashboard/icon";
-import { card, cardInteractive, skeleton } from "@/components/dashboard/styles";
+import { appButton, card, cardInteractive, skeleton } from "@/components/dashboard/styles";
 import { StartMockButton } from "@/components/quiz/start-mock-button";
 import { formatTime } from "@/lib/quiz/time";
 import { routes } from "@/lib/routes";
@@ -22,11 +23,13 @@ export default function MockPage() {
 }
 
 async function MockLandingView() {
-  const [data, entryTest, tests, displayName] = await Promise.all([
+  const [data, entryTest, tests, displayName, openMock] = await Promise.all([
     getMockLanding(),
     getActiveEntryTest(),
     getEntryTestsCached(),
     getDisplayName(),
+    // A mock still running: offer it instead of starting a second paper.
+    getOpenMock(),
   ]);
 
   if (!entryTest) redirect("/auth/login");
@@ -42,6 +45,32 @@ async function MockLandingView() {
       />
       <main className="px-4 pb-24 pt-28 md:px-12 md:pb-20">
         <div className="mx-auto max-w-4xl">
+          {openMock ? (
+            <section
+              aria-label="Mock in progress"
+              className="mb-6 flex flex-col gap-4 rounded-2xl border border-brand/20 bg-brand-fixed p-5 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="flex items-start gap-3">
+                <Icon name="timer" filled className="mt-0.5 text-2xl text-brand-container" />
+                <div>
+                  <p className="font-headline font-semibold text-on-surface">
+                    You have a mock in progress
+                  </p>
+                  <p className="text-sm text-on-surface-variant">
+                    <span className="tabular-nums">
+                      {openMock.answered} of {openMock.total}
+                    </span>{" "}
+                    answered. The timer keeps running.
+                  </p>
+                </div>
+              </div>
+              <Link href={openMock.href} className={cn(appButton(), "shrink-0")}>
+                Resume mock
+                <Icon name="arrow_forward" className="text-lg" />
+              </Link>
+            </section>
+          ) : null}
+
           {/* Hero / start card */}
           {data?.blueprint ? (
             <section className={cn(card, "mb-12 p-6 md:p-10")}>
@@ -74,7 +103,14 @@ async function MockLandingView() {
                 </div>
               </dl>
               <div className="mt-8">
-                <StartMockButton blueprintId={data.blueprint.id} />
+                {/* Starting a new paper would leave the open one ungraded. */}
+                {openMock ? (
+                  <p className="text-sm text-on-surface-variant">
+                    Submit your mock in progress to start a new one.
+                  </p>
+                ) : (
+                  <StartMockButton blueprintId={data.blueprint.id} />
+                )}
               </div>
             </section>
           ) : (

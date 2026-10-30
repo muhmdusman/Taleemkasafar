@@ -3,22 +3,21 @@ import { redirect } from "next/navigation";
 import { getActiveEntryTest } from "@/lib/queries/entry-test";
 import { getEntryTestsCached, getSubjectsCached } from "@/lib/queries/catalog";
 import { getDisplayName } from "@/lib/queries/profile";
-import { getHasActivity } from "@/lib/queries/dashboard";
+import { getHasActivity, getJourney } from "@/lib/queries/dashboard";
 import { DashboardHeader, DashboardHeaderFallback } from "@/components/dashboard/header";
 import { HeroSection } from "@/components/dashboard/hero-section";
+import { NextStepCard } from "@/components/dashboard/next-step-card";
 import { SectionHeading } from "@/components/dashboard/section-heading";
 import { SubjectsSection } from "@/components/dashboard/subjects-section";
-import { ChallengeSection } from "@/components/dashboard/challenge-section";
 import { skeleton } from "@/components/dashboard/styles";
 import { cn } from "@/lib/utils";
 
 /**
- * Dashboard home. Each region streams in its OWN Suspense boundary so the page
- * shell + the fully-static Challenge section paint immediately, the cached
- * subjects appear almost instantly (served from the catalog cache, not
- * refetched on every navigation), and only the personalized header/hero fill in
- * last. This avoids the old single full-page skeleton that gated everything
- * behind the slowest per-user query.
+ * Dashboard home: greeting + ONE next step (resume / get started / keep
+ * going), then the subjects. Each region streams in its OWN Suspense boundary:
+ * the cached subjects appear almost instantly (served from the catalog cache,
+ * not refetched on every navigation), the greeting next, and the next-step
+ * card (a few small per-user reads) last, without holding up the rest.
  */
 export default function HomePage() {
   return (
@@ -28,7 +27,7 @@ export default function HomePage() {
       </Suspense>
 
       <main className="px-6 pb-24 pt-28 md:px-8 md:pb-20">
-        <div className="mx-auto flex max-w-7xl flex-col gap-16">
+        <div className="mx-auto flex max-w-7xl flex-col gap-14">
           <Suspense fallback={<HeroFallback />}>
             <HeroRegion />
           </Suspense>
@@ -39,9 +38,6 @@ export default function HomePage() {
               <SubjectsRegion />
             </Suspense>
           </section>
-
-          {/* Fully static — no data, renders immediately. */}
-          <ChallengeSection />
         </div>
       </main>
     </>
@@ -59,7 +55,6 @@ async function HeaderRegion() {
   return (
     <DashboardHeader
       title="Dashboard"
-      badge="Active Session"
       displayName={displayName}
       tests={tests}
       activeTestId={entryTest.id}
@@ -69,6 +64,9 @@ async function HeaderRegion() {
 
 /* ---- Hero (personalized: name + activity) ---- */
 async function HeroRegion() {
+  // Start the next-step reads now; `cache` hands the same promise to
+  // NextStepRegion, so the card doesn't wait for this region first.
+  void getJourney();
   const [entryTest, displayName, hasActivity] = await Promise.all([
     getActiveEntryTest(),
     getDisplayName(),
@@ -80,8 +78,19 @@ async function HeroRegion() {
       displayName={displayName}
       testName={entryTest.name}
       hasActivity={hasActivity}
+      aside={
+        <Suspense fallback={<div className={cn(skeleton, "h-64 w-full")} />}>
+          <NextStepRegion testName={entryTest.name} />
+        </Suspense>
+      }
     />
   );
+}
+
+/* ---- Next step (resume / checklist; per-user) ---- */
+async function NextStepRegion({ testName }: { testName: string }) {
+  const journey = await getJourney();
+  return <NextStepCard journey={journey} testName={testName} />;
 }
 
 /* ---- Subjects (cached catalog — fast across navigations) ---- */
@@ -94,7 +103,7 @@ async function SubjectsRegion() {
 
 /* ---- Static fallbacks ---- */
 function HeroFallback() {
-  return <div className={cn(skeleton, "h-40 w-full")} />;
+  return <div className={cn(skeleton, "h-64 w-full")} />;
 }
 
 function SubjectsFallback() {

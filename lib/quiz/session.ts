@@ -112,3 +112,40 @@ export function sectionAnsweredCount(
   }
   return n;
 }
+
+export type MockSubmitCounts = {
+  answered: number;
+  unanswered: number;
+  markedForReview: number;
+};
+
+/** Counts shown in the "submit test?" confirmation. */
+export function mockSubmitCounts(states: AnswerState[]): MockSubmitCounts {
+  let answered = 0;
+  let markedForReview = 0;
+  for (const s of states) {
+    if (s.saved) answered += 1;
+    if (s.review) markedForReview += 1;
+  }
+  return { answered, unanswered: states.length - answered, markedForReview };
+}
+
+export type PracticeSessionSummary = {
+  answered: number;
+  correct: number;
+  /** Whole-number percent of answered questions that were correct. */
+  accuracyPercent: number;
+};
+
+/** Summary of the answers graded in the current practice sitting. */
+export function practiceSessionSummary(
+  graded: { isCorrect: boolean }[],
+): PracticeSessionSummary {
+  const answered = graded.length;
+  const correct = graded.filter((g) => g.isCorrect).length;
+  return {
+    answered,
+    correct,
+    accuracyPercent: answered === 0 ? 0 : Math.round((correct / answered) * 100),
+  };
+}

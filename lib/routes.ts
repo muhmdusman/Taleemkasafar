@@ -39,7 +39,8 @@ export const routes = {
   mock: (attemptId: string) => `${DASHBOARD}/mock/${attemptId}`,
   mockResult: (attemptId: string) => `${DASHBOARD}/mock/${attemptId}/result`,
   performance: `${DASHBOARD}/performance`,
-  // Nav placeholders: pages not built yet (render 404 for now).
+  // Reserved for pages not built yet (404 today). Not linked from the nav;
+  // the sidebar's help link goes to `contact` meanwhile.
   settings: `${DASHBOARD}/settings`,
   help: `${DASHBOARD}/help`,
 } as const;

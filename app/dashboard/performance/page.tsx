@@ -56,15 +56,16 @@ async function PerformanceView() {
                 Take a mock test or practice some chapters to start tracking your
                 progress.
               </p>
-              <div className="mt-6 flex justify-center gap-3">
-                <Link href={routes.mocks} className={appButton()}>
-                  Start a Mock
+              {/* Practice first: it's the gentler start (same order as the home checklist). */}
+              <div className="mt-6 flex flex-wrap justify-center gap-3">
+                <Link href={routes.subjects} className={appButton()}>
+                  Practise a chapter
                 </Link>
                 <Link
-                  href={routes.subjects}
+                  href={routes.mocks}
                   className={appButton({ variant: "secondary" })}
                 >
-                  Practice
+                  Take a mock
                 </Link>
               </div>
             </div>

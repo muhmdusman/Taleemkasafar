@@ -5,6 +5,9 @@ import {
   cardIndex,
   sumQuestionCounts,
   chapterMetaLabel,
+  pickLiveMock,
+  openPracticeFrom,
+  nextChapterAfter,
 } from "./dashboard-helpers";
 
 describe("resolveDisplayName", () => {
@@ -77,5 +80,69 @@ describe("chapterMetaLabel", () => {
 
   it("treats null question count as 0", () => {
     expect(chapterMetaLabel(0, null)).toBe("0 MCQs");
+  });
+});
+
+describe("pickLiveMock", () => {
+  const now = Date.parse("2026-10-30T12:00:00Z");
+
+  it("skips mocks whose timer has run out", () => {
+    const picked = pickLiveMock(
+      [
+        { id: "expired", expires_at: "2026-10-30T11:00:00Z" },
+        { id: "live", expires_at: "2026-10-30T13:00:00Z" },
+      ],
+      now,
+    );
+    expect(picked?.id).toBe("live");
+  });
+
+  it("treats a missing expiry as still running", () => {
+    expect(pickLiveMock([{ id: "open", expires_at: null }], now)?.id).toBe("open");
+  });
+
+  it("returns null when every mock has expired or there are none", () => {
+    expect(pickLiveMock([{ id: "x", expires_at: "2026-10-30T11:59:59Z" }], now)).toBeNull();
+    expect(pickLiveMock([], now)).toBeNull();
+  });
+});
+
+describe("openPracticeFrom", () => {
+  it("returns an in-progress sitting with its chapter", () => {
+    expect(
+      openPracticeFrom("a1", { topic_id: "t1", usage: "past_paper", status: "in_progress" }),
+    ).toEqual({ attemptId: "a1", topicId: "t1", usage: "past_paper" });
+  });
+
+  it("accepts the embedded row as a one-item array", () => {
+    expect(
+      openPracticeFrom("a1", [{ topic_id: "t1", usage: null, status: "in_progress" }]),
+    ).toEqual({ attemptId: "a1", topicId: "t1", usage: "practice" });
+  });
+
+  it("returns null for a finished sitting or one without a chapter", () => {
+    expect(openPracticeFrom("a1", { topic_id: "t1", status: "submitted" })).toBeNull();
+    expect(openPracticeFrom("a1", { topic_id: null, status: "in_progress" })).toBeNull();
+    expect(openPracticeFrom("a1", null)).toBeNull();
+  });
+});
+
+describe("nextChapterAfter", () => {
+  const chapters = [
+    { chapter_slug: "kinematics", chapter_title: "Kinematics", question_count: 30 },
+    { chapter_slug: "empty", chapter_title: "Empty", question_count: 0 },
+    { chapter_slug: "dynamics", chapter_title: null, question_count: 12 },
+  ];
+
+  it("skips chapters without questions", () => {
+    expect(nextChapterAfter(chapters, "kinematics")).toEqual({
+      slug: "dynamics",
+      title: "dynamics",
+    });
+  });
+
+  it("returns null for the last chapter or an unknown slug", () => {
+    expect(nextChapterAfter(chapters, "dynamics")).toBeNull();
+    expect(nextChapterAfter(chapters, "missing")).toBeNull();
   });
 });

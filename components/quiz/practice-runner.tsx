@@ -4,6 +4,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/dashboard/icon";
 import { appButton, card } from "@/components/dashboard/styles";
+import {
+  practiceSessionSummary,
+  type PracticeSessionSummary,
+} from "@/lib/quiz/session";
+import { Dialog } from "./dialog";
 import { OptionButton, type OptionVisualState } from "./option-button";
 import { MathText } from "./math-text";
 import { BookmarkButton } from "./bookmark-button";
@@ -91,10 +96,34 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
   );
 
   const endHref = routes.subject(subjectSlug);
-  const handleEnd = useCallback(() => {
-    if (attemptId) finishPractice(attemptId);
-    router.push(endHref);
-  }, [attemptId, endHref, router]);
+  const nextHref = data.nextChapter
+    ? data.usage === "past_paper"
+      ? routes.pastPaper(subjectSlug, data.nextChapter.slug)
+      : routes.practice(subjectSlug, data.nextChapter.slug)
+    : null;
+
+  // "end" = left early via End, "finish" = reached the last question.
+  const [summary, setSummary] = useState<"end" | "finish" | null>(null);
+
+  /** Close the sitting (marks the attempt submitted) and go to `href`. */
+  const leave = useCallback(
+    (href: string) => {
+      // Close the summary first: the hidden route must not keep a modal open.
+      setSummary(null);
+      if (attemptId) finishPractice(attemptId);
+      router.push(href);
+    },
+    [attemptId, router],
+  );
+  const sessionAnswers = Object.values(graded);
+  const openSummary = useCallback(
+    (kind: "end" | "finish") => {
+      // Nothing answered this sitting: no summary to show, just leave.
+      if (sessionAnswers.length === 0) leave(endHref);
+      else setSummary(kind);
+    },
+    [sessionAnswers.length, leave, endHref],
+  );
 
   if (questions.length === 0) {
     return (
@@ -149,7 +178,7 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
         </div>
         <button
           type="button"
-          onClick={handleEnd}
+          onClick={() => openSummary("end")}
           className={cn(
             appButton({ variant: "secondary", size: "sm" }),
             "hover:border-danger/40 hover:bg-danger-fixed hover:text-danger",
@@ -270,12 +299,98 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
             <Icon name="arrow_forward" className="text-lg" />
           </button>
         ) : (
-          <button type="button" onClick={handleEnd} className={appButton()}>
+          <button type="button" onClick={() => openSummary("finish")} className={appButton()}>
             <span className="sr-only sm:not-sr-only">Finish</span>
             <Icon name="flag" className="text-lg" />
           </button>
         )}
       </footer>
+
+      <SessionSummaryDialog
+        kind={summary}
+        stats={practiceSessionSummary(sessionAnswers)}
+        nextChapterTitle={data.nextChapter?.title ?? null}
+        onKeepPractising={() => setSummary(null)}
+        onBackToChapters={() => leave(endHref)}
+        onNextChapter={nextHref ? () => leave(nextHref) : null}
+      />
     </div>
+  );
+}
+
+/**
+ * End-of-sitting summary: this session's score plus the obvious next move
+ * (next chapter when there is one), so a finished chapter leads straight into
+ * the next instead of a dead end.
+ */
+function SessionSummaryDialog({
+  kind,
+  stats,
+  nextChapterTitle,
+  onKeepPractising,
+  onBackToChapters,
+  onNextChapter,
+}: {
+  kind: "end" | "finish" | null;
+  stats: PracticeSessionSummary;
+  nextChapterTitle: string | null;
+  onKeepPractising: () => void;
+  onBackToChapters: () => void;
+  onNextChapter: (() => void) | null;
+}) {
+  const tiles = [
+    { label: "Answered", value: String(stats.answered) },
+    { label: "Correct", value: String(stats.correct) },
+    { label: "Accuracy", value: `${stats.accuracyPercent}%` },
+  ];
+  return (
+    <Dialog
+      open={kind !== null}
+      title={kind === "finish" ? "Chapter finished" : "End this session?"}
+      onClose={onKeepPractising}
+      actions={
+        <>
+          {kind === "end" ? (
+            <button
+              type="button"
+              onClick={onKeepPractising}
+              className={appButton({ variant: "secondary" })}
+            >
+              Keep practising
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={onBackToChapters}
+            className={appButton({ variant: onNextChapter ? "secondary" : "primary" })}
+          >
+            Back to chapters
+          </button>
+          {onNextChapter ? (
+            <button type="button" onClick={onNextChapter} className={appButton()}>
+              Next chapter
+              <Icon name="arrow_forward" className="text-lg" />
+            </button>
+          ) : null}
+        </>
+      }
+    >
+      <p>This session:</p>
+      <dl className="mt-3 grid grid-cols-3 gap-2">
+        {tiles.map((t) => (
+          <div key={t.label} className="rounded-xl bg-surface-low px-3 py-3">
+            <dt className="text-xs font-semibold text-on-surface-variant">{t.label}</dt>
+            <dd className="mt-0.5 font-headline text-2xl font-bold tabular-nums text-on-surface">
+              {t.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {onNextChapter && nextChapterTitle ? (
+        <p className="mt-4">
+          Up next: <span className="font-semibold text-on-surface">{nextChapterTitle}</span>
+        </p>
+      ) : null}
+    </Dialog>
   );
 }

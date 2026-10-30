@@ -1,6 +1,8 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveEntryTest } from "./entry-test";
+import { getChaptersCached } from "./catalog";
+import { nextChapterAfter } from "./dashboard-helpers";
 import { resumeIndex } from "@/lib/quiz/session";
 import type { Database } from "@/lib/database.types";
 
@@ -31,6 +33,8 @@ export type PracticeScreenData = {
   topicId: string;
   questions: QuizQuestion[];
   resumeIndex: number;
+  /** Next chapter with questions in this subject (for "Next chapter"), or null. */
+  nextChapter: { slug: string; title: string } | null;
 };
 
 /**
@@ -66,6 +70,12 @@ export async function getPracticeScreen(
     .is("deleted_at", null)
     .maybeSingle();
   if (!chapter) return null;
+
+  // Cached catalog read (same order + counts as the subject page).
+  const nextChapter = nextChapterAfter(
+    await getChaptersCached(entryTest.slug, subject.slug),
+    chapter.slug,
+  );
 
   // All descendant topic ids (chapter node + its children) for question scope.
   const { data: descendants } = await supabase
@@ -130,6 +140,7 @@ export async function getPracticeScreen(
       topicId: chapter.id,
       questions: [],
       resumeIndex: 0,
+      nextChapter,
     };
   }
 
@@ -196,5 +207,6 @@ export async function getPracticeScreen(
     topicId: chapter.id,
     questions: quizQuestions,
     resumeIndex: resumeIndex(savedFlags),
+    nextChapter,
   };
 }
