@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/dashboard/icon";
+import { TopProgressBar } from "@/components/dashboard/loading-indicators";
 import { appButton, card } from "@/components/dashboard/styles";
+import { toneClasses } from "@/components/dashboard/tone";
+import { subjectTone } from "@/lib/subject-tone";
 import {
   practiceSessionSummary,
   type PracticeSessionSummary,
@@ -37,7 +40,9 @@ type Graded = {
  *    viewport; explanation revealed via a button at the bottom
  *  - bottom bar: Prev / Next + Explanation toggle
  * Instant server-graded feedback (green correct / red wrong); the clicked
- * option shows a "TS" loader while grading.
+ * option shows a "TS" loader while grading. The subject's soft tone colours
+ * the progress bar, chips and question card; a small streak chip rewards
+ * three or more correct answers in a row.
  */
 export function PracticeRunner({ data }: { data: PracticeScreenData }) {
   const router = useRouter();
@@ -47,7 +52,11 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
   const [graded, setGraded] = useState<Record<string, Graded>>({});
   const [pendingOption, setPendingOption] = useState<string | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
+  // Correct/wrong in the order answered this sitting (for the streak chip).
+  const [answerLog, setAnswerLog] = useState<boolean[]>([]);
+  const [leaving, startLeaving] = useTransition();
   const questionStartRef = useRef<number>(Date.now());
+  const tone = toneClasses[subjectTone(subjectSlug)];
 
   useEffect(() => {
     let active = true;
@@ -88,6 +97,7 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
             explanation: result.explanation ?? null,
           },
         }));
+        setAnswerLog((log) => [...log, result.isCorrect ?? false]);
         setShowExplanation(true);
       }
       setPendingOption(null);
@@ -111,7 +121,8 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
       // Close the summary first: the hidden route must not keep a modal open.
       setSummary(null);
       if (attemptId) finishPractice(attemptId);
-      router.push(href);
+      // Transition: keeps `leaving` true (top progress bar) until the next screen shows.
+      startLeaving(() => router.push(href));
     },
     [attemptId, router],
   );
@@ -153,12 +164,17 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
 
   const answeredCount = Object.keys(graded).length;
   const progressPct = (answeredCount / questions.length) * 100;
+  const correctCount = answerLog.filter(Boolean).length;
+  const wrongCount = answerLog.length - correctCount;
+  const lastWrong = answerLog.lastIndexOf(false);
+  const streak = answerLog.length - 1 - lastWrong;
   const isLast = index === questions.length - 1;
   const isFirst = index === 0;
 
   return (
     <div className="flex h-full flex-col">
       <CheckingOverlay active={pendingOption !== null} />
+      <TopProgressBar active={leaving} label="Leaving practice" />
 
       {/* Slim header: logo · moving counter · end */}
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-outline-variant bg-surface-lowest px-4 md:px-6">
@@ -168,7 +184,7 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
         <div className="mx-4 flex flex-1 items-center gap-3">
           <div className="h-2 w-full max-w-md overflow-hidden rounded-full bg-surface-high">
             <div
-              className="h-full rounded-full bg-brand transition-[width] duration-300 motion-reduce:transition-none"
+              className={cn("h-full rounded-full transition-[width] duration-300 motion-reduce:transition-none", tone.bar)}
               style={{ width: `${progressPct}%` }}
             />
           </div>
@@ -193,13 +209,36 @@ export function PracticeRunner({ data }: { data: PracticeScreenData }) {
         <div className="mx-auto grid h-full max-w-6xl grid-cols-1 gap-6 p-4 md:grid-cols-2 md:gap-8 md:p-8">
           {/* Statement panel */}
           <section className="flex flex-col">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="font-headline text-xs font-semibold uppercase tracking-widest text-brand">
-                {data.subjectName} · Q{index + 1}
-              </span>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <span className={cn("inline-flex max-w-full items-center truncate rounded-full px-3 py-1 font-headline text-xs font-semibold", tone.chip)}>
+                  {data.subjectName} · {data.chapterTitle}
+                </span>
+                <span className="font-headline text-xs font-semibold tabular-nums text-on-surface-variant">
+                  Q{index + 1}
+                </span>
+              </div>
               <BookmarkButton questionId={current.id} />
             </div>
-            <div className={cn(card, "flex-1 p-6 md:p-8")}>
+            {/* This sitting so far: score chips + a streak cheer. */}
+            {answerLog.length > 0 ? (
+              <div className="mb-3 flex flex-wrap gap-2" aria-label="This session">
+                <span className="inline-flex items-center gap-1 rounded-full bg-success-fixed px-2.5 py-0.5 font-headline text-xs font-semibold text-success">
+                  <Icon name="check" className="text-sm" /> {correctCount} correct
+                </span>
+                {wrongCount > 0 ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-danger-fixed px-2.5 py-0.5 font-headline text-xs font-semibold text-danger">
+                    <Icon name="close" className="text-sm" /> {wrongCount} to review
+                  </span>
+                ) : null}
+                {streak >= 3 ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-tone-amber-soft px-2.5 py-0.5 font-headline text-xs font-semibold text-tone-amber">
+                    🔥 {streak} in a row
+                  </span>
+                ) : null}
+              </div>
+            ) : null}
+            <div className={cn(card, "flex-1 border-t-4 p-6 md:p-8", tone.topBorder)}>
               <p className="font-body text-xl leading-relaxed text-on-surface">
                 <MathText>{current.statement}</MathText>
               </p>
