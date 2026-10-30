@@ -1,7 +1,7 @@
 import type { Section } from "@/lib/quiz/session";
 import { sectionAnsweredCount } from "@/lib/quiz/session";
 
-/** Per-section answered counts with Soft Brutalism progress bars. */
+/** Per-section answered counts with rounded progress bars. */
 export function SectionProgress({
   sections,
   savedFlags,
@@ -17,15 +17,15 @@ export function SectionProgress({
         const pct = total === 0 ? 0 : (answered / total) * 100;
         return (
           <div key={s.label}>
-            <div className="mb-1 flex justify-between font-headline text-xs font-bold uppercase tracking-tight">
-              <span>{s.label}</span>
-              <span className="text-on-surface-variant">
+            <div className="mb-1.5 flex justify-between font-headline text-xs font-semibold tracking-tight">
+              <span className="text-on-surface">{s.label}</span>
+              <span className="tabular-nums text-on-surface-variant">
                 {answered} / {total}
               </span>
             </div>
-            <div className="h-3 w-full border-2 border-ink bg-surface-high">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-surface-high">
               <div
-                className="h-full bg-brand transition-all"
+                className="h-full rounded-full bg-brand transition-[width] duration-300 motion-reduce:transition-none"
                 style={{ width: `${pct}%` }}
               />
             </div>

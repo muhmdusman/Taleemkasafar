@@ -8,9 +8,9 @@
      * shadcn/ui HSL variables, ALIGNED to the brand tokens below so any
      * shadcn component matches the palette (primary stays ink/charcoal, not
      * blue). If you change a brand token, update its mirror here too.
-     * `--radius` is deliberately left at the shadcn default: public-site
-     * rounding is applied per component via classes, so the dashboard's
-     * 0px Soft Brutalism shapes are unaffected.
+     * `--radius` is deliberately left at the shadcn default: public-site and
+     * dashboard rounding is applied per component via classes, so the auth
+     * pages' 0px Soft Brutalism shapes are unaffected.
      */
     --background: 60 14.3% 95.9%; /* = surface */
     --foreground: 212.7 13.3% 16.3%; /* = on-surface */
@@ -148,7 +148,8 @@
  * a light black) only where a dark banner/poster is needed, plus brutalist
  * borders and hard shadows. White on #0768D0 is 5.4:1 and on #296FBB 5.1:1
  * (both pass WCAG AA).
- * The dashboard and auth pages keep :root.
+ * Also applied to the dashboard (app/dashboard/layout.tsx, 2026-10-30) so the
+ * app matches the landing page. Auth pages keep :root.
  */
 .theme-public {
   --brand: 7 104 208; /* #0768D0 blue on WHITE backgrounds (text, buttons) */

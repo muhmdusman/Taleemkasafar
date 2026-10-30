@@ -1,10 +1,10 @@
 "use client";
 
 import { Icon } from "@/components/dashboard/icon";
+import { appButton } from "@/components/dashboard/styles";
 import { cn } from "@/lib/utils";
 
-const btn =
-  "flex items-center gap-2 border-2 border-ink px-4 py-2.5 font-headline text-xs font-bold uppercase tracking-tight transition-transform active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-40";
+const btn = appButton({ variant: "secondary", size: "sm" });
 
 /** Mock navigation controls: Save, Prev/Next, Mark Review, section jumps. */
 export function QuizNavigation({
@@ -32,28 +32,30 @@ export function QuizNavigation({
 }) {
   return (
     <div className="flex flex-wrap gap-2">
-      <button type="button" onClick={onPrev} disabled={isFirst} className={cn(btn, "bg-surface-lowest hover:bg-brand-fixed")}>
-        <Icon name="arrow_back" className="text-base" /> Prev
+      <button type="button" onClick={onPrev} disabled={isFirst} className={btn}>
+        <Icon name="arrow_back" className="text-lg" /> Prev
       </button>
-      <button type="button" onClick={onNext} disabled={isLast} className={cn(btn, "bg-surface-lowest hover:bg-brand-fixed")}>
-        Next <Icon name="arrow_forward" className="text-base" />
+      <button type="button" onClick={onNext} disabled={isLast} className={btn}>
+        Next <Icon name="arrow_forward" className="text-lg" />
       </button>
       <button
         type="button"
         onClick={onToggleReview}
+        aria-pressed={isMarkedForReview}
         className={cn(
           btn,
-          isMarkedForReview ? "bg-danger text-on-brand" : "bg-surface-lowest hover:bg-brand-fixed",
+          isMarkedForReview &&
+            "border-danger/40 bg-danger-fixed text-danger hover:border-danger/60 hover:bg-danger-fixed",
         )}
       >
-        <Icon name="flag" className="text-base" />
+        <Icon name="flag" filled={isMarkedForReview} className="text-lg" />
         {isMarkedForReview ? "Unmark" : "Review"}
       </button>
-      <button type="button" onClick={onPrevSection} disabled={!canPrevSection} className={cn(btn, "bg-surface-lowest hover:bg-brand-fixed")}>
-        <Icon name="first_page" className="text-base" /> Prev Section
+      <button type="button" onClick={onPrevSection} disabled={!canPrevSection} className={btn}>
+        <Icon name="first_page" className="text-lg" /> Prev Section
       </button>
-      <button type="button" onClick={onNextSection} disabled={!canNextSection} className={cn(btn, "bg-surface-lowest hover:bg-brand-fixed")}>
-        Next Section <Icon name="last_page" className="text-base" />
+      <button type="button" onClick={onNextSection} disabled={!canNextSection} className={btn}>
+        Next Section <Icon name="last_page" className="text-lg" />
       </button>
     </div>
   );

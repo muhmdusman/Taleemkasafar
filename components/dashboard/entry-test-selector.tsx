@@ -4,6 +4,8 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { selectEntryTest } from "@/app/dashboard/actions";
 import { Icon } from "./icon";
+import { focusRing } from "./styles";
+import { cn } from "@/lib/utils";
 import type { EntryTest } from "@/lib/queries/entry-test";
 
 /**
@@ -42,11 +44,20 @@ export function EntryTestSelector({
         disabled={isPending}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center gap-2 border-2 border-ink bg-surface-lowest px-4 py-2 font-headline text-sm font-bold uppercase tracking-tight transition-colors hover:bg-surface-container disabled:opacity-60"
+        className={cn(
+          "flex h-10 items-center gap-2 rounded-xl border border-outline-variant bg-surface-lowest px-4 font-headline text-sm font-semibold tracking-tight text-on-surface transition-colors hover:border-outline hover:bg-surface-low disabled:opacity-60 motion-reduce:transition-none",
+          focusRing,
+        )}
       >
-        <Icon name="school" className="text-lg text-brand" filled />
+        <Icon name="school" className="text-lg text-on-surface-variant" filled />
         <span className="max-w-[10rem] truncate">{active.name}</span>
-        <Icon name={open ? "expand_less" : "expand_more"} className="text-lg" />
+        <Icon
+          name="expand_more"
+          className={cn(
+            "text-lg text-on-surface-variant transition-transform duration-200 motion-reduce:transition-none",
+            open && "rotate-180",
+          )}
+        />
       </button>
 
       {open && (
@@ -59,7 +70,7 @@ export function EntryTestSelector({
           />
           <ul
             role="listbox"
-            className="absolute left-1/2 z-20 mt-2 w-64 -translate-x-1/2 border-2 border-ink bg-surface-lowest shadow-hard"
+            className="absolute left-1/2 z-20 mt-2 flex w-64 -translate-x-1/2 flex-col gap-0.5 rounded-2xl border border-outline-variant bg-surface-lowest p-1.5 shadow-soft-lg"
           >
             {tests.map((t) => {
               const selected = t.id === activeId;
@@ -68,11 +79,13 @@ export function EntryTestSelector({
                   <button
                     type="button"
                     onClick={() => choose(t.id)}
-                    className={`flex w-full items-center justify-between px-4 py-3 text-left font-headline text-sm font-bold uppercase tracking-tight transition-colors ${
+                    className={cn(
+                      "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left font-headline text-sm font-semibold tracking-tight transition-colors motion-reduce:transition-none",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-container",
                       selected
-                        ? "bg-brand-fixed text-on-surface"
-                        : "hover:bg-surface-container"
-                    }`}
+                        ? "bg-brand-fixed text-brand-container"
+                        : "text-on-surface hover:bg-surface-low",
+                    )}
                   >
                     {t.name}
                     {selected && <Icon name="check" className="text-lg" />}

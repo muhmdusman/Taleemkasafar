@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/dashboard/icon";
+import { appButton, card } from "@/components/dashboard/styles";
 import { QuestionCard } from "./question-card";
 import { OptionButton } from "./option-button";
 import { QuizTimer } from "./quiz-timer";
@@ -22,6 +23,10 @@ import {
   type AnswerState,
 } from "@/lib/quiz/session";
 import type { MockAttemptData } from "@/lib/queries/mock";
+import { cn } from "@/lib/utils";
+
+const statusChip =
+  "inline-flex items-center gap-1 rounded-full px-2.5 py-1 font-headline text-xs font-semibold";
 
 /**
  * Timed mock orchestrator. No per-question feedback. Saves each selection to
@@ -97,7 +102,7 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
 
   if (questions.length === 0) {
     return (
-      <div className="border-2 border-ink bg-surface-lowest p-8 shadow-hard">
+      <div className={cn(card, "p-8")}>
         <p className="font-body text-on-surface-variant">
           This mock has no questions.
         </p>
@@ -118,7 +123,7 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
             type="button"
             onClick={doSubmit}
             disabled={submitting}
-            className="flex items-center gap-2 border-2 border-ink bg-ink px-5 py-3 font-headline text-sm font-bold uppercase tracking-tight text-on-ink shadow-hard transition-colors hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:opacity-50"
+            className={appButton()}
           >
             {submitting ? "Submitting..." : "Submit Test"}
             <Icon name="done_all" className="text-lg" />
@@ -131,15 +136,15 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
           sectionLabel={sectionLabels[index] ?? ""}
           statusSlot={
             review[current.id] ? (
-              <span className="flex items-center gap-1 border-2 border-danger bg-surface-lowest px-2 py-1 text-xs font-bold uppercase text-danger">
+              <span className={cn(statusChip, "bg-danger-fixed text-danger")}>
                 <Icon name="flag" className="text-sm" /> Review
               </span>
             ) : selected[current.id] ? (
-              <span className="border-2 border-ink bg-success px-2 py-1 text-xs font-bold uppercase text-on-brand">
-                Answered
+              <span className={cn(statusChip, "bg-success-fixed text-success")}>
+                <Icon name="check" className="text-sm" /> Answered
               </span>
             ) : (
-              <span className="border-2 border-ink bg-surface-high px-2 py-1 text-xs font-bold uppercase text-on-surface-variant">
+              <span className={cn(statusChip, "bg-surface-container text-on-surface-variant")}>
                 Not answered
               </span>
             )
@@ -183,14 +188,14 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
 
       {/* Sidebar: progress + palette */}
       <aside className="flex flex-col gap-6">
-        <div className="border-2 border-ink bg-surface-lowest p-5 shadow-hard">
-          <div className="mb-3 font-headline text-sm font-bold uppercase tracking-tight">
-            Progress · {answeredCount}/{questions.length}
+        <div className={cn(card, "p-5")}>
+          <div className="mb-4 font-headline text-sm font-semibold tracking-tight text-on-surface">
+            Progress · <span className="tabular-nums">{answeredCount}/{questions.length}</span>
           </div>
           <SectionProgress sections={sections} savedFlags={savedFlags} />
         </div>
-        <div className="border-2 border-ink bg-surface-lowest p-5 shadow-hard">
-          <div className="mb-3 font-headline text-sm font-bold uppercase tracking-tight">
+        <div className={cn(card, "p-5")}>
+          <div className="mb-4 font-headline text-sm font-semibold tracking-tight text-on-surface">
             Questions
           </div>
           <QuestionPalette

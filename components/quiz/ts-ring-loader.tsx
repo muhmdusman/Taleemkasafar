@@ -5,7 +5,7 @@ import { useDelayedVisible } from "@/lib/hooks/use-delayed-visible";
 /**
  * The "TS" brand mark (same geometry as `app/icon.svg`), inlined so it can be
  * sized freely and composed with the ring spinner without depending on the
- * favicon route.
+ * favicon route. Rounded tile, like the public-site LogoMark.
  */
 function TsMark({ size = 40 }: { size?: number }) {
   return (
@@ -14,7 +14,7 @@ function TsMark({ size = 40 }: { size?: number }) {
       height={size}
       viewBox="0 0 64 64"
       aria-hidden="true"
-      className="shrink-0"
+      className="shrink-0 overflow-hidden rounded-[22%]"
     >
       <rect width="64" height="64" className="fill-ink" />
       <rect y="55" width="64" height="9" className="fill-brand" />
@@ -97,14 +97,14 @@ export function QuizLoadingScreen({
 }) {
   return (
     <div className="flex h-full flex-col">
-      <div className="h-14 shrink-0 border-b-2 border-ink bg-surface-lowest" />
+      <div className="h-14 shrink-0 border-b border-outline-variant bg-surface-lowest" />
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
         <TsRingLoader size={96} label={label} />
-        <p className="font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+        <p className="font-headline text-sm font-semibold text-on-surface-variant">
           {label}
         </p>
       </div>
-      <div className="h-16 shrink-0 border-t-2 border-ink bg-surface-lowest" />
+      <div className="h-16 shrink-0 border-t border-outline-variant bg-surface-lowest" />
     </div>
   );
 }
@@ -134,9 +134,9 @@ export function CheckingOverlay({
       role="status"
       aria-live="polite"
     >
-      <div className="flex flex-col items-center gap-4 border-2 border-ink bg-surface-lowest px-10 py-8 shadow-hard">
+      <div className="flex flex-col items-center gap-4 rounded-2xl border border-outline-variant bg-surface-lowest px-10 py-8 shadow-soft-lg">
         <TsRingLoader size={72} label={label} />
-        <span className="font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant">
+        <span className="font-headline text-sm font-semibold text-on-surface-variant">
           {label}
         </span>
       </div>

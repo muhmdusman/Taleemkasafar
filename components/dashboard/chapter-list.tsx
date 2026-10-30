@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Icon } from "./icon";
+import { card, focusRing } from "./styles";
 import { cardIndex, chapterMetaLabel } from "@/lib/queries/dashboard-helpers";
 import type { ChapterOverview } from "@/lib/queries/subject";
 import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 type ContentButton = {
   key: string;
@@ -33,7 +35,7 @@ export function ChapterList({
 
   if (chapters.length === 0) {
     return (
-      <div className="border-2 border-ink bg-surface-lowest p-8 shadow-hard">
+      <div className={cn(card, "p-8")}>
         <p className="font-body text-on-surface-variant">
           No chapters available yet.
         </p>
@@ -42,9 +44,10 @@ export function ChapterList({
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {chapters.map((c, i) => {
         const id = c.chapter_id ?? String(i);
+        const panelId = `chapter-panel-${id}`;
         const open = openId === id;
         const count = c.question_count ?? 0;
         const chapterSlug = c.chapter_slug ?? "";
@@ -70,76 +73,92 @@ export function ChapterList({
         return (
           <div
             key={id}
-            className={
+            className={cn(
+              "overflow-hidden rounded-2xl border bg-surface-lowest transition-[border-color,box-shadow] duration-200 motion-reduce:transition-none",
               open
-                ? "relative z-10 flex flex-col border-2 border-ink bg-surface-lowest shadow-hard"
-                : "border-2 border-ink bg-surface-lowest"
-            }
+                ? "border-outline shadow-soft-lg"
+                : "border-outline-variant shadow-soft",
+            )}
           >
             <button
               type="button"
               onClick={() => setOpenId(open ? null : id)}
               aria-expanded={open}
-              className={
-                open
-                  ? "flex items-center justify-between bg-ink p-5 text-left text-on-ink"
-                  : "flex items-center justify-between p-5 text-left transition-colors hover:bg-surface-low"
-              }
+              aria-controls={panelId}
+              className={cn(
+                "flex w-full items-center justify-between gap-4 p-4 text-left transition-colors motion-reduce:transition-none md:p-5",
+                // Inset ring: the rounded, overflow-hidden card would clip an offset ring.
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-container",
+                !open && "hover:bg-surface-low",
+              )}
             >
-              <div className="flex items-center gap-6">
+              <div className="flex min-w-0 items-center gap-4 md:gap-5">
                 <span
-                  className={
+                  className={cn(
+                    "flex size-11 shrink-0 items-center justify-center rounded-xl font-headline text-base font-bold tabular-nums transition-colors motion-reduce:transition-none",
                     open
-                      ? "font-headline text-2xl font-bold text-brand-fixed"
-                      : "font-headline text-2xl font-bold text-on-surface opacity-20"
-                  }
+                      ? "bg-brand text-on-brand"
+                      : "bg-surface-container text-on-surface-variant",
+                  )}
                 >
                   {cardIndex(i)}
                 </span>
-                <div>
-                  <h3 className="font-headline text-xl font-bold uppercase tracking-tight">
+                <div className="min-w-0">
+                  <h3 className="font-headline text-lg font-bold leading-snug tracking-tight text-on-surface">
                     {c.chapter_title}
                   </h3>
-                  <p
-                    className={
-                      open
-                        ? "mt-1 text-xs font-bold uppercase tracking-tighter text-brand-fixed"
-                        : "mt-1 text-xs font-bold uppercase tracking-tighter text-on-surface-variant"
-                    }
-                  >
+                  <p className="mt-0.5 text-sm text-on-surface-variant">
                     {chapterMetaLabel(c.subtopic_count, count)}
                   </p>
                 </div>
               </div>
-              <Icon name={open ? "expand_less" : "expand_more"} />
+              <Icon
+                name="expand_more"
+                className={cn(
+                  "shrink-0 text-on-surface-variant transition-transform duration-200 motion-reduce:transition-none",
+                  open && "rotate-180",
+                )}
+              />
             </button>
 
             {open && (
-              <div className="grid grid-cols-1 gap-4 bg-surface-lowest p-6 md:grid-cols-2 lg:grid-cols-4">
+              <div
+                id={panelId}
+                className="grid grid-cols-1 gap-3 px-4 pb-4 sm:grid-cols-2 md:px-5 md:pb-5 lg:grid-cols-4"
+              >
                 {buttons.map((b) =>
                   b.href ? (
                     <Link
                       key={b.key}
                       href={b.href}
-                      className="group flex flex-col gap-3 border-2 border-ink p-4 text-left transition-colors hover:bg-brand-fixed"
+                      className={cn(
+                        "group flex items-center gap-3 rounded-xl border border-outline-variant bg-surface-lowest p-4 text-left transition-colors hover:border-outline hover:bg-surface-low motion-reduce:transition-none",
+                        focusRing,
+                      )}
                     >
-                      <Icon name={b.icon} className="text-brand" />
-                      <span className="font-headline text-sm font-bold uppercase tracking-tight">
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-fixed text-brand-container">
+                        <Icon name={b.icon} />
+                      </span>
+                      <span className="font-headline text-sm font-semibold tracking-tight text-on-surface">
                         {b.label}
                       </span>
                     </Link>
                   ) : (
                     <div
                       key={b.key}
-                      title="Coming soon"
-                      className="flex cursor-not-allowed flex-col gap-3 border-2 border-ink p-4 text-left opacity-40"
+                      aria-disabled="true"
+                      className="flex cursor-not-allowed items-center gap-3 rounded-xl border border-dashed border-outline-variant bg-surface-low p-4 text-left"
                     >
-                      <Icon name={b.icon} className="text-brand" />
-                      <span className="font-headline text-sm font-bold uppercase tracking-tight">
-                        {b.label}
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-container text-on-surface-variant">
+                        <Icon name={b.icon} />
                       </span>
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
-                        Coming soon
+                      <span className="flex flex-col items-start gap-1">
+                        <span className="font-headline text-sm font-semibold tracking-tight text-on-surface-variant">
+                          {b.label}
+                        </span>
+                        <span className="rounded-full bg-surface-container px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant">
+                          Coming soon
+                        </span>
                       </span>
                     </div>
                   ),

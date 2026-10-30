@@ -4,8 +4,10 @@ import { getMockResult } from "@/lib/queries/mock";
 import { getActiveEntryTest } from "@/lib/queries/entry-test";
 import { getEntryTestsCached } from "@/lib/queries/catalog";
 import { getDisplayName } from "@/lib/queries/profile";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { DashboardHeader, DashboardHeaderFallback } from "@/components/dashboard/header";
+import { skeleton } from "@/components/dashboard/styles";
 import { MockResult } from "@/components/quiz/mock-result";
+import { cn } from "@/lib/utils";
 
 export default function MockResultPage({
   params,
@@ -57,11 +59,11 @@ async function MockResultView({
 function ResultSkeleton() {
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-ink bg-surface-lowest md:left-64" />
+      <DashboardHeaderFallback />
       <main className="px-4 pb-24 pt-28 md:px-12">
         <div className="mx-auto max-w-3xl">
-          <div className="mb-8 h-48 w-full animate-pulse border-2 border-ink bg-surface-high" />
-          <div className="h-60 w-full animate-pulse border-2 border-ink bg-surface-container" />
+          <div className={cn(skeleton, "mb-8 h-48 w-full")} />
+          <div className={cn(skeleton, "h-60 w-full")} />
         </div>
       </main>
     </>

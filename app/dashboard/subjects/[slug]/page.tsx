@@ -5,10 +5,12 @@ import { getSubjectPage } from "@/lib/queries/subject";
 import { getActiveEntryTest } from "@/lib/queries/entry-test";
 import { getEntryTestsCached } from "@/lib/queries/catalog";
 import { getDisplayName } from "@/lib/queries/profile";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { DashboardHeader, DashboardHeaderFallback } from "@/components/dashboard/header";
 import { ChapterList } from "@/components/dashboard/chapter-list";
 import { Icon } from "@/components/dashboard/icon";
+import { card, focusRing, skeleton } from "@/components/dashboard/styles";
 import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 export default function SubjectPage({
   params,
@@ -53,32 +55,38 @@ async function SubjectView({
           {/* Breadcrumb */}
           <Link
             href={routes.subjects}
-            className="mb-6 inline-flex items-center gap-1 font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-brand"
+            className={cn(
+              "mb-6 inline-flex items-center gap-1 rounded-lg font-headline text-sm font-semibold text-on-surface-variant transition-colors hover:text-on-surface",
+              focusRing,
+            )}
           >
-            <Icon name="arrow_back" className="text-base" />
+            <Icon name="arrow_back" className="text-lg" />
             All Subjects
           </Link>
 
           {/* Header section */}
-          <section className="mb-12 flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
+          <section className="mb-10 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
             <div>
-              <h2 className="mb-4 font-headline text-5xl font-bold uppercase leading-none tracking-tighter text-on-surface">
+              <h2 className="mb-3 font-headline text-4xl font-bold leading-tight tracking-tight text-on-surface md:text-5xl">
                 {data.subjectName}
               </h2>
-              <p className="max-w-xl text-lg font-medium text-on-surface-variant">
+              <p className="max-w-xl text-lg leading-relaxed text-on-surface-variant">
                 Explore {data.chapters.length} chapters. Attempt past papers,
                 practice MCQs, and master each topic.
               </p>
             </div>
-            <div className="min-w-[240px] border-2 border-ink bg-ink p-6 text-on-ink shadow-hard-primary">
-              <div className="mb-1 text-sm font-bold uppercase tracking-widest opacity-70">
-                Question Bank
-              </div>
-              <div className="font-headline text-4xl font-bold">
-                {data.totalQuestions}
-              </div>
-              <div className="mt-1 text-xs font-bold uppercase tracking-widest opacity-70">
-                Approved MCQs
+            <div className={cn(card, "flex min-w-[240px] items-center gap-4 p-5")}>
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand-fixed text-brand-container">
+                <Icon name="quiz" className="text-2xl" />
+              </span>
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
+                  Question Bank
+                </div>
+                <div className="font-headline text-3xl font-bold tabular-nums tracking-tight text-on-surface">
+                  {data.totalQuestions}
+                </div>
+                <div className="text-xs text-on-surface-variant">Approved MCQs</div>
               </div>
             </div>
           </section>
@@ -93,16 +101,13 @@ async function SubjectView({
 function SubjectSkeleton() {
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-ink bg-surface-lowest md:left-64" />
+      <DashboardHeaderFallback />
       <main className="px-4 pb-24 pt-28 md:px-12">
         <div className="mx-auto max-w-5xl">
-          <div className="mb-12 h-32 w-full animate-pulse border-2 border-ink bg-surface-high" />
-          <div className="flex flex-col gap-4">
+          <div className={cn(skeleton, "mb-10 h-32 w-full")} />
+          <div className="flex flex-col gap-3">
             {[0, 1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="h-20 animate-pulse border-2 border-ink bg-surface-container"
-              />
+              <div key={i} className={cn(skeleton, "h-20")} />
             ))}
           </div>
         </div>

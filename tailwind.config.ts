@@ -107,8 +107,8 @@ export default {
         hard: "4px 4px 0px 0px rgb(var(--ink))",
         "hard-primary": "4px 4px 0px 0px rgb(var(--brand))",
         "hard-sm": "2px 2px 0px 0px rgb(var(--ink))",
-        // Public site variant only (app/(marketing), components/marketing):
-        // subtle, tokenized soft shadows. Never use on the dashboard.
+        // Rounded variant (public site + dashboard, .kiro/context/DESIGN.md
+        // §11-12): subtle, tokenized soft shadows. Not used on auth pages.
         soft: "0 1px 2px 0 rgb(var(--ink) / 0.05), 0 4px 12px -2px rgb(var(--ink) / 0.07)",
         "soft-lg":
           "0 2px 4px 0 rgb(var(--ink) / 0.05), 0 16px 32px -8px rgb(var(--ink) / 0.12)",

@@ -1,7 +1,12 @@
 import { Icon } from "./icon";
 import { avatarInitial } from "@/lib/queries/dashboard-helpers";
 import { EntryTestSelector } from "./entry-test-selector";
+import { appButton } from "./styles";
+import { cn } from "@/lib/utils";
 import type { EntryTest } from "@/lib/queries/entry-test";
+
+const headerShell =
+  "fixed left-0 right-0 top-0 z-30 h-20 border-b border-outline-variant bg-surface-lowest/90 backdrop-blur supports-[backdrop-filter]:bg-surface-lowest/80 md:left-64";
 
 /**
  * Top header for the dashboard shell. Left: page title. Center: entry-test
@@ -22,13 +27,13 @@ export function DashboardHeader({
 }) {
   const initial = avatarInitial(displayName);
   return (
-    <header className="fixed left-0 right-0 top-0 z-30 flex h-20 items-center justify-between border-b-2 border-ink bg-surface-lowest px-6 md:left-64 md:px-8">
-      <div className="flex items-center gap-4">
-        <h1 className="font-headline text-2xl font-bold uppercase tracking-tighter text-on-surface">
+    <header className={`${headerShell} flex items-center justify-between px-6 md:px-8`}>
+      <div className="flex min-w-0 items-center gap-3">
+        <h1 className="truncate font-headline text-xl font-bold tracking-tight text-on-surface md:text-2xl">
           {title}
         </h1>
         {badge && (
-          <span className="hidden border-2 border-ink bg-brand-fixed px-2 py-1 text-xs font-bold text-on-surface lg:inline">
+          <span className="hidden shrink-0 rounded-full bg-surface-container px-3 py-1 font-headline text-xs font-semibold text-on-surface lg:inline">
             {badge}
           </span>
         )}
@@ -43,12 +48,13 @@ export function DashboardHeader({
         <button
           type="button"
           aria-label="Search"
-          className="flex h-10 w-10 items-center justify-center border-2 border-ink transition-colors hover:bg-surface-container"
+          className={cn(appButton({ variant: "secondary", size: "sm" }), "w-9 px-0")}
         >
-          <Icon name="search" />
+          <Icon name="search" className="text-xl" />
         </button>
         <div
-          className="flex h-10 w-10 items-center justify-center border-2 border-ink bg-brand-fixed font-headline font-bold text-on-surface"
+          role="img"
+          className="flex size-9 items-center justify-center rounded-full bg-brand-fixed font-headline font-bold text-brand-container"
           aria-label={`Signed in as ${displayName}`}
         >
           {initial}
@@ -56,4 +62,9 @@ export function DashboardHeader({
       </div>
     </header>
   );
+}
+
+/** Empty header bar for Suspense fallbacks (same size, no content). */
+export function DashboardHeaderFallback() {
+  return <div className={headerShell} />;
 }

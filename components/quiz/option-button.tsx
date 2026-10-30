@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/dashboard/icon";
+import { focusRing } from "@/components/dashboard/styles";
 import { MathText } from "./math-text";
 
 export type OptionVisualState =
@@ -12,9 +13,10 @@ export type OptionVisualState =
   | "muted-correct";
 
 /**
- * A single MCQ option in Soft Brutalism. Feedback colors (green correct / red
- * wrong) are used ONLY after grading. Before grading, options are idle or
- * selected. `muted-correct` highlights the right answer when the user picked
+ * A single MCQ option. Feedback colors (green correct / red wrong) are used
+ * ONLY after grading, as light tints with a solid icon badge (never color
+ * alone: the badge shows a check or a cross). Before grading, options are idle
+ * or selected. `muted-correct` outlines the right answer when the user picked
  * wrong. Option text is rendered with proper math typography.
  */
 export function OptionButton({
@@ -32,21 +34,25 @@ export function OptionButton({
   loading?: boolean;
   onClick?: () => void;
 }) {
-  const base =
-    "flex w-full items-center gap-4 border-2 border-ink p-4 text-left font-body transition-all";
+  // `border` + a 1px ring of the same color reads as a 2px edge for the
+  // active states without shifting the layout.
+  const base = cn(
+    "flex w-full items-center gap-4 rounded-xl border p-4 text-left font-body text-on-surface transition-[background-color,border-color,box-shadow] duration-150 motion-reduce:transition-none",
+    focusRing,
+  );
   const byState: Record<OptionVisualState, string> = {
-    idle: "bg-surface-lowest hover:bg-brand-fixed active:translate-x-[2px] active:translate-y-[2px]",
-    selected: "bg-brand-fixed shadow-hard",
-    correct: "bg-success text-on-brand shadow-hard",
-    wrong: "bg-danger text-on-brand shadow-hard",
-    "muted-correct": "bg-success-fixed border-success",
+    idle: "border-outline bg-surface-lowest hover:bg-surface-low",
+    selected: "border-brand bg-brand-fixed ring-1 ring-brand",
+    correct: "border-success bg-success-fixed ring-1 ring-success",
+    wrong: "border-danger bg-danger-fixed ring-1 ring-danger",
+    "muted-correct": "border-success bg-surface-lowest ring-1 ring-success",
   };
 
   const badge: Record<OptionVisualState, string> = {
-    idle: "bg-ink text-on-ink",
-    selected: "bg-ink text-on-ink",
-    correct: "bg-surface-lowest text-success",
-    wrong: "bg-surface-lowest text-danger",
+    idle: "bg-surface-container text-on-surface",
+    selected: "bg-brand text-on-brand",
+    correct: "bg-success text-on-brand",
+    wrong: "bg-danger text-on-brand",
     "muted-correct": "bg-success text-on-brand",
   };
 
@@ -59,7 +65,7 @@ export function OptionButton({
     >
       <span
         className={cn(
-          "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden font-headline text-base font-bold uppercase",
+          "flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg font-headline text-base font-bold uppercase",
           badge[state],
         )}
       >

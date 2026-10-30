@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getDashboardData } from "@/lib/queries/dashboard";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { DashboardHeader, DashboardHeaderFallback } from "@/components/dashboard/header";
 import { SubjectsSection } from "@/components/dashboard/subjects-section";
+import { skeleton } from "@/components/dashboard/styles";
+import { cn } from "@/lib/utils";
 
 export default function SubjectsPage() {
   return (
@@ -37,14 +39,11 @@ async function SubjectsView() {
 function Skeleton() {
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-ink bg-surface-lowest md:left-64" />
+      <DashboardHeaderFallback />
       <main className="px-6 pb-24 pt-28 md:px-8">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-3">
           {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="h-56 animate-pulse border-2 border-ink bg-surface-container"
-            />
+            <div key={i} className={cn(skeleton, "h-56")} />
           ))}
         </div>
       </main>

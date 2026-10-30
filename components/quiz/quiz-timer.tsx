@@ -9,6 +9,9 @@ import { cn } from "@/lib/utils";
  * Display-only countdown anchored to a server-set expiry. The server is the
  * source of truth (submit_mock rejects/auto-finalizes after expiry); this just
  * ticks locally and fires onExpire once when it hits zero.
+ *
+ * `role="timer"` (implicitly aria-live off) so screen readers can read it on
+ * demand without announcing every second.
  */
 export function QuizTimer({
   expiresAt,
@@ -39,13 +42,16 @@ export function QuizTimer({
 
   return (
     <div
+      role="timer"
       className={cn(
-        "flex items-center gap-2 border-2 border-ink px-4 py-2 font-headline text-lg font-bold tabular-nums",
-        danger ? "bg-danger text-on-brand" : "bg-ink text-on-ink",
+        "flex h-11 items-center gap-2 rounded-xl border px-4 font-headline text-lg font-bold tabular-nums transition-colors motion-reduce:transition-none",
+        danger
+          ? "border-danger/40 bg-danger-fixed text-danger"
+          : "border-outline-variant bg-surface-lowest text-on-surface shadow-soft",
       )}
-      aria-live="polite"
     >
-      <Icon name="timer" className="text-xl" />
+      <Icon name="timer" className={cn("text-xl", !danger && "text-on-surface-variant")} />
+      <span className="sr-only">Time remaining: </span>
       {formatTime(secs)}
     </div>
   );

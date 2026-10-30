@@ -5,11 +5,13 @@ import { getMockLanding } from "@/lib/queries/mock";
 import { getActiveEntryTest } from "@/lib/queries/entry-test";
 import { getEntryTestsCached } from "@/lib/queries/catalog";
 import { getDisplayName } from "@/lib/queries/profile";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { DashboardHeader, DashboardHeaderFallback } from "@/components/dashboard/header";
 import { Icon } from "@/components/dashboard/icon";
+import { card, cardInteractive, skeleton } from "@/components/dashboard/styles";
 import { StartMockButton } from "@/components/quiz/start-mock-button";
 import { formatTime } from "@/lib/quiz/time";
 import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 export default function MockPage() {
   return (
@@ -42,38 +44,41 @@ async function MockLandingView() {
         <div className="mx-auto max-w-4xl">
           {/* Hero / start card */}
           {data?.blueprint ? (
-            <section className="mb-12 border-2 border-ink bg-ink p-8 text-on-ink shadow-hard-primary md:p-10">
-              <div className="mb-2 text-xs font-bold uppercase tracking-widest text-brand-fixed">
+            <section className={cn(card, "mb-12 p-6 md:p-10")}>
+              <p className="inline-flex items-center gap-2 rounded-full bg-brand-fixed px-3 py-1 font-headline text-xs font-semibold uppercase tracking-widest text-brand-container">
+                <Icon name="timer" className="text-base" />
                 Full Simulation
-              </div>
-              <h2 className="mb-4 font-headline text-4xl font-bold uppercase leading-none tracking-tighter md:text-5xl">
+              </p>
+              <h2 className="mt-4 font-headline text-3xl font-bold leading-tight tracking-tight text-on-surface md:text-4xl">
                 {data.blueprint.name}
               </h2>
-              <p className="mb-6 max-w-xl font-body text-base text-on-ink/80">
+              <p className="mt-3 max-w-xl font-body text-base leading-relaxed text-on-surface-variant">
                 {data.blueprint.description}
               </p>
-              <div className="mb-8 flex flex-wrap gap-6 font-headline">
-                <div>
-                  <div className="text-3xl font-bold">
-                    {data.blueprint.totalQuestions}
-                  </div>
-                  <div className="text-xs uppercase tracking-widest text-on-ink/60">
+              <dl className="mt-6 grid max-w-sm grid-cols-2 gap-3">
+                <div className="rounded-xl bg-surface-low px-4 py-3">
+                  <dt className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
                     Questions
-                  </div>
+                  </dt>
+                  <dd className="mt-1 font-headline text-2xl font-bold tabular-nums text-on-surface">
+                    {data.blueprint.totalQuestions}
+                  </dd>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold tabular-nums">
-                    {formatTime(data.blueprint.durationSeconds)}
-                  </div>
-                  <div className="text-xs uppercase tracking-widest text-on-ink/60">
+                <div className="rounded-xl bg-surface-low px-4 py-3">
+                  <dt className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
                     Duration
-                  </div>
+                  </dt>
+                  <dd className="mt-1 font-headline text-2xl font-bold tabular-nums text-on-surface">
+                    {formatTime(data.blueprint.durationSeconds)}
+                  </dd>
                 </div>
+              </dl>
+              <div className="mt-8">
+                <StartMockButton blueprintId={data.blueprint.id} />
               </div>
-              <StartMockButton blueprintId={data.blueprint.id} />
             </section>
           ) : (
-            <section className="mb-12 border-2 border-ink bg-surface-lowest p-8 shadow-hard">
+            <section className={cn(card, "mb-12 p-8")}>
               <p className="font-body text-on-surface-variant">
                 No mock test is available for this entry test yet.
               </p>
@@ -82,7 +87,7 @@ async function MockLandingView() {
 
           {/* Recent results */}
           <section>
-            <h3 className="mb-4 font-headline text-2xl font-bold uppercase tracking-tight">
+            <h3 className="mb-4 font-headline text-xl font-bold tracking-tight text-on-surface md:text-2xl">
               Recent Results
             </h3>
             {data && data.recentResults.length > 0 ? (
@@ -91,29 +96,29 @@ async function MockLandingView() {
                   <Link
                     key={r.attemptId}
                     href={routes.mockResult(r.attemptId)}
-                    className="flex items-center justify-between border-2 border-ink bg-surface-lowest p-5 transition-colors hover:bg-brand-fixed"
+                    className={cn(cardInteractive, "flex items-center justify-between gap-4 p-4 md:p-5")}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="font-headline text-3xl font-bold text-brand">
+                      <div className="flex h-14 w-16 shrink-0 items-center justify-center rounded-xl bg-brand-fixed font-headline text-xl font-bold tabular-nums text-brand-container">
                         {Math.round(r.scorePercent)}%
                       </div>
                       <div>
-                        <div className="font-headline text-sm font-bold uppercase tracking-tight">
+                        <div className="font-headline text-sm font-semibold tracking-tight text-on-surface">
                           {r.correctCount} / {r.totalQuestions} correct
                         </div>
-                        <div className="text-xs text-on-surface-variant">
+                        <div className="mt-0.5 text-xs text-on-surface-variant">
                           {r.submittedAt
                             ? new Date(r.submittedAt).toLocaleDateString()
                             : "—"}
                         </div>
                       </div>
                     </div>
-                    <Icon name="chevron_right" />
+                    <Icon name="chevron_right" className="text-on-surface-variant" />
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className="border-2 border-ink bg-surface-lowest p-8 shadow-hard">
+              <div className={cn(card, "p-8")}>
                 <p className="font-body text-on-surface-variant">
                   No mock attempts yet. Start your first full mock above to see
                   your results here.
@@ -130,11 +135,11 @@ async function MockLandingView() {
 function MockSkeleton() {
   return (
     <>
-      <div className="fixed left-0 right-0 top-0 z-30 h-20 border-b-2 border-ink bg-surface-lowest md:left-64" />
+      <DashboardHeaderFallback />
       <main className="px-4 pb-24 pt-28 md:px-12">
         <div className="mx-auto max-w-4xl">
-          <div className="mb-12 h-64 w-full animate-pulse border-2 border-ink bg-surface-high" />
-          <div className="h-40 w-full animate-pulse border-2 border-ink bg-surface-container" />
+          <div className={cn(skeleton, "mb-12 h-64 w-full")} />
+          <div className={cn(skeleton, "h-40 w-full")} />
         </div>
       </main>
     </>

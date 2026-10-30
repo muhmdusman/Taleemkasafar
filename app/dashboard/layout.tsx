@@ -10,6 +10,10 @@ import { MaterialSymbolsFont } from "@/components/material-symbols-font";
  * public allowlist in lib/routes.ts requires login); pages also verify on the
  * server.
  *
+ * `theme-public` gives the dashboard the same palette as the landing page
+ * (app/globals.css, .kiro/context/DESIGN.md §12). The canvas is the light grey
+ * `surface-low` so white cards stand out without heavy borders.
+ *
  * The nav components read usePathname() (dynamic); they're wrapped in Suspense
  * so that dynamic read doesn't block page rendering under Cache Components.
  */
@@ -19,7 +23,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-svh bg-surface font-body text-on-surface">
+    <div className="theme-public min-h-svh bg-surface-low font-body text-on-surface">
       <MaterialSymbolsFont />
       <Suspense fallback={<SidebarFallback />}>
         <Sidebar />
@@ -34,6 +38,6 @@ export default function DashboardLayout({
 
 function SidebarFallback() {
   return (
-    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 border-r-2 border-ink bg-surface-lowest md:block" />
+    <aside className="fixed left-0 top-0 z-40 hidden h-screen w-64 border-r border-outline-variant bg-surface-lowest md:block" />
   );
 }
