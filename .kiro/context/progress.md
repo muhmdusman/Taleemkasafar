@@ -851,3 +851,39 @@ pu_import.sql still not applied to DB — regenerate then load via psql.
   user and for one with an unfinished chapter/mock, practice Finish dialog,
   mock submit dialog.
 - Terms/Privacy links on sign-up are still `href="#"` (no pages yet).
+
+## 2026-10-30 (c) — Soft colour, loading states, new home, focused mocks with pause
+
+### Done
+- Soft accent tones (`tone-*`), `subjectTone`, `areaTone`, `.theme-app`
+  clearer borders, shimmer skeletons, `LinkPendingIndicator`,
+  `TopProgressBar`, a ticking `FullscreenLoader`.
+- Header entry-test dropdown (Radix) on all sizes; onboarding test picker in
+  the Get started card (`hasChosenEntryTest`).
+- Home: greeting + next step, progress tiles + suggested focus, subjects with
+  coverage/accuracy, mock section. New `lib/queries/progress.ts`; mock
+  results and Performance are now scoped to the active test.
+- Mock sitting full screen (no sidebar/bottom nav via `isFocusRoute`):
+  - header with save status and a coloured timer; section tabs; question map
+    (a dialog on mobile); clear answer;
+  - the Back button and Exit open "Pause & exit / End test" (both go home);
+  - time-up submits only on a server-confirmed clock; the sitting resets
+    itself when Cache Components shows it again.
+- Practice: subject tone, session score chips, streak chip, top bar on leave.
+- Migration `mcq_15_mock_pause_and_progress.sql`: `attempts.paused_at`,
+  `pause_mock`, `resume_mock`, `practice_progress`. Types hand-edited in
+  `lib/database.types.ts`.
+- Tests: `subject-tone.test.ts`, `isFocusRoute`, `pickOpenMock`,
+  `mockSecondsLeft`, `pickFocusSubject`. Shim run: 74/74 in the 4 changed
+  test files. A sub-agent review found 9 issues (history entries left behind,
+  a stale clock auto-submitting a paused mock, a stuck loader on home, pause
+  ignoring failed saves, and others); all fixed.
+- ⚠ Not run: lint, typecheck, build, full Vitest, the migration itself.
+
+### Next
+- Apply mcq_15 (`supabase db push` or MCP `apply_migration`), run
+  `get_advisors`, regenerate `lib/database.types.ts`.
+- Run `npm run lint && npm run typecheck && npm run test && npm run build`.
+- Browser check: test switching (desktop + mobile), new-student home,
+  mock Back button → Pause → home → Resume (timer continues from the paused
+  time), End test, time running out, offline save + Retry.

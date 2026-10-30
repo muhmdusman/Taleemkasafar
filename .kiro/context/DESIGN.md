@@ -213,3 +213,56 @@ landing page, and fix login contrast while typing credentials.
   inputs with `border-outline`, placeholder at 4.6:1, brand focus ring,
   `FormError` (`role="alert"`), `autoComplete` on every field, lucide icons
   (the auth layout no longer loads the Material Symbols font).
+
+## 14. Soft colour, clear edges, loading states, focused mocks — user override 2026-10-30
+Owner: the light dashboard is good; make practice and the dashboard a bit
+more colourful with soft colours, clearer borders and proper loading
+indicators, and make onboarding effortless. Applies to `app/dashboard/`,
+`components/dashboard/`, `components/quiz/` only (not the public site).
+- **Soft tones** (`--tone-{blue,violet,teal,amber,rose}` + `-soft`, Tailwind
+  `tone-*`): deep tone for text/icons/bars (≥5.5:1 on its tint, ≥6.3:1 on
+  white), soft tint for tiles/chips/panels (body text on any tint ≥13:1).
+  Class maps live in `components/dashboard/tone.ts` (`toneClasses`), because
+  Tailwind doesn't scan `lib/`.
+  - **Subjects** keep one tone everywhere via `subjectTone(slug)`
+    (`lib/subject-tone.ts`): maths blue, physics amber, English/verbal violet,
+    chemistry/biology teal, computer science rose, others hashed.
+  - **Areas** (`areaTone`): Home blue, Subjects teal, Mock tests violet,
+    Progress amber. Used by nav items, section headings and page accents.
+  - Blue `brand` stays the colour of the primary button. Correct/wrong stay
+    `success`/`danger`. "Marked for review" is amber.
+- **Clear edges**: `.theme-app` (on the dashboard layout, after
+  `.theme-public`) raises `outline-variant` to #D5D9E0 (1.4:1 on white). Cards
+  in a tone add a 4px tinted top edge (`border-t-4` + `toneClasses.topBorder`).
+- **Loading**:
+  - **Skeletons** (`components/dashboard/skeletons.tsx`) shaped like the
+    content they replace, with a CSS shimmer (`.skeleton-shimmer`, static for
+    reduced motion).
+  - **Link spinners**: `LinkPendingIndicator` (`useLinkStatus`) inside links
+    shows a spinner after a 120ms delay.
+  - **`TopProgressBar`** for whole-screen changes: switching test, leaving a
+    test.
+  - **`FullscreenLoader`**: a checklist that ticks forward while a mock is
+    created or submitted.
+  - **Mock save status**: "Saving… / Saved / n not saved · Retry".
+- **Header**: entry-test dropdown (Radix DropdownMenu) on every screen size;
+  switching shows a spinner + top bar and announces the new test. The badge
+  next to page titles was removed (it repeated the test name).
+- **Home**, top to bottom:
+  1. Greeting panel (soft blue) with shortcuts, and the `NextStepCard`. New
+     students pick their entry test right in step 1 (`EntryTestPicker`).
+  2. Progress: four stat tiles, plus a "Suggested focus" subject from
+     `pickFocusSubject` (weakest subject in the last mock, else low practice
+     accuracy, else an untouched subject).
+  3. Subjects: cards in their subject tone, with "% covered" and "% correct".
+  4. Mock tests: start, resume, or "See my score" when time ran out.
+- **Mock sitting is full screen**, like practice: the sidebar and bottom nav
+  hide on `isFocusRoute` paths.
+  - **Header**: Exit, title + answered + save status, timer (violet → amber
+    at 5 min → red at 1 min), Submit.
+  - **Body**: question card; on desktop, section tabs + a question map for
+    one section at a time.
+  - **Footer**: Prev, Mark for review, Questions (the map on mobile), Next.
+  - **Leaving**: Exit or browser Back opens "Leave the mock test?" with Keep
+    going / End test / Pause & exit. Pause stops the timer on the server
+    (mcq_15). End submits. Both go to the dashboard home.
