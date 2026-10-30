@@ -9,7 +9,7 @@ import { SiteHeader } from "@/components/marketing/site-header";
  * searchParams reads anywhere under this group, so pages prerender for SEO.
  * Signed-in visitors may browse it; CTAs swap client-side (auth-aware-cta.tsx).
  * Rounded "public site variant" of the brand: .kiro/context/DESIGN.md §11. `theme-public`
- * (app/globals.css) sets the sky-blue #009DFF public brand for this subtree.
+ * (app/globals.css) sets the app palette (#0768D0 blue, near-black text) for this subtree.
  */
 export const metadata: Metadata = {
   title: {

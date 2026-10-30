@@ -142,7 +142,7 @@ function HeroVisual() {
         </div>
       </div>
 
-      <div className="relative -mt-6 ml-auto w-[85%] rounded-2xl border-2 border-ink bg-surface-lowest p-5 shadow-hard sm:-mt-8 sm:w-[75%]">
+      <div className="relative -mt-6 ml-auto w-[85%] rounded-2xl border border-outline-variant bg-surface-lowest p-5 shadow-soft-lg sm:-mt-8 sm:w-[75%]">
         <p className="font-headline text-sm font-semibold text-on-surface">Your progress</p>
         <ul className="mt-4 flex flex-col gap-3">
           {subjects.map((s) => (

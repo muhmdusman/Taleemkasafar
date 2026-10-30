@@ -327,7 +327,7 @@ function ResultPanel({
   return (
     <section
       aria-labelledby="merit-result-heading"
-      className="rounded-2xl border-2 border-ink bg-surface-lowest p-6 shadow-hard sm:p-8"
+      className="rounded-2xl border-2 border-brand/30 bg-surface-lowest p-6 shadow-soft-lg sm:p-8"
     >
       <h2
         id="merit-result-heading"

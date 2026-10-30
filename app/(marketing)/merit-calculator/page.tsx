@@ -88,7 +88,7 @@ export default function MeritCalculatorIndexPage() {
               >
                 <span
                   aria-hidden="true"
-                  className="flex size-10 items-center justify-center rounded-full bg-ink font-headline font-bold text-on-ink"
+                  className="flex size-10 items-center justify-center rounded-full bg-brand-fixed font-headline font-bold text-brand-container"
                 >
                   {i + 1}
                 </span>

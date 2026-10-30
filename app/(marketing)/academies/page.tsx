@@ -166,7 +166,7 @@ export default function AcademiesPage() {
               >
                 <span
                   aria-hidden="true"
-                  className="flex size-10 items-center justify-center rounded-full bg-ink font-headline font-bold text-on-ink"
+                  className="flex size-10 items-center justify-center rounded-full bg-brand-fixed font-headline font-bold text-brand-container"
                 >
                   {i + 1}
                 </span>
@@ -193,7 +193,7 @@ export default function AcademiesPage() {
               description={`Message us on WhatsApp and we will agree a plan that fits your batch. ${studentOffer.short}: your students can always use ${siteConfig.name} on their own at no cost.`}
             />
             {/* Plan name, features and CTA come from config/pricing.ts ("academy"). */}
-            <div className="rounded-2xl border-2 border-brand bg-surface-lowest p-6 shadow-hard-primary sm:p-8">
+            <div className="rounded-2xl border-2 border-brand bg-surface-lowest p-6 shadow-soft-lg sm:p-8">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h3 className="font-headline text-xl font-bold tracking-tight text-on-surface">
                   {academyPlan.name}
@@ -244,14 +244,14 @@ export default function AcademiesPage() {
 
       <section aria-labelledby="academy-cta-heading" className="py-12 md:py-20">
         <Container>
-          <div className="rounded-2xl bg-ink p-8 text-on-ink shadow-soft-lg sm:p-12">
+          <div className="rounded-2xl border border-brand/15 bg-brand-fixed p-8 shadow-soft sm:p-12">
             <h2
               id="academy-cta-heading"
-              className="max-w-2xl font-headline text-3xl font-bold tracking-tight sm:text-4xl"
+              className="max-w-2xl font-headline text-3xl font-bold tracking-tight text-on-surface sm:text-4xl"
             >
               Let&apos;s plan it around your academy
             </h2>
-            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-on-ink/80">
+            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-on-surface-variant">
               Tell us about your students and the tests you prepare for. Message
               us on WhatsApp at {siteConfig.contact.phone} and we reply{" "}
               {siteConfig.contact.responseTime.toLowerCase()}.
@@ -261,14 +261,13 @@ export default function AcademiesPage() {
                 href={siteConfig.contact.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                variant="primary-dark"
                 size="lg"
               >
                 <MessageCircle aria-hidden="true" />
                 Contact on WhatsApp
                 <span className="sr-only"> (opens WhatsApp)</span>
               </ButtonLink>
-              <ButtonLink href={routes.contact} variant="inverse-outline" size="lg">
+              <ButtonLink href={routes.contact} variant="secondary" size="lg">
                 Other ways to reach us
                 <ArrowRight aria-hidden="true" />
               </ButtonLink>
