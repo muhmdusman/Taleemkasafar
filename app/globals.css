@@ -99,6 +99,14 @@
 }
 
 @layer base {
+  /*
+   * Light only until dark mode is designed (.kiro/context/DESIGN.md §8). Without
+   * this, an OS in dark mode renders native inputs/checkboxes with dark
+   * backgrounds under our dark text, which made typed credentials unreadable.
+   */
+  :root {
+    color-scheme: light;
+  }
   * {
     @apply border-border;
   }
@@ -141,39 +149,39 @@
  * Tokens only; rounded public-site variant (.kiro/context/DESIGN.md §11).
  */
 /*
- * PUBLIC-SITE THEME (app/(marketing) layout + the mobile menu portal).
+ * APP THEME (public site + dashboard + auth, plus the mobile menu portal).
  * Product owner, 2026-10-23 (v3): blue used ONLY for primary CTAs and key
- * highlights: #0768D0 on white backgrounds, #296FBB (`brand-ondark`) on
- * charcoal banners; white backgrounds; solid black text; charcoal (#2B2F36,
- * a light black) only where a dark banner/poster is needed, plus brutalist
- * borders and hard shadows. White on #0768D0 is 5.4:1 and on #296FBB 5.1:1
- * (both pass WCAG AA).
- * Also applied to the dashboard (app/dashboard/layout.tsx, 2026-10-30) so the
- * app matches the landing page. Auth pages keep :root.
+ * highlights: #0768D0 on light backgrounds, #296FBB (`brand-ondark`) on
+ * charcoal; charcoal (#2B2F36) for the logo mark and shadow tint.
+ * White on #0768D0 is 5.4:1 and on #296FBB 5.1:1 (both pass WCAG AA).
+ * 2026-10-30: applied to the dashboard and auth layouts too, and softened
+ * for eye comfort: near-black #1F2328 text instead of pure #000 (15.3:1 on
+ * the page, inside the ≥12:1 "calm" target) on an off-white #FAFBFC page;
+ * cards and inputs stay pure white so they lift off the page.
  */
 .theme-public {
   --brand: 7 104 208; /* #0768D0 blue on WHITE backgrounds (text, buttons) */
   --brand-container: 5 85 171; /* #0555AB hover / pressed */
-  --brand-ondark: 41 111 187; /* #296FBB blue on CHARCOAL backgrounds */
+  --brand-ondark: 41 111 187; /* #296FBB blue on CHARCOAL backgrounds (none today) */
   --brand-fixed: 234 242 251; /* #EAF2FB light blue tint */
   --on-brand: 255 255 255; /* #FFFFFF */
   --ink: 43 47 54; /* #2B2F36 charcoal: dark banners/posters, borders, hard shadows */
   --on-ink: 255 255 255; /* #FFFFFF */
-  --surface: 255 255 255; /* #FFFFFF page background */
-  --surface-lowest: 255 255 255; /* #FFFFFF cards */
-  --surface-low: 246 247 249; /* #F6F7F9 alternate sections */
+  --surface: 250 251 252; /* #FAFBFC off-white page background (softer than #FFF) */
+  --surface-lowest: 255 255 255; /* #FFFFFF cards, inputs */
+  --surface-low: 246 247 249; /* #F6F7F9 alternate sections, app canvas */
   --surface-container: 238 239 242; /* #EEEFF2 */
   --surface-high: 228 228 231; /* #E4E4E7 progress tracks */
-  --on-surface: 0 0 0; /* #000000 solid black text */
-  --on-surface-variant: 82 82 91; /* #52525B muted text (7.7:1 on white) */
-  --outline: 138 143 152; /* #8A8F98 */
-  --outline-variant: 228 228 231; /* #E4E4E7 hairline card borders */
+  --on-surface: 31 35 40; /* #1F2328 near-black text (15.3:1 on the page) */
+  --on-surface-variant: 82 82 91; /* #52525B muted text (7.5:1 on the page) */
+  --outline: 138 143 152; /* #8A8F98 input/control borders (3.3:1 on white) */
+  --outline-variant: 228 228 231; /* #E4E4E7 hairline card borders (decorative) */
   /* shadcn mirrors */
-  --background: 0 0% 100%;
-  --foreground: 0 0% 0%;
+  --background: 210 25% 98.4%; /* = surface */
+  --foreground: 213 12.7% 13.9%; /* = on-surface */
   --primary: 218.2 11.3% 19%; /* = ink */
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
+  --border: 240 5.9% 90%; /* = outline-variant */
+  --input: 218.6 6.4% 56.9%; /* = outline: inputs need a ≥3:1 edge */
   --ring: 211 93.5% 42.2%; /* = brand */
   --accent: 211.8 68% 95.1%; /* = brand-fixed */
 }
