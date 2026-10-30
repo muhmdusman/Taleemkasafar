@@ -30,7 +30,7 @@ Next.js App Router. Server Components by default; business logic on the server.
 | `app/dashboard/actions.ts` | Server Actions: `selectEntryTest`, `revalidateCatalog`. |
 | `app/dashboard/quiz-actions.ts` | Server Actions wrapping the practice/mock grading RPCs. |
 | `app/globals.css` | Tailwind layers + CSS variables. |
-| `app/auth/layout.tsx` | Shared shell for all auth screens: branded "Taleem ka Safar" header + footer (Soft Brutalism). |
+| `app/auth/layout.tsx` | Shared shell for all auth screens: `theme-public`, logo header + Help link (contact page), footer. Rounded variant (DESIGN.md §13), lucide icons. |
 | `app/auth/actions.ts` | **Server Actions** for auth: `signInAction` (→ `/dashboard`) and `signUpAction` (→ sign-up-success). All auth business logic lives here. |
 | `app/auth/login/page.tsx` | Sign-in page (renders `SignInForm`). |
 | `app/auth/sign-up/page.tsx` | Sign-up page (renders `SignUpForm`). |
@@ -49,7 +49,9 @@ Client Components only where interactivity is needed; otherwise presentational.
 
 | File | What it does |
 |------|--------------|
-| `components/auth/sign-in-form.tsx` | Sign-in form UI (email/password). Calls `signInAction`. Soft Brutalism styling. |
+| `components/auth/auth-ui.tsx` | Shared auth pieces: `AuthHeading`, `AuthCard`, `FormError` (`role="alert"`), `OrDivider`, `authInput`, `authLabel`. |
+| `components/auth/password-input.tsx` | Password field with a show/hide toggle (`aria-pressed`). |
+| `components/auth/sign-in-form.tsx` | Sign-in form UI (email/password). Calls `signInAction`. |
 | `components/auth/sign-up-form.tsx` | Sign-up form UI (name/email/password/terms) + branded side panel. Calls `signUpAction`. |
 | `components/auth/social-buttons.tsx` | Google (wired) + GitHub (disabled, "coming soon") sign-in buttons. |
 | `components/forgot-password-form.tsx` | Sends a password-reset email. |
@@ -65,7 +67,7 @@ Client Components only where interactivity is needed; otherwise presentational.
 | `components/marketing/merit/` | `university-card`, `weight-chips`, `formula-card` (server, formula in HTML), `merit-disclaimer`, `merit-calculator-form` (client: route picker, fieldsets, inline errors, aria-live result + breakdown). |
 | `components/marketing/blog/` | `post-card` (server: cover via next/image, category badge, title link with whole-card overlay, date, reading time, tags), `post-meta` (`CategoryBadge`). |
 | `components/marketing/contact/contact-form.tsx` | Client contact form: inline errors, focus first invalid, honeypot, honest "not sent yet" success state, `TODO(backend)` for the server action. |
-| `components/dashboard/` | Dashboard shell + home sections (rounded variant + public palette, DESIGN.md §12): `sidebar`, `bottom-nav`, `header` (`DashboardHeader`, `DashboardHeaderFallback`), `entry-test-selector`, `hero-section`, `subjects-section`, `chapter-list`, `challenge-section`, `section-heading`, `icon` (Material Symbols), `styles.ts` (`card`, `cardInteractive`, `skeleton`, `focusRing`, `appButton` cva). |
+| `components/dashboard/` | Dashboard shell + home sections (rounded variant + public palette, DESIGN.md §12): `sidebar`, `bottom-nav`, `header` (`DashboardHeader`, `DashboardHeaderFallback`), `entry-test-selector`, `hero-section` (greeting + `aside` slot), `next-step-card` (resume / get started / keep going, from `getJourney()`), `subjects-section`, `chapter-list`, `section-heading`, `icon` (Material Symbols), `styles.ts` (`card`, `cardInteractive`, `skeleton`, `focusRing`, `appButton` cva). |
 | `components/seo/json-ld.tsx` | `<JsonLd>` (escapes `<`) + Organization / WebSite / FAQPage / BreadcrumbList / Article helpers. |
 | `components/material-symbols-font.tsx` | Material Symbols `<link>`s + reveal script, rendered by dashboard + auth layouts only. |
 | `components/ui/sheet.tsx` | shadcn Sheet (mobile menu); close button 44x44px with brand focus ring. (`accordion.tsx` removed: FAQ uses `<details>`.) |

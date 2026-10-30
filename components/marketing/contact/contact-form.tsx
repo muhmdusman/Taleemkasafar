@@ -96,7 +96,7 @@ export function ContactForm({ emailSlot, whatsappSlot }: Props) {
         ref={successRef}
         tabIndex={-1}
         role="status"
-        className="rounded-2xl border-2 border-ink bg-surface-lowest p-6 shadow-hard focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-container sm:p-8"
+        className="rounded-2xl border border-outline-variant bg-surface-lowest p-6 shadow-soft-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-container sm:p-8"
       >
         <CheckCircle2 className="size-8 text-success" aria-hidden="true" />
         <h3 className="mt-4 font-headline text-2xl font-bold tracking-tight text-on-surface">

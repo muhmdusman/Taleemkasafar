@@ -7,6 +7,8 @@ import {
   nextSectionStart,
   prevSectionStart,
   sectionAnsweredCount,
+  mockSubmitCounts,
+  practiceSessionSummary,
 } from "./session";
 
 describe("resumeIndex", () => {
@@ -83,5 +85,34 @@ describe("buildSections", () => {
 
   it("handles an empty label list", () => {
     expect(buildSections([])).toEqual([]);
+  });
+});
+
+describe("mockSubmitCounts", () => {
+  it("counts answered, unanswered and review flags", () => {
+    expect(
+      mockSubmitCounts([
+        { saved: true },
+        { saved: true, review: true },
+        {},
+        { review: true },
+      ]),
+    ).toEqual({ answered: 2, unanswered: 2, markedForReview: 2 });
+  });
+
+  it("handles an empty paper", () => {
+    expect(mockSubmitCounts([])).toEqual({ answered: 0, unanswered: 0, markedForReview: 0 });
+  });
+});
+
+describe("practiceSessionSummary", () => {
+  it("returns answered, correct and a rounded accuracy", () => {
+    expect(
+      practiceSessionSummary([{ isCorrect: true }, { isCorrect: false }, { isCorrect: true }]),
+    ).toEqual({ answered: 3, correct: 2, accuracyPercent: 67 });
+  });
+
+  it("reports 0% when nothing was answered", () => {
+    expect(practiceSessionSummary([])).toEqual({ answered: 0, correct: 0, accuracyPercent: 0 });
   });
 });

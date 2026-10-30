@@ -16,9 +16,11 @@ type PageHeaderProps = {
 };
 
 /**
- * Inner public page intro: a light sky-blue banner with the plain white
- * "Taleemkasafar" wordmark and the page h1, then breadcrumbs, intro text and
- * actions on the page background (owner direction, 2026-10-23).
+ * Inner public page intro: a light sky-blue banner with the "Taleemkasafar"
+ * wordmark and the page h1, then breadcrumbs, intro text and actions on the
+ * page background (owner direction, 2026-10-23). Since 2026-10-30 the banner
+ * is a soft blue tint with dark text instead of a saturated gradient with
+ * white text (eye comfort).
  */
 export function PageHeader({
   breadcrumbs,
@@ -30,17 +32,17 @@ export function PageHeader({
 }: PageHeaderProps) {
   return (
     <div className={className}>
-      <div className="relative overflow-hidden bg-gradient-to-br from-brand to-brand-container text-on-brand">
+      <div className="relative overflow-hidden border-b border-brand/10 bg-brand-fixed">
         {/* Subtle dot texture (decorative). */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgb(var(--on-brand)/0.14)_1.5px,transparent_1.5px)] bg-[length:22px_22px]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgb(var(--brand)/0.10)_1.5px,transparent_1.5px)] bg-[length:22px_22px]"
         />
         <Container className="relative flex flex-col items-center py-12 text-center md:py-16">
-          <p className="font-headline text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+          <p className="font-headline text-4xl font-bold tracking-tight text-brand-container sm:text-5xl md:text-6xl">
             {siteConfig.wordmark}
           </p>
-          <h1 className="mt-4 max-w-4xl text-balance font-headline text-2xl font-semibold leading-tight tracking-tight sm:text-3xl md:text-4xl">
+          <h1 className="mt-4 max-w-4xl text-balance font-headline text-2xl font-semibold leading-tight tracking-tight text-on-surface sm:text-3xl md:text-4xl">
             {title}
           </h1>
         </Container>

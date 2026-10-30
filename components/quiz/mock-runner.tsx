@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/dashboard/icon";
 import { appButton, card } from "@/components/dashboard/styles";
+import { Dialog } from "./dialog";
 import { QuestionCard } from "./question-card";
 import { OptionButton } from "./option-button";
 import { QuizTimer } from "./quiz-timer";
@@ -20,6 +21,7 @@ import {
   buildSections,
   nextSectionStart,
   prevSectionStart,
+  mockSubmitCounts,
   type AnswerState,
 } from "@/lib/quiz/session";
 import type { MockAttemptData } from "@/lib/queries/mock";
@@ -53,6 +55,7 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
     return init;
   });
   const [submitting, setSubmitting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const questionStartRef = useRef<number>(Date.now());
 
   const sections = useMemo(() => buildSections(sectionLabels), [sectionLabels]);
@@ -81,8 +84,10 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
     void toggleReview(attemptId, current.id, next);
   }, [current, review, attemptId]);
 
+  // Called from the confirm dialog, or directly when the timer runs out.
   const doSubmit = useCallback(async () => {
     if (submitting) return;
+    setConfirmOpen(false);
     setSubmitting(true);
     const answers = questions.map((q) => ({
       question_id: q.id,
@@ -99,6 +104,7 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
     review: review[q.id] === true,
   }));
   const savedFlags = questions.map((q) => selected[q.id] !== undefined);
+  const counts = mockSubmitCounts(states);
 
   if (questions.length === 0) {
     return (
@@ -121,7 +127,7 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
           <QuizTimer expiresAt={data.expiresAt ?? new Date().toISOString()} onExpire={doSubmit} />
           <button
             type="button"
-            onClick={doSubmit}
+            onClick={() => setConfirmOpen(true)}
             disabled={submitting}
             className={appButton()}
           >
@@ -129,6 +135,43 @@ export function MockRunner({ data }: { data: MockAttemptData }) {
             <Icon name="done_all" className="text-lg" />
           </button>
         </div>
+
+        {/* Guard against an accidental tap ending a long paper. */}
+        <Dialog
+          alert
+          open={confirmOpen}
+          title="Submit your test?"
+          onClose={() => setConfirmOpen(false)}
+          actions={
+            <>
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                className={appButton({ variant: "secondary" })}
+              >
+                Keep working
+              </button>
+              <button type="button" onClick={doSubmit} className={appButton()}>
+                Submit test
+              </button>
+            </>
+          }
+        >
+          <p>
+            You have answered{" "}
+            <strong className="font-semibold text-on-surface tabular-nums">
+              {counts.answered} of {questions.length}
+            </strong>{" "}
+            questions.
+            {counts.unanswered > 0
+              ? ` ${counts.unanswered} unanswered ${counts.unanswered === 1 ? "question gets" : "questions get"} no marks.`
+              : ""}
+            {counts.markedForReview > 0
+              ? ` ${counts.markedForReview} ${counts.markedForReview === 1 ? "is" : "are"} marked for review.`
+              : ""}
+          </p>
+          <p className="mt-2">You can&apos;t change answers after submitting.</p>
+        </Dialog>
 
         <QuestionCard
           index={index}

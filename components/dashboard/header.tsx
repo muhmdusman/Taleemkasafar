@@ -1,8 +1,5 @@
-import { Icon } from "./icon";
 import { avatarInitial } from "@/lib/queries/dashboard-helpers";
 import { EntryTestSelector } from "./entry-test-selector";
-import { appButton } from "./styles";
-import { cn } from "@/lib/utils";
 import type { EntryTest } from "@/lib/queries/entry-test";
 
 const headerShell =
@@ -10,7 +7,7 @@ const headerShell =
 
 /**
  * Top header for the dashboard shell. Left: page title. Center: entry-test
- * selector. Right: search + avatar.
+ * selector. Right: avatar.
  */
 export function DashboardHeader({
   title,
@@ -45,13 +42,6 @@ export function DashboardHeader({
       </div>
 
       <div className="flex items-center gap-3">
-        <button
-          type="button"
-          aria-label="Search"
-          className={cn(appButton({ variant: "secondary", size: "sm" }), "w-9 px-0")}
-        >
-          <Icon name="search" className="text-xl" />
-        </button>
         <div
           role="img"
           className="flex size-9 items-center justify-center rounded-full bg-brand-fixed font-headline font-bold text-brand-container"

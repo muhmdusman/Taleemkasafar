@@ -1,17 +1,17 @@
 "use client";
 
+import { MailCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+  AuthCard,
+  AuthHeading,
+  FormError,
+  authInput,
+  authLabel,
+} from "@/components/auth/auth-ui";
+import { appButton, focusRing } from "@/components/dashboard/styles";
+import { routes } from "@/lib/routes";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -44,61 +44,76 @@ export function ForgotPasswordForm({
     }
   };
 
+  const backLink = cn(
+    "rounded font-semibold text-brand underline-offset-4 hover:text-brand-container hover:underline",
+    focusRing,
+  );
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       {success ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Check Your Email</CardTitle>
-            <CardDescription>Password reset instructions sent</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              If you registered using your email and password, you will receive
-              a password reset email.
-            </p>
-          </CardContent>
-        </Card>
+        <>
+          <AuthHeading
+            title="Check your email"
+            description="Password reset instructions sent."
+          />
+          <AuthCard>
+            <div role="status" className="flex items-start gap-4">
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand-fixed text-brand-container">
+                <MailCheck className="size-6" aria-hidden="true" />
+              </span>
+              <p className="text-sm leading-relaxed text-on-surface-variant">
+                If you registered using your email and password, you will
+                receive a password reset email.
+              </p>
+            </div>
+            <Link href={routes.login} className={appButton({ variant: "secondary" })}>
+              Back to sign in
+            </Link>
+          </AuthCard>
+        </>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-            <CardDescription>
-              Type in your email and we&apos;ll send you a link to reset your
-              password
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleForgotPassword}>
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                {error && <p className="text-sm text-danger">{error}</p>}
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Sending..." : "Send reset email"}
-                </Button>
+        <>
+          <AuthHeading
+            title="Reset your password"
+            description="Type in your email and we'll send you a link to reset your password."
+          />
+          <AuthCard>
+            <form onSubmit={handleForgotPassword} className="flex flex-col gap-5">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="email" className={authLabel}>
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  inputMode="email"
+                  spellCheck={false}
+                  placeholder="you@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={authInput}
+                />
               </div>
-              <div className="mt-4 text-center text-sm">
-                Already have an account?{" "}
-                <Link
-                  href="/auth/login"
-                  className="underline underline-offset-4"
-                >
-                  Login
-                </Link>
-              </div>
+              {error && <FormError>{error}</FormError>}
+              <button
+                type="submit"
+                className={cn(appButton({ size: "lg" }), "w-full")}
+                disabled={isLoading}
+              >
+                {isLoading ? "Sending…" : "Send reset email"}
+              </button>
             </form>
-          </CardContent>
-        </Card>
+            <p className="text-center text-sm text-on-surface-variant">
+              Remembered it?{" "}
+              <Link href={routes.login} className={backLink}>
+                Sign in
+              </Link>
+            </p>
+          </AuthCard>
+        </>
       )}
     </div>
   );

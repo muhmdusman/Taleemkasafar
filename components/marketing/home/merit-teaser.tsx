@@ -45,7 +45,7 @@ export function MeritTeaser() {
                 </li>
               ))}
             </ul>
-            <p className="mt-4 rounded-xl bg-ink px-4 py-3 text-center font-headline font-semibold text-on-ink">
+            <p className="mt-4 rounded-xl bg-brand-fixed px-4 py-3 text-center font-headline font-semibold text-brand-container">
               = Your estimated aggregate
             </p>
             <p className="mt-4 flex gap-2 text-sm leading-relaxed text-on-surface-variant">

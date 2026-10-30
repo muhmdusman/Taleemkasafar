@@ -815,3 +815,39 @@ pu_import.sql still not applied to DB — regenerate then load via psql.
 - Run `npm run lint && npm run typecheck && npm run build && npm run test`
   and check the dashboard in a browser (desktop + mobile).
 - Auth pages are still Soft Brutalism; decide whether they follow.
+
+## 2026-10-30 (b) — Eye-comfort pass (landing + auth) and dashboard user journey
+
+### Done
+- Palette (`.theme-public`): text #000 → #1F2328, page #FFF → #FAFBFC; cards
+  stay white. No hard shadows or charcoal/gradient blocks left on the public
+  site (pricing, hero card, merit result, contact success, academies plan,
+  final CTA, academies CTA, PageHeader, step markers, aggregate pill).
+- Login contrast bug fixed at the root: ThemeProvider forced to light +
+  `color-scheme: light` (dark-OS users had dark native inputs behind dark text).
+- Auth pages restyled (theme-public, rounded cards, `border-outline` inputs,
+  readable placeholders, `FormError` role=alert, autocomplete, lucide icons;
+  Material Symbols no longer loaded on auth). Password reset/update pages no
+  longer nest a second full-height wrapper.
+- Dashboard journey: home `NextStepCard` (resume / get started / keep going)
+  via `getJourney()` (running mock first, else the chapter last answered in);
+  practice session summary with "Next chapter" (`nextChapter` in practice
+  data); mock submit confirmation (alertdialog); `getOpenMock()` drives
+  "Resume mock" on the mock page and hides "Start Mock Test" meanwhile;
+  `getHasActivity` scoped to the active test; dead ends removed (Settings
+  link, Help → contact, no-op search); "Choose your challenge" removed.
+- Tests: new pure helpers (`pickLiveMock`, `openPracticeFrom`,
+  `nextChapterAfter`, `mockSubmitCounts`, `practiceSessionSummary`) with
+  cases in the existing test files. Ran them with a vitest shim: 38/38 pass
+  in those two files.
+- A sub-agent review caught a modal left open on hidden routes, the mock
+  banner being shadowed by practice, and first-open ranking; all fixed.
+- ⚠ Not run: lint, typecheck, build, full Vitest (sandbox npm registry
+  blocked). Global `tsc` diff vs the PR #3 branch shows only missing-package noise.
+
+### Next
+- Run `npm run lint && npm run typecheck && npm run test && npm run build`.
+- Check in a browser: login on an OS in dark mode, dashboard home for a new
+  user and for one with an unfinished chapter/mock, practice Finish dialog,
+  mock submit dialog.
+- Terms/Privacy links on sign-up are still `href="#"` (no pages yet).

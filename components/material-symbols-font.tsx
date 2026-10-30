@@ -4,9 +4,9 @@ const MATERIAL_SYMBOLS_CSS =
   "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block";
 
 /**
- * Loads the Material Symbols icon font. Rendered ONLY by the dashboard and
- * auth layouts (moved out of the root layout 2026-10-22) so public marketing
- * pages, which use lucide-react, don't pay for it.
+ * Loads the Material Symbols icon font. Rendered ONLY by the dashboard layout
+ * (moved out of the root layout 2026-10-22; auth switched to lucide-react
+ * 2026-10-30) so public and auth pages, which use lucide-react, don't pay for it.
  *
  * React 19 hoists the <link>s into <head>; `precedence` makes the stylesheet
  * a managed resource, inserted after Next's own CSS (same order as before)

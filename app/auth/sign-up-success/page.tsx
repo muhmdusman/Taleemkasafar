@@ -1,43 +1,35 @@
 import Link from "next/link";
+import { ArrowRight, MailCheck } from "lucide-react";
+import { AuthCard, AuthHeading } from "@/components/auth/auth-ui";
+import { appButton } from "@/components/dashboard/styles";
+import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 export default function Page() {
   return (
-    <div className="w-full max-w-md md:max-w-[440px]">
-      <div className="flex flex-col gap-8">
-        <div className="space-y-2">
-          <h1 className="font-headline text-5xl font-bold uppercase leading-none tracking-tighter text-on-surface md:text-6xl">
-            Check Your
-            <br />
-            Email
-          </h1>
-          <p className="text-lg font-medium tracking-tight text-on-surface-variant">
-            We&apos;ve sent you a confirmation link.
+    <div className="flex w-full max-w-md flex-col gap-6 md:max-w-[440px]">
+      <AuthHeading
+        title="Check your email"
+        description="We've sent you a confirmation link."
+      />
+
+      <AuthCard>
+        <div className="flex items-start gap-4">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand-fixed text-brand-container">
+            <MailCheck className="size-6" aria-hidden="true" />
+          </span>
+          <p className="leading-relaxed text-on-surface-variant">
+            You&apos;ve signed up. Open the email we sent, confirm your account,
+            then sign in to start your preparation. Can&apos;t find it? Check
+            your spam or promotions folder.
           </p>
         </div>
 
-        <div className="flex flex-col gap-6 border-2 border-ink bg-surface-lowest p-8 shadow-hard">
-          <div className="flex items-center gap-3">
-            <span
-              className="material-symbols-outlined text-4xl text-brand"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              mark_email_unread
-            </span>
-            <p className="font-body text-on-surface-variant">
-              You&apos;ve successfully signed up. Confirm your account via the
-              email we sent, then sign in to start your preparation.
-            </p>
-          </div>
-
-          <Link
-            href="/auth/login"
-            className="flex w-full items-center justify-center gap-3 border-2 border-ink bg-ink py-5 font-headline text-xl font-bold uppercase tracking-tight text-on-ink shadow-hard transition-all hover:bg-brand active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
-          >
-            Go to Sign In
-            <span className="material-symbols-outlined">arrow_forward</span>
-          </Link>
-        </div>
-      </div>
+        <Link href={routes.login} className={cn(appButton({ size: "lg" }), "w-full")}>
+          Go to sign in
+          <ArrowRight className="size-5" aria-hidden="true" />
+        </Link>
+      </AuthCard>
     </div>
   );
 }

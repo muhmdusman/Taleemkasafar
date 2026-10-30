@@ -39,17 +39,24 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       {/*
-        The Material Symbols icon font is loaded by the dashboard + auth
-        layouts only (components/material-symbols-font.tsx); the public site
-        uses lucide-react and skips it.
+        The Material Symbols icon font is loaded by the dashboard layout only
+        (components/material-symbols-font.tsx); the public site and auth pages
+        use lucide-react and skip it.
       */}
       <body
         className={`${spaceGrotesk.variable} ${inter.variable} font-body antialiased`}
       >
+        {/*
+          Light theme forced until dark mode is designed (DESIGN.md §8). With
+          "system", dark-OS users got the `.dark` shadcn variables and a dark
+          color-scheme on inputs while our brand tokens stayed light, so auth
+          fields and cards rendered with unreadable contrast.
+        */}
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light"
+          forcedTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
           {children}

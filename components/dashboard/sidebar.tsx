@@ -11,12 +11,13 @@ import { focusRing } from "./styles";
 
 type NavItem = { href: string; label: string; icon: string };
 
+// Only pages that exist: Settings stays out of the nav until it is built
+// (it was a 404 dead end).
 const NAV: NavItem[] = [
   { href: routes.dashboard, label: "Home", icon: "dashboard" },
   { href: routes.subjects, label: "My Subjects", icon: "menu_book" },
   { href: routes.mocks, label: "Mock Tests", icon: "quiz" },
   { href: routes.performance, label: "Performance", icon: "insights" },
-  { href: routes.settings, label: "Settings", icon: "settings" },
 ];
 
 const itemBase = cn(
@@ -67,9 +68,10 @@ export function Sidebar() {
       </nav>
 
       <div className="mt-auto flex flex-col gap-1 border-t border-outline-variant pt-4">
-        <Link href={routes.help} className={cn(itemBase, itemIdle)}>
+        {/* The contact page is the help channel until a help center exists. */}
+        <Link href={routes.contact} className={cn(itemBase, itemIdle)}>
           <Icon name="help" />
-          Help Center
+          Help &amp; Contact
         </Link>
         <button
           type="button"
