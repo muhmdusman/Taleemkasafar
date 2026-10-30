@@ -788,3 +788,30 @@ pu_import.sql still not applied to DB — regenerate then load via psql.
 ### Next
 - Manual check while signed in: header shows Access dashboard on `/`.
 - DESIGN.md §3 still lists v2 values; update the table to v2.1 when the palette settles.
+
+## 2026-10-30 — Dashboard UX: landing palette, rounded corners, softer fills
+
+### Done
+- `app/dashboard/layout.tsx` applies `theme-public` (landing tokens) on a
+  `bg-surface-low` canvas; practice/past-paper screens use the same canvas.
+- New `components/dashboard/styles.ts` (`card`, `cardInteractive`,
+  `skeleton`, `focusRing`, `appButton` cva) and `section-heading.tsx`;
+  `DashboardHeaderFallback` replaces 5 copy-pasted header skeletons.
+- All dashboard + quiz components moved off Soft Brutalism: rounded-2xl
+  cards with hairline borders + soft shadows, rounded-xl buttons, no
+  `shadow-hard` / 2px ink borders / solid `bg-ink` panels (mock start card,
+  question bank card, open chapter header, score card, timer, bookmark).
+- Quiz feedback now uses tinted `success-fixed` / `danger-fixed` fills with
+  solid icon badges (matches DESIGN.md §6, which the solid fills violated).
+- A11y: focus rings everywhere, `motion-reduce` guards, sr-only labels on
+  icon-only footer buttons, palette chips get spoken status, timer is
+  `role="timer"` (no per-second announcements), muted text no longer uses
+  `opacity-*` (contrast).
+- Docs: DESIGN.md §12, steering design-system.md (variant per area).
+- ⚠ Not run in this session: build, lint, Vitest (sandbox npm registry
+  blocked). Syntax + global `tsc` diff vs main showed no new errors.
+
+### Next
+- Run `npm run lint && npm run typecheck && npm run build && npm run test`
+  and check the dashboard in a browser (desktop + mobile).
+- Auth pages are still Soft Brutalism; decide whether they follow.

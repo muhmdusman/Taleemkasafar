@@ -5,6 +5,16 @@ ALWAYS follow this when building or reviewing UI. Source of truth:
 Layout references: `ui_design/<screen>/screen.png` + `code.html` (gitignored,
 desktop + mobile variants). Port to React/Next components — never copy raw HTML.
 
+## Where each variant applies (read first)
+- **Public site** (`app/(marketing)/`, `components/marketing/`): rounded public
+  variant, section below.
+- **Dashboard** (`app/dashboard/`, `components/dashboard/`, `components/quiz/`):
+  rounded variant + public palette since 2026-10-30, section below.
+- **Auth pages** (`app/auth/`, `components/auth/`): Soft Brutalism, i.e. the
+  0px-radius / 2px-border / hard-shadow rules and "Component patterns" here.
+- Tokens-only, calm-contrast targets, typography and "never color alone"
+  apply everywhere.
+
 ## Non-negotiable rules
 - **Tokens only for color.** Use `ink`, `on-ink`, `surface-*`, `on-surface*`,
   `brand*`, `on-brand`, `outline*`, `success*`, `danger*`. NEVER raw `black`,
@@ -43,7 +53,21 @@ The public website (landing, merit calculator, blog, contact, academies) uses a
   "Taleemkasafar" wordmark + h1.
 - CTAs that should change for signed-in visitors use `AuthAwareButton`
   (never read cookies on the server in public pages).
-- The dashboard keeps Soft Brutalism until the dashboard UI/UX phase decides.
+
+## Dashboard variant (`app/dashboard/`, `components/dashboard/`, `components/quiz/`) — user override 2026-10-30
+The dashboard matches the landing page. Full spec: `.kiro/context/DESIGN.md` §12.
+- `app/dashboard/layout.tsx` sets `theme-public` (same tokens as the landing);
+  canvas `bg-surface-low`, white cards.
+- Build with `components/dashboard/styles.ts`: `card`, `cardInteractive`,
+  `skeleton`, `focusRing`, `appButton({ variant, size })`. Don't hand-write
+  new card/button class strings.
+- Cards `rounded-2xl` + 1px `border-outline-variant` + `shadow-soft`; buttons
+  and options `rounded-xl`; chips/progress `rounded-full`. NO `shadow-hard`,
+  2px `ink` borders or solid `bg-ink` panels.
+- Blue only for the main action, active nav, icon tiles, key numbers and
+  progress. Quiz feedback = tinted `success-fixed` / `danger-fixed` + icon,
+  never solid green/red blocks.
+- Headings not uppercase; small eyebrow labels may be.
 
 ## Colors
 See `.kiro/context/DESIGN.md` §3 for the token table (v2 calm palette applied 2026-10-22;
@@ -56,7 +80,7 @@ for status and quiz feedback.
   tight tracking (`tracking-tighter`/`tracking-tight`), often `uppercase`.
 - `font-body` = Inter (body, inputs, paragraphs). This is the default body font.
 
-## Component patterns
+## Component patterns (Soft Brutalism: auth pages)
 - **Primary button**: `bg-ink text-on-ink border-2 border-ink shadow-hard
   hover:bg-brand hover:border-brand` + active press (`active:translate-x-[2px]
   active:translate-y-[2px] active:shadow-none`). Square, uppercase headline font.

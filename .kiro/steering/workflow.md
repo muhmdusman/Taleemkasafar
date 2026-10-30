@@ -46,7 +46,8 @@ Skills live in `.kiro/skills/`. Activate the matching skill for the task:
 - For runtime behavior, use the `next-dev-loop` skill against a running dev
   server (the USER runs `npm run dev`; agents do not start long-running servers).
 - For UI changes, run a pass with `web-design-guidelines` and follow
-  `.kiro/steering/design-system.md` (Soft Brutalism).
+  `.kiro/steering/design-system.md` (variant per area: public site,
+  dashboard, auth).
 
 ## 6. Close the loop — update memory
 When a chunk of work completes, update `.kiro/context/progress.md` (done / next)
