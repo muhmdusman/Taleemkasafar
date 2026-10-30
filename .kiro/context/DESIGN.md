@@ -9,9 +9,10 @@ Short rules for agents live in `.kiro/steering/design-system.md`.
 > color schemes. Structure, shape, type, and token architecture are final.
 > The public website uses a rounded variant of the brand (§11).
 >
-> **Update (2026-10-30):** the dashboard now uses the same rounded variant and
-> the public palette (`.theme-public`), see §12. Soft Brutalism (§5–6) only
-> applies to the auth pages (`app/auth/`, `components/auth/`).
+> **Update (2026-10-30):** the dashboard (§12) and the auth pages (§13) now use
+> the same rounded variant and palette (`.theme-public`) as the public site, and
+> the palette was softened for eye comfort (§13). Soft Brutalism (§5–6) is
+> retired from the live UI; it stays here as history and in the mockups.
 
 ---
 
@@ -136,8 +137,8 @@ dashboard uses it too (§12).
 - **Cards**: `bg-surface-lowest`, 1px `border-outline-variant` allowed,
   `shadow-soft` (tokenized: `rgb(var(--ink) / low alpha)`), gentle hover lift
   (`hover:-translate-y-0.5 hover:shadow-soft-lg`).
-- **Emphasis** (featured pricing plan, final CTA): 2px `ink`/`brand` border +
-  `shadow-hard` as the brand accent.
+- **Emphasis** (featured pricing plan, merit result): 2px `brand` border (or
+  `brand/30`) + `shadow-soft-lg`. Hard shadows were removed 2026-10-30 (§13).
 - **Inputs**: border in `outline` (≥3:1), focus ring in `brand`.
 - **Focus**: visible `focus-visible` ring in `brand` on every interactive element.
 - Same color tokens, same fonts (Space Grotesk headlines, Inter body), lucide
@@ -150,7 +151,7 @@ performance). Owner: the brutalist dashboard (sharp corners, solid charcoal
 and blue blocks) felt harsh; match the landing page instead.
 - **Palette**: `app/dashboard/layout.tsx` sets `theme-public`, so the
   dashboard uses the exact landing tokens (blue #0768D0, charcoal #2B2F36,
-  white cards, black text). Canvas is `bg-surface-low` (#F6F7F9) so white
+  white cards, near-black text, §13). Canvas is `bg-surface-low` (#F6F7F9) so white
   cards separate without heavy borders; practice/past-paper screens too.
 - **Shared styles** live in `components/dashboard/styles.ts`: `card`,
   `cardInteractive`, `skeleton`, `focusRing` and the `appButton()` cva
@@ -173,3 +174,42 @@ and blue blocks) felt harsh; match the landing page instead.
   bold; small eyebrow labels may stay `uppercase tracking-widest`.
 - **A11y**: `focusRing` on every interactive element; `motion-reduce:` guards
   on hover lifts/transitions; icon-only buttons keep an `sr-only` label.
+- **User journey (2026-10-30)**: one obvious next step per screen.
+  - Home: greeting + `NextStepCard` (`getJourney()` in
+    `lib/queries/dashboard.ts`): a running mock first (its timer doesn't
+    stop), else the chapter the user last ANSWERED in if that sitting is
+    still open → else a 3-step "Get started" checklist (test chosen, first
+    practice answers, first mock) → else "Keep going". The old "Choose your
+    challenge" section (duplicate links) was removed.
+  - Practice: End/Finish opens a session summary (answered, correct,
+    accuracy) with "Next chapter" (`nextChapter` on the practice data).
+  - Mock: "Submit test" asks for confirmation (answered / unanswered /
+    marked for review). While a mock is open (`getOpenMock()`), the mock
+    page shows "Resume mock" and hides "Start Mock Test", because a second
+    paper would leave the first one ungraded.
+  - No dead ends: Settings (404) is out of the nav, Help goes to the contact
+    page, the no-op header search was removed, mobile "Profile" → "Progress".
+
+## 13. Eye-comfort pass + auth pages — user override 2026-10-30
+Owner: avoid very sharp colors and sharp corners that tire the eyes, fix the
+landing page, and fix login contrast while typing credentials.
+- **Palette (`.theme-public`)**: text `on-surface` #000 → **#1F2328** (15.3:1
+  on the page; inside the ≥12:1 calm target, below 21:1 glare); page
+  `surface` #FFF → **#FAFBFC**; cards/inputs stay #FFF (`surface-lowest`).
+  shadcn `--input` mirrors `outline` so any shadcn input has a ≥3:1 edge.
+- **No hard shadows or charcoal blocks anywhere**: pricing cards, hero
+  progress card, merit result, contact success and academies plan use soft
+  shadows (emphasis = 2px brand edge). The home final CTA, academies CTA and
+  inner-page `PageHeader` are light `brand-fixed` panels with dark text (were
+  charcoal / blue gradient with white text). Step markers and the merit
+  "aggregate" pill use `brand-fixed` + `brand-container` instead of `ink`.
+  The dark-banner button variants were removed.
+- **Light only**: `ThemeProvider` is `forcedTheme="light"` and `:root` sets
+  `color-scheme: light`. Root cause of the login bug: with `defaultTheme=
+  "system"`, dark-OS users got the shadcn `.dark` variables and a dark
+  color-scheme, so native inputs rendered dark behind our dark text.
+- **Auth pages** (`app/auth/`, `components/auth/`, password-reset forms):
+  `theme-public` on a `surface-low` canvas, rounded cards (`AuthCard`), white
+  inputs with `border-outline`, placeholder at 4.6:1, brand focus ring,
+  `FormError` (`role="alert"`), `autoComplete` on every field, lucide icons
+  (the auth layout no longer loads the Material Symbols font).

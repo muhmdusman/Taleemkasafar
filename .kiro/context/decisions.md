@@ -501,3 +501,26 @@ paper surfaces, and a less saturated blue. Targets: body text ≥12:1, muted
   card/focus constants) rather than importing `marketingButton`, so the
   public site and the app can evolve separately while sharing tokens.
 - Soft Brutalism now only covers auth pages.
+
+
+## 2026-10-30 (b) — One calm, rounded style everywhere; light theme forced
+
+- Owner: avoid very sharp colors and sharp corners that tire the eyes, on the
+  landing page, auth and dashboard. Supersedes 2026-10-23 (c) "solid black
+  text", the charcoal final-CTA banner, the blue-gradient PageHeader and the
+  brutalist pricing cards. Soft Brutalism is retired from the live UI.
+- Text #1F2328 (15.3:1) on an #FAFBFC page; white only for cards/inputs.
+  Banners/highlight panels = light `brand-fixed` tint with dark text.
+- **Dark mode off until designed**: `forcedTheme="light"` + `color-scheme:
+  light`. "system" mixed shadcn dark variables with light brand tokens and
+  dark native inputs, which caused the unreadable login fields.
+- **Dashboard journey**: every screen gets one obvious next step, scoped to
+  the active test. Resume priority: a running mock (in-progress, `expires_at`
+  in the future), else the practice sitting behind the user's latest
+  `attempt_answers.answered_at` if still `in_progress`. `started_at` is NOT
+  used for practice: `start_attempt` reuses one row per chapter, so it is the
+  first-open time. While a mock is open, "Start Mock Test" is hidden (a new
+  paper would orphan the old one ungraded). Reads degrade to "nothing to
+  resume". No schema change.
+- Shared app styles stay in `components/dashboard/styles.ts` (now also used
+  by quiz + auth) rather than moving the file while PR #3 is open.
