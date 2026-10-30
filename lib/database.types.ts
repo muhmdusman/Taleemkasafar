@@ -108,6 +108,7 @@ export type Database = {
           expires_at: string | null
           id: string
           mode: Database["public"]["Enums"]["attempt_mode"]
+          paused_at: string | null
           started_at: string
           status: Database["public"]["Enums"]["attempt_status"]
           submitted_at: string | null
@@ -124,6 +125,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           mode: Database["public"]["Enums"]["attempt_mode"]
+          paused_at?: string | null
           started_at?: string
           status?: Database["public"]["Enums"]["attempt_status"]
           submitted_at?: string | null
@@ -140,6 +142,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           mode?: Database["public"]["Enums"]["attempt_mode"]
+          paused_at?: string | null
           started_at?: string
           status?: Database["public"]["Enums"]["attempt_status"]
           submitted_at?: string | null
@@ -1007,6 +1010,23 @@ export type Database = {
     Functions: {
       generate_mock_attempt: { Args: { p_blueprint: string }; Returns: string }
       is_admin: { Args: never; Returns: boolean }
+      pause_mock: { Args: { p_attempt: string }; Returns: string }
+      practice_progress: {
+        Args: { p_entry_test: string }
+        Returns: {
+          answered: number
+          correct: number
+          questions_seen: number
+          subject_id: string
+        }[]
+      }
+      resume_mock: {
+        Args: { p_attempt: string }
+        Returns: {
+          current_expires_at: string
+          current_status: Database["public"]["Enums"]["attempt_status"]
+        }[]
+      }
       start_attempt: {
         Args: {
           p_entry_test: string
