@@ -3,7 +3,7 @@
 ## How we read from Supabase
 We do NOT open a direct Postgres connection from the app. We use the
 `@supabase/ssr` / `@supabase/supabase-js` clients, which call Supabase's
-**PostgREST REST API** over HTTPS. Two clients, two purposes:
+**PostgREST REST API** over HTTPS. Three clients, three purposes:
 
 - **`lib/supabase/server.ts`** (`createClient`) — cookie-based, authenticated as
   the signed-in user. Every query runs under that user's **RLS**. Because it
@@ -31,7 +31,24 @@ Split data by who it belongs to:
    - Result: navigating Home → Subjects → Home does NOT refetch the catalog.
 
 2. **User-specific data** — stays **dynamic** (cookie client, RLS). Never cache
-   per-user reads in a shared cache.
+   per-user reads in a shared cache. Per-user fetchers live in
+   `lib/queries/` (dashboard, entry-test, mock, performance, practice,
+   profile, progress, subject).
+
+## Grading and attempt writes go through RPCs
+Correct answers never reach the client: `select` on `question_options` is
+revoked from `anon` and `authenticated` (mcq_14). Attempts are started,
+answered, graded, paused and resumed only through Postgres functions, called
+from Server Actions in `app/dashboard/quiz-actions.ts`:
+- `SECURITY DEFINER` (search_path pinned, re-check `auth.uid()` ownership,
+  `execute` revoked from `anon`/`public`): `start_attempt`,
+  `submit_practice_answer`, `generate_mock_attempt`, `submit_mock` (mcq_14),
+  `pause_mock`, `resume_mock` (mcq_15).
+- `SECURITY INVOKER` (RLS scopes rows): `practice_progress` (mcq_15), used by
+  `lib/queries/progress.ts`.
+New grading/scoring logic follows the same pattern: a new migration with a
+definer function that checks ownership, revoke from `anon`/`public`, call it
+from a Server Action.
 
 ## Invalidating the cache
 When the question bank / catalog changes (e.g. after a CSV import or admin edit),
