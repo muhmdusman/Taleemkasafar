@@ -69,6 +69,25 @@
     --success-fixed: 227 242 234; /* #E3F2EA */
     --danger: 180 35 24; /* #B42318 */
     --danger-fixed: 251 231 230; /* #FBE7E6 */
+
+    /*
+     * Soft accent tones (dashboard + practice + mock, 2026-10-30). Each tone
+     * has a deep `--tone-x` for text, icons and progress fills and a light
+     * `--tone-x-soft` tint for tiles and chips. Measured: deep on its tint
+     * ≥5.5:1, deep on white ≥6.3:1, body text on any tint ≥13:1. Subjects get
+     * a stable tone (lib/subject-tone.ts) so a subject looks the same on
+     * every screen. Not used on the public site.
+     */
+    --tone-blue: 5 85 171; /* #0555AB */
+    --tone-blue-soft: 234 242 251; /* #EAF2FB */
+    --tone-violet: 91 60 196; /* #5B3CC4 */
+    --tone-violet-soft: 240 236 253; /* #F0ECFD */
+    --tone-teal: 13 107 102; /* #0D6B66 */
+    --tone-teal-soft: 225 244 241; /* #E1F4F1 */
+    --tone-amber: 138 80 0; /* #8A5000 */
+    --tone-amber-soft: 253 241 220; /* #FDF1DC */
+    --tone-rose: 174 40 88; /* #AE2858 */
+    --tone-rose-soft: 252 234 240; /* #FCEAF0 */
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -187,6 +206,17 @@
 }
 
 /*
+ * APP SURFACES (dashboard, practice, mock), layered on top of .theme-public.
+ * Owner, 2026-10-30: clearer card and divider edges than the public site's
+ * hairlines. #D5D9E0 is 1.4:1 on white, enough to read as an edge while
+ * staying soft. Must come after .theme-public (same specificity).
+ */
+.theme-app {
+  --outline-variant: 213 217 224; /* #D5D9E0 */
+  --border: 218.2 15.1% 85.7%; /* = outline-variant */
+}
+
+/*
  * Hero rotating words (CSS only, no JS): cycles through 6 items and lands on
  * a duplicate of the first so the loop is seamless. Each item is 1.15em tall
  * (matches `h-[1.15em]` on the rotator window). Static for reduced motion.
@@ -206,6 +236,32 @@
 @media (prefers-reduced-motion: reduce) {
   .word-rotator {
     animation: none;
+  }
+}
+
+/*
+ * Skeleton shimmer (components/dashboard/styles.ts `skeleton`): a soft
+ * highlight sweeps across the placeholder. A plain class rather than Tailwind
+ * utilities so tailwind-merge can't drop it as a conflicting `bg-*`.
+ */
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton-shimmer {
+  background-image: linear-gradient(
+    90deg,
+    rgb(var(--surface-container)) 0%,
+    rgb(var(--surface-lowest) / 0.9) 50%,
+    rgb(var(--surface-container)) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+    background-image: none;
   }
 }
 

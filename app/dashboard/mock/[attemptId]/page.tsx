@@ -1,24 +1,27 @@
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { getMockAttempt } from "@/lib/queries/mock";
-import { getActiveEntryTest } from "@/lib/queries/entry-test";
-import { getEntryTestsCached } from "@/lib/queries/catalog";
-import { getDisplayName } from "@/lib/queries/profile";
-import { DashboardHeader, DashboardHeaderFallback } from "@/components/dashboard/header";
-import { skeleton } from "@/components/dashboard/styles";
 import { MockRunner } from "@/components/quiz/mock-runner";
+import { QuizLoadingScreen } from "@/components/quiz/ts-ring-loader";
 import { routes } from "@/lib/routes";
-import { cn } from "@/lib/utils";
 
+/**
+ * A mock sitting, full screen like practice: no dashboard sidebar, header or
+ * bottom nav (the layout's nav hides itself here, see `isFocusRoute`), so
+ * the student only sees the paper. Leaving goes through the runner's
+ * "Pause or end?" dialog.
+ */
 export default function MockAttemptPage({
   params,
 }: {
   params: Promise<{ attemptId: string }>;
 }) {
   return (
-    <Suspense fallback={<MockRunSkeleton />}>
-      <MockAttemptView params={params} />
-    </Suspense>
+    <div className="fixed inset-0 z-50 bg-surface-low">
+      <Suspense fallback={<QuizLoadingScreen label="Loading your mock..." />}>
+        <MockAttemptView params={params} />
+      </Suspense>
+    </div>
   );
 }
 
@@ -28,48 +31,13 @@ async function MockAttemptView({
   params: Promise<{ attemptId: string }>;
 }) {
   const { attemptId } = await params;
-
-  const [data, entryTest, tests, displayName] = await Promise.all([
-    getMockAttempt(attemptId),
-    getActiveEntryTest(),
-    getEntryTestsCached(),
-    getDisplayName(),
-  ]);
-
-  if (!entryTest) redirect("/auth/login");
+  // Signed out → null (the proxy guards /dashboard anyway).
+  const data = await getMockAttempt(attemptId);
   if (!data) notFound();
 
-  // Already submitted → go to the result.
+  // Already submitted → go to the result; abandoned → back to mock tests.
   if (data.status === "submitted") redirect(routes.mockResult(attemptId));
+  if (data.status !== "in_progress") redirect(routes.mocks);
 
-  return (
-    <>
-      <DashboardHeader
-        title="Mock Test"
-        badge="In Progress"
-        displayName={displayName}
-        tests={tests}
-        activeTestId={entryTest.id}
-      />
-      <main className="px-4 pb-24 pt-28 md:px-12 md:pb-20">
-        <div className="mx-auto max-w-6xl">
-          <MockRunner data={data} />
-        </div>
-      </main>
-    </>
-  );
-}
-
-function MockRunSkeleton() {
-  return (
-    <>
-      <DashboardHeaderFallback />
-      <main className="px-4 pb-24 pt-28 md:px-12">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
-          <div className={cn(skeleton, "h-96 w-full")} />
-          <div className={cn(skeleton, "h-96 w-full")} />
-        </div>
-      </main>
-    </>
-  );
+  return <MockRunner data={data} />;
 }

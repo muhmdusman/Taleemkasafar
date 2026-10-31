@@ -55,6 +55,30 @@ export default {
           DEFAULT: "rgb(var(--danger) / <alpha-value>)", // error / wrong answer
           fixed: "rgb(var(--danger-fixed) / <alpha-value>)", // wrong tint
         },
+        // Soft accent tones for the app (dashboard, practice, mock). Deep
+        // tone = text/icons/bars, `soft` = tile/chip tint. See globals.css.
+        tone: {
+          blue: {
+            DEFAULT: "rgb(var(--tone-blue) / <alpha-value>)",
+            soft: "rgb(var(--tone-blue-soft) / <alpha-value>)",
+          },
+          violet: {
+            DEFAULT: "rgb(var(--tone-violet) / <alpha-value>)",
+            soft: "rgb(var(--tone-violet-soft) / <alpha-value>)",
+          },
+          teal: {
+            DEFAULT: "rgb(var(--tone-teal) / <alpha-value>)",
+            soft: "rgb(var(--tone-teal-soft) / <alpha-value>)",
+          },
+          amber: {
+            DEFAULT: "rgb(var(--tone-amber) / <alpha-value>)",
+            soft: "rgb(var(--tone-amber-soft) / <alpha-value>)",
+          },
+          rose: {
+            DEFAULT: "rgb(var(--tone-rose) / <alpha-value>)",
+            soft: "rgb(var(--tone-rose-soft) / <alpha-value>)",
+          },
+        },
         // --- shadcn tokens (kept for existing ui/ primitives) ---
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -129,8 +153,15 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
       },
       animation: {
+        // Pending indicators: wait a beat before showing, so instant
+        // navigations don't flash a spinner.
+        "fade-in-delayed": "fade-in 150ms ease-out 120ms both",
         loaderSweep: "loaderSweep 1s linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",

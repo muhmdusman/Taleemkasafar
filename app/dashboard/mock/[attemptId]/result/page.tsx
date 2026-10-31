@@ -5,9 +5,8 @@ import { getActiveEntryTest } from "@/lib/queries/entry-test";
 import { getEntryTestsCached } from "@/lib/queries/catalog";
 import { getDisplayName } from "@/lib/queries/profile";
 import { DashboardHeader, DashboardHeaderFallback } from "@/components/dashboard/header";
-import { skeleton } from "@/components/dashboard/styles";
+import { BlockSkeleton, RowsSkeleton } from "@/components/dashboard/skeletons";
 import { MockResult } from "@/components/quiz/mock-result";
-import { cn } from "@/lib/utils";
 
 export default function MockResultPage({
   params,
@@ -42,12 +41,11 @@ async function MockResultView({
     <>
       <DashboardHeader
         title="Mock Result"
-        badge={entryTest.name}
         displayName={displayName}
         tests={tests}
         activeTestId={entryTest.id}
       />
-      <main className="px-4 pb-24 pt-28 md:px-12 md:pb-20">
+      <main className="px-4 pb-24 pt-24 sm:px-6 md:px-12 md:pb-20 md:pt-28">
         <div className="mx-auto max-w-3xl">
           <MockResult result={result} />
         </div>
@@ -60,10 +58,10 @@ function ResultSkeleton() {
   return (
     <>
       <DashboardHeaderFallback />
-      <main className="px-4 pb-24 pt-28 md:px-12">
-        <div className="mx-auto max-w-3xl">
-          <div className={cn(skeleton, "mb-8 h-48 w-full")} />
-          <div className={cn(skeleton, "h-60 w-full")} />
+      <main className="px-4 pb-24 pt-24 sm:px-6 md:px-12 md:pt-28">
+        <div className="mx-auto flex max-w-3xl flex-col gap-8">
+          <BlockSkeleton className="h-56" label="Loading your result" />
+          <RowsSkeleton rows={3} label="Loading subject breakdown" />
         </div>
       </main>
     </>

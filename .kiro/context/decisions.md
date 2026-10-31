@@ -524,3 +524,29 @@ paper surfaces, and a less saturated blue. Targets: body text ≥12:1, muted
   resume". No schema change.
 - Shared app styles stay in `components/dashboard/styles.ts` (now also used
   by quiz + auth) rather than moving the file while PR #3 is open.
+
+
+## 2026-10-30 (c) — Soft tones in the app; real pause for mocks
+
+- **Colour**: the owner asked for a more colourful but soft dashboard and
+  practice. A small tone palette (blue, violet, teal, amber, rose) is scoped
+  to the app (not the public site, where the 2026-10-23 "blue sparingly" rule
+  still holds). A subject keeps one tone everywhere; areas have fixed tones.
+  `brand` blue stays the primary-button colour.
+- **Pause is real, server-side** (mcq_15): `paused_at` freezes the remaining
+  time; `resume_mock` shifts `expires_at` by the pause length and is called
+  every time a sitting opens. Real exams don't pause, but the owner asked for
+  it, and mocks are self-study. The server already didn't enforce expiry, so
+  pausing weakens nothing. Without the migration, Pause says it isn't
+  available and "Leave anyway" keeps the timer running.
+- **Leaving a mock goes home** (owner): Pause & exit and End test both land
+  on the dashboard, where the next-step card or progress shows the paused
+  mock or the new score. The in-sitting Submit still opens the result page.
+- **Back guard**: duplicate history entry (state copied from Next's own, so
+  no router refresh); exits pop it before `router.replace`.
+- **One open mock at a time**: while a mock is running, paused or out of
+  time, "Start" is hidden; out-of-time mocks offer "See my score", which
+  grades the saved answers.
+- **Progress per test**: `practice_progress` RPC (SECURITY INVOKER) groups
+  answers per subject in one query, instead of loading rows (PostgREST
+  1000-row cap). Mock results and Performance are scoped to the active test.

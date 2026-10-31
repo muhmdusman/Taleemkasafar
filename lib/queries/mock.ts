@@ -1,6 +1,8 @@
 import "server-only";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { getActiveEntryTest } from "./entry-test";
+import { mockSecondsLeft } from "./dashboard-helpers";
+import { getActiveEntryTest, getUserTestContext } from "./entry-test";
 import type { QuizQuestion } from "./practice";
 
 export type MockBlueprintSummary = {
@@ -25,33 +27,43 @@ export type MockLandingData = {
   recentResults: MockResultSummary[];
 };
 
+/** The active entry test's mock blueprint (first active one), or null. */
+export const getActiveBlueprint = cache(
+  async (): Promise<MockBlueprintSummary | null> => {
+    const entryTest = await getActiveEntryTest();
+    if (!entryTest) return null;
+    const supabase = await createClient();
+
+    const { data: bp } = await supabase
+      .from("mock_test_blueprints")
+      .select("id, name, description, duration_seconds, total_questions")
+      .eq("entry_test_id", entryTest.id)
+      .eq("is_active", true)
+      .order("display_order", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    return bp
+      ? {
+          id: bp.id,
+          name: bp.name,
+          description: bp.description,
+          durationSeconds: bp.duration_seconds,
+          totalQuestions: bp.total_questions,
+        }
+      : null;
+  },
+);
+
 /** Mock landing: the active test's blueprint + the user's recent results. */
 export async function getMockLanding(): Promise<MockLandingData | null> {
   const entryTest = await getActiveEntryTest();
   if (!entryTest) return null;
 
-  const supabase = await createClient();
-
-  const { data: bp } = await supabase
-    .from("mock_test_blueprints")
-    .select("id, name, description, duration_seconds, total_questions")
-    .eq("entry_test_id", entryTest.id)
-    .eq("is_active", true)
-    .order("display_order", { ascending: true })
-    .limit(1)
-    .maybeSingle();
-
-  const blueprint: MockBlueprintSummary | null = bp
-    ? {
-        id: bp.id,
-        name: bp.name,
-        description: bp.description,
-        durationSeconds: bp.duration_seconds,
-        totalQuestions: bp.total_questions,
-      }
-    : null;
-
-  const recentResults = await listMockResults(8);
+  const [blueprint, recentResults] = await Promise.all([
+    getActiveBlueprint(),
+    listMockResults(8),
+  ]);
 
   return {
     entryTestName: entryTest.name,
@@ -60,20 +72,23 @@ export async function getMockLanding(): Promise<MockLandingData | null> {
   };
 }
 
-/** The user's submitted mock results, most recent first. */
+/**
+ * The user's submitted mock results for the ACTIVE entry test, most recent
+ * first (results follow the test picked in the header, like everything else).
+ */
 export async function listMockResults(limit = 20): Promise<MockResultSummary[]> {
-  const supabase = await createClient();
-  const { data: claims } = await supabase.auth.getClaims();
-  const userId = claims?.claims?.sub as string | undefined;
-  if (!userId) return [];
+  const ctx = await getUserTestContext();
+  if (!ctx) return [];
+  const { supabase, userId, entryTest } = ctx;
 
   // mock_results -> attempt (owned by user). RLS already scopes to the owner.
   const { data } = await supabase
     .from("mock_results")
     .select(
-      "attempt_id, score_percent, correct_count, total_questions, attempts!inner(submitted_at, user_id)",
+      "attempt_id, score_percent, correct_count, total_questions, attempts!inner(submitted_at, user_id, entry_test_id)",
     )
     .eq("attempts.user_id", userId)
+    .eq("attempts.entry_test_id", entryTest.id)
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -91,10 +106,16 @@ export async function listMockResults(limit = 20): Promise<MockResultSummary[]> 
 export type MockAttemptData = {
   attemptId: string;
   status: string;
+  /** Blueprint name, e.g. "NET Engineering Full Mock". */
+  title: string;
   expiresAt: string | null;
+  /** Set while the mock is paused: the frozen time left, in seconds. */
+  pausedSecondsLeft: number | null;
   questions: QuizQuestion[];
   /** Per-question section label (subject name), aligned to `questions`. */
   sectionLabels: string[];
+  /** Per-question subject slug (for the section's colour), aligned to `questions`. */
+  sectionSlugs: string[];
   /** Per-question marked-for-review flag, aligned to `questions`. */
   reviewFlags: boolean[];
 };
@@ -112,46 +133,58 @@ export async function getMockAttempt(
   const userId = claims?.claims?.sub as string | undefined;
   if (!userId) return null;
 
+  // `*` so this works before the mcq_15 migration adds `paused_at`.
   const { data: attempt } = await supabase
     .from("attempts")
-    .select("id, status, expires_at, user_id, mode")
+    .select("*")
     .eq("id", attemptId)
     .eq("user_id", userId)
     .eq("mode", "mock")
     .maybeSingle();
   if (!attempt) return null;
 
-  // Frozen ordered rows.
-  const { data: frozen } = await supabase
-    .from("attempt_answers")
-    .select("question_id, selected_option_id, marked_for_review, display_order")
-    .eq("attempt_id", attemptId)
-    .order("display_order", { ascending: true });
+  // Frozen ordered rows + the paper's name.
+  const [{ data: frozen }, { data: blueprint }] = await Promise.all([
+    supabase
+      .from("attempt_answers")
+      .select("question_id, selected_option_id, marked_for_review, display_order")
+      .eq("attempt_id", attemptId)
+      .order("display_order", { ascending: true }),
+    attempt.blueprint_id
+      ? supabase
+          .from("mock_test_blueprints")
+          .select("name")
+          .eq("id", attempt.blueprint_id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
 
   const rows = frozen ?? [];
   const questionIds = rows.map((r) => r.question_id);
 
-  // Question content + subject (for sections).
-  const { data: questionRows } = await supabase
-    .from("questions")
-    .select("id, statement, subjects!inner(name)")
-    .in("id", questionIds);
-  const qById = new Map(
-    (questionRows ?? []).map((q) => [
-      q.id,
-      {
-        statement: q.statement,
-        subject: (q.subjects as { name: string } | null)?.name ?? "",
-      },
-    ]),
-  );
+  // Question content + subject (for sections), and options (answer-free).
+  const [{ data: questionRows }, { data: optionRows }] = await Promise.all([
+    supabase
+      .from("questions")
+      .select("id, statement, subjects!inner(name, slug)")
+      .in("id", questionIds),
+    supabase
+      .from("question_options")
+      .select("id, question_id, option_label, content")
+      .in("question_id", questionIds)
+      .order("display_order", { ascending: true }),
+  ]);
+  type QuestionMeta = { statement: string; subject: string; subjectSlug: string };
+  const qById = new Map<string, QuestionMeta>();
+  for (const q of questionRows ?? []) {
+    const subject = q.subjects as { name: string; slug: string } | null;
+    qById.set(q.id, {
+      statement: q.statement,
+      subject: subject?.name ?? "",
+      subjectSlug: subject?.slug ?? "",
+    });
+  }
 
-  // Options (answer-free).
-  const { data: optionRows } = await supabase
-    .from("question_options")
-    .select("id, question_id, option_label, content")
-    .in("question_id", questionIds)
-    .order("display_order", { ascending: true });
   const optionsByQuestion = new Map<
     string,
     { id: string; label: string; content: string }[]
@@ -164,6 +197,7 @@ export async function getMockAttempt(
 
   const questions: QuizQuestion[] = [];
   const sectionLabels: string[] = [];
+  const sectionSlugs: string[] = [];
   const reviewFlags: boolean[] = [];
   for (const r of rows) {
     const meta = qById.get(r.question_id);
@@ -174,15 +208,24 @@ export async function getMockAttempt(
       savedOptionId: r.selected_option_id,
     });
     sectionLabels.push(meta?.subject ?? "");
+    sectionSlugs.push(meta?.subjectSlug ?? "");
     reviewFlags.push(r.marked_for_review);
   }
+
+  const pausedAt = (attempt as { paused_at?: string | null }).paused_at ?? null;
 
   return {
     attemptId: attempt.id,
     status: attempt.status,
+    title: blueprint?.name ?? "Mock test",
     expiresAt: attempt.expires_at,
+    // No "now" needed while paused: the time left is frozen.
+    pausedSecondsLeft: pausedAt
+      ? mockSecondsLeft({ expires_at: attempt.expires_at, paused_at: pausedAt }, 0)
+      : null,
     questions,
     sectionLabels,
+    sectionSlugs,
     reviewFlags,
   };
 }

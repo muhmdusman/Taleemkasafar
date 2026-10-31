@@ -1,4 +1,4 @@
-# Design System — rounded, calm, one blue accent
+# Design System — rounded, calm, blue actions + soft tones
 
 ALWAYS follow this when building or reviewing UI. Source of truth:
 **`.kiro/context/DESIGN.md` (committed)** — palette, contrast targets, components.
@@ -11,11 +11,14 @@ RETIRED from the live UI (2026-10-30). Take layout from them, not the styling.
 One style everywhere: public site (`app/(marketing)/`, `components/marketing/`),
 dashboard (`app/dashboard/`, `components/dashboard/`, `components/quiz/`) and
 auth (`app/auth/`, `components/auth/`). Each area's layout sets `theme-public`
-(app/globals.css), so they all share the same tokens.
+(app/globals.css), so they all share the same tokens. The dashboard also sets
+`theme-app` (clearer card edges) and may use the soft `tone-*` accents
+(DESIGN.md §14); the public site and auth may not.
 
 ## Non-negotiable rules
 - **Tokens only for color.** Use `ink`, `on-ink`, `surface-*`, `on-surface*`,
-  `brand*`, `on-brand`, `outline*`, `success*`, `danger*`. NEVER raw `black`,
+  `brand*`, `on-brand`, `outline*`, `success*`, `danger*`, and in the app
+  `tone-{blue,violet,teal,amber,rose}` (+ `-soft`). NEVER raw `black`,
   `white`, Tailwind palette colors (`red-500`), or hex/arbitrary values. Token
   values live as CSS variables in `app/globals.css`; palette changes happen there.
 - **Eye comfort**: no pure #000 text, no pure #fff page. Text `on-surface`
@@ -29,9 +32,14 @@ auth (`app/auth/`, `components/auth/`). Each area's layout sets `theme-public`
 - **No solid dark or saturated blocks**: no `bg-ink` panels/banners, no blue
   gradients. Banners and highlight panels use the light `bg-brand-fixed` tint
   with dark text; blue fills are only for buttons and small markers.
-- **Blue only for** the main action of a screen/section, active nav, icon
-  tiles, step markers, key numbers and progress fills. No blue hover effects,
-  no blue dropdown icons. Hover = same element slightly deeper/neutral.
+- **Blue (`brand`) only for** the main action of a screen/section, step
+  markers and the current question. No blue hover effects. Hover = same
+  element slightly deeper/neutral.
+- **Soft tones (app only)**: subjects use `subjectTone(slug)` and areas use
+  `areaTone` (Home blue, Subjects teal, Mock tests violet, Progress amber),
+  via `toneClasses` in `components/dashboard/tone.ts`. Never write tone
+  class strings in `lib/` (Tailwind doesn't scan it). Tints for tiles, chips
+  and panels; the deep tone for text, icons and progress fills.
 - **Controls need a visible edge**: inputs/options use `border-outline`
   (≥3:1); `outline-variant` is decorative only.
 - **Focus**: visible brand ring on every interactive element (`focusRing`).
@@ -43,8 +51,13 @@ auth (`app/auth/`, `components/auth/`). Each area's layout sets `theme-public`
 
 ## Shared building blocks (use these, don't hand-write class strings)
 - `components/dashboard/styles.ts`: `card`, `cardInteractive`, `skeleton`,
-  `focusRing`, `appButton({ variant: primary|secondary|ghost, size: sm|md|lg })`.
+  `focusRing`, `appButton({ variant: primary|secondary|ghost|danger, size: sm|md|lg })`.
   Used by dashboard, quiz and auth.
+- Loading (app): content-shaped fallbacks from `components/dashboard/skeletons.tsx`
+  for every Suspense boundary; `LinkPendingIndicator` inside links whose
+  target may be slow; `Spinner` / `TopProgressBar` from `loading-indicators.tsx`
+  for in-place and whole-screen work; `FullscreenLoader` for multi-second jobs.
+  Never leave a click without visible feedback.
 - Public site buttons: `ButtonLink` / `marketingButton` (`primary`,
   `secondary`, `brand`, `ghost`) in `components/marketing/button-link.tsx`.
 - Auth: `components/auth/auth-ui.tsx` (`AuthHeading`, `AuthCard`,
@@ -56,10 +69,18 @@ auth (`app/auth/`, `components/auth/`). Each area's layout sets `theme-public`
 - **Public site**: inner pages start with `PageHeader` (light blue banner,
   blue wordmark, dark h1). CTAs that change for signed-in visitors use
   `AuthAwareButton` (never read cookies on the server in public pages).
-- **Dashboard**: every screen has ONE obvious next step. Home shows the
-  `NextStepCard` (resume an unfinished chapter/mock → first-run checklist →
-  keep going). Practice ends with a summary + "Next chapter"; mock submit asks
-  for confirmation. Don't link to pages that don't exist yet.
+- **Dashboard**: every screen has ONE obvious next step. Home = greeting +
+  `NextStepCard` (resume → first-run checklist with the test picker → keep
+  going), then progress + suggested focus, subjects, mock tests. Practice ends
+  with a summary + "Next chapter"; mock submit asks for confirmation. Don't
+  link to pages that don't exist yet. The entry-test dropdown is in the
+  header on every size.
+- **Study screens are full screen** (practice, past paper, a mock sitting):
+  no sidebar/bottom nav (`isFocusRoute` in lib/routes.ts). A mock sitting
+  guards browser Back with `useBackGuard` and offers Pause & exit / End test;
+  leave via the guard's `release()` + `router.replace` so the sitting doesn't
+  stay in history. Routes are kept hidden (Cache Components), so screens
+  that hold state must reset it when shown again.
 - **Quiz feedback**: tinted `success-fixed` / `danger-fixed` + icon badge,
   never solid green/red blocks.
 

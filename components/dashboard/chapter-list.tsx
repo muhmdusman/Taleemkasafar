@@ -3,15 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Icon } from "./icon";
+import { LinkPendingIndicator } from "./link-pending";
 import { card, focusRing } from "./styles";
+import { toneClasses } from "./tone";
 import { cardIndex, chapterMetaLabel } from "@/lib/queries/dashboard-helpers";
 import type { ChapterOverview } from "@/lib/queries/subject";
 import { routes } from "@/lib/routes";
+import type { Tone } from "@/lib/subject-tone";
 import { cn } from "@/lib/utils";
 
 type ContentButton = {
   key: string;
   label: string;
+  /** One line telling the student what this mode is for. */
+  hint: string;
   icon: string;
   /** href when enabled; undefined => "coming soon" (disabled) */
   href?: string;
@@ -21,14 +26,18 @@ type ContentButton = {
  * Accordion list of chapters. Expanding a chapter reveals the four content
  * entry points (Past Paper, Practice, Quick Notes, Lectures). MCQ options link
  * to the practice/past-paper routes; notes & lectures are future (disabled).
+ * `tone` is the subject's soft accent (lib/subject-tone.ts).
  */
 export function ChapterList({
   subjectSlug,
   chapters,
+  tone: toneName,
 }: {
   subjectSlug: string;
   chapters: ChapterOverview[];
+  tone: Tone;
 }) {
+  const tone = toneClasses[toneName];
   const [openId, setOpenId] = useState<string | null>(
     chapters[0]?.chapter_id ?? null,
   );
@@ -55,6 +64,7 @@ export function ChapterList({
           {
             key: "past_paper",
             label: "Past Paper MCQs",
+            hint: "Questions in real test style",
             icon: "history_edu",
             href:
               count > 0 ? routes.pastPaper(subjectSlug, chapterSlug) : undefined,
@@ -62,12 +72,13 @@ export function ChapterList({
           {
             key: "practice",
             label: "Practice MCQs",
+            hint: "Instant check + explanation",
             icon: "assignment",
             href:
               count > 0 ? routes.practice(subjectSlug, chapterSlug) : undefined,
           },
-          { key: "notes", label: "Quick Notes", icon: "sticky_note_2" },
-          { key: "lectures", label: "Lectures", icon: "play_circle" },
+          { key: "notes", label: "Quick Notes", hint: "Short revision notes", icon: "sticky_note_2" },
+          { key: "lectures", label: "Lectures", hint: "Video lessons", icon: "play_circle" },
         ];
 
         return (
@@ -76,7 +87,7 @@ export function ChapterList({
             className={cn(
               "overflow-hidden rounded-2xl border bg-surface-lowest transition-[border-color,box-shadow] duration-200 motion-reduce:transition-none",
               open
-                ? "border-outline shadow-soft-lg"
+                ? cn(tone.border, "shadow-soft-lg")
                 : "border-outline-variant shadow-soft",
             )}
           >
@@ -96,9 +107,7 @@ export function ChapterList({
                 <span
                   className={cn(
                     "flex size-11 shrink-0 items-center justify-center rounded-xl font-headline text-base font-bold tabular-nums transition-colors motion-reduce:transition-none",
-                    open
-                      ? "bg-brand text-on-brand"
-                      : "bg-surface-container text-on-surface-variant",
+                    open ? tone.solid : tone.tile,
                   )}
                 >
                   {cardIndex(i)}
@@ -124,7 +133,7 @@ export function ChapterList({
             {open && (
               <div
                 id={panelId}
-                className="grid grid-cols-1 gap-3 px-4 pb-4 sm:grid-cols-2 md:px-5 md:pb-5 lg:grid-cols-4"
+                className="grid grid-cols-1 gap-3 px-4 pb-4 sm:grid-cols-2 md:px-5 md:pb-5"
               >
                 {buttons.map((b) =>
                   b.href ? (
@@ -132,15 +141,24 @@ export function ChapterList({
                       key={b.key}
                       href={b.href}
                       className={cn(
-                        "group flex items-center gap-3 rounded-xl border border-outline-variant bg-surface-lowest p-4 text-left transition-colors hover:border-outline hover:bg-surface-low motion-reduce:transition-none",
+                        "group flex items-center gap-3 rounded-xl border border-outline-variant bg-surface-lowest p-4 text-left transition-colors hover:bg-surface-low motion-reduce:transition-none",
+                        tone.hoverBorder,
                         focusRing,
                       )}
                     >
-                      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-fixed text-brand-container">
+                      <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg", tone.tile)}>
                         <Icon name={b.icon} />
                       </span>
-                      <span className="font-headline text-sm font-semibold tracking-tight text-on-surface">
-                        {b.label}
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        <span className="font-headline text-sm font-semibold tracking-tight text-on-surface">
+                          {b.label}
+                        </span>
+                        <span className="text-xs text-on-surface-variant">{b.hint}</span>
+                      </span>
+                      <span className={cn("shrink-0", tone.text)}>
+                        <LinkPendingIndicator>
+                          <Icon name="arrow_forward" className="text-lg" />
+                        </LinkPendingIndicator>
                       </span>
                     </Link>
                   ) : (
@@ -156,6 +174,7 @@ export function ChapterList({
                         <span className="font-headline text-sm font-semibold tracking-tight text-on-surface-variant">
                           {b.label}
                         </span>
+                        <span className="text-xs text-on-surface-variant">{b.hint}</span>
                         <span className="rounded-full bg-surface-container px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant">
                           Coming soon
                         </span>

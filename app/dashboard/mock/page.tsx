@@ -6,13 +6,31 @@ import { getActiveEntryTest } from "@/lib/queries/entry-test";
 import { getEntryTestsCached } from "@/lib/queries/catalog";
 import { getDisplayName } from "@/lib/queries/profile";
 import { getOpenMock } from "@/lib/queries/dashboard";
+import { getProgress } from "@/lib/queries/progress";
+import { routes } from "@/lib/routes";
+import type { Tone } from "@/lib/subject-tone";
+import { cn } from "@/lib/utils";
 import { DashboardHeader, DashboardHeaderFallback } from "@/components/dashboard/header";
 import { Icon } from "@/components/dashboard/icon";
-import { appButton, card, cardInteractive, skeleton } from "@/components/dashboard/styles";
-import { StartMockButton } from "@/components/quiz/start-mock-button";
-import { formatTime } from "@/lib/quiz/time";
-import { routes } from "@/lib/routes";
-import { cn } from "@/lib/utils";
+import { LinkPendingIndicator } from "@/components/dashboard/link-pending";
+import { MockSection } from "@/components/dashboard/mock-section";
+import { SectionHeading } from "@/components/dashboard/section-heading";
+import { MockCardSkeleton, RowsSkeleton } from "@/components/dashboard/skeletons";
+import { card, cardInteractive } from "@/components/dashboard/styles";
+import { areaTone, toneClasses } from "@/components/dashboard/tone";
+
+/** What to expect, before the first paper (the timed mode is new to most). */
+const TIPS: { icon: string; title: string; text: string; tone: Tone }[] = [
+  { icon: "timer", title: "Timed like the real test", text: "The clock runs while you work. Pause from Exit if you need a break.", tone: "violet" },
+  { icon: "flag", title: "Mark for review", text: "Unsure? Flag it and come back before you submit.", tone: "amber" },
+  { icon: "grid_view", title: "Jump between sections", text: "Use the question map to move between subjects.", tone: "teal" },
+  { icon: "insights", title: "Score by subject", text: "Your result shows where to practise next.", tone: "blue" },
+];
+
+/** Soft tone for a score: no judgement words, the number is always shown. */
+function scoreTone(percent: number): Tone {
+  return percent >= 70 ? "teal" : percent >= 50 ? "amber" : "rose";
+}
 
 export default function MockPage() {
   return (
@@ -23,13 +41,14 @@ export default function MockPage() {
 }
 
 async function MockLandingView() {
-  const [data, entryTest, tests, displayName, openMock] = await Promise.all([
+  const [data, entryTest, tests, displayName, openMock, progress] = await Promise.all([
     getMockLanding(),
     getActiveEntryTest(),
     getEntryTestsCached(),
     getDisplayName(),
-    // A mock still running: offer it instead of starting a second paper.
+    // An unsubmitted mock replaces "Start" so a second paper can't orphan it.
     getOpenMock(),
+    getProgress(),
   ]);
 
   if (!entryTest) redirect("/auth/login");
@@ -38,126 +57,91 @@ async function MockLandingView() {
     <>
       <DashboardHeader
         title="Mock Tests"
-        badge={entryTest.name}
         displayName={displayName}
         tests={tests}
         activeTestId={entryTest.id}
       />
-      <main className="px-4 pb-24 pt-28 md:px-12 md:pb-20">
-        <div className="mx-auto max-w-4xl">
-          {openMock ? (
-            <section
-              aria-label="Mock in progress"
-              className="mb-6 flex flex-col gap-4 rounded-2xl border border-brand/20 bg-brand-fixed p-5 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="flex items-start gap-3">
-                <Icon name="timer" filled className="mt-0.5 text-2xl text-brand-container" />
-                <div>
-                  <p className="font-headline font-semibold text-on-surface">
-                    You have a mock in progress
-                  </p>
-                  <p className="text-sm text-on-surface-variant">
-                    <span className="tabular-nums">
-                      {openMock.answered} of {openMock.total}
-                    </span>{" "}
-                    answered. The timer keeps running.
-                  </p>
-                </div>
-              </div>
-              <Link href={openMock.href} className={cn(appButton(), "shrink-0")}>
-                Resume mock
-                <Icon name="arrow_forward" className="text-lg" />
-              </Link>
+      <main className="px-4 pb-24 pt-24 sm:px-6 md:px-12 md:pb-20 md:pt-28">
+        <div className="mx-auto flex max-w-4xl flex-col gap-10">
+          <section aria-label="Full mock test" className="flex flex-col gap-3">
+            <MockSection
+              blueprint={data?.blueprint ?? null}
+              openMock={openMock}
+              mocks={progress?.mocks ?? null}
+              testName={entryTest.name}
+              showResultsLink={false}
+            />
+            {data?.blueprint?.description && !openMock ? (
+              <p className="px-1 text-sm leading-relaxed text-on-surface-variant">
+                {data.blueprint.description}
+              </p>
+            ) : null}
+          </section>
+
+          {!progress?.mocks.taken ? (
+            <section aria-labelledby="tips-heading">
+              <SectionHeading id="tips-heading" icon="tips_and_updates" tone={areaTone.mocks}>
+                Before your first mock
+              </SectionHeading>
+              <ul className="grid gap-3 sm:grid-cols-2">
+                {TIPS.map((tip) => (
+                  <li key={tip.title} className={cn(card, "flex items-start gap-3 p-4")}>
+                    <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", toneClasses[tip.tone].tile)}>
+                      <Icon name={tip.icon} className="text-xl" />
+                    </span>
+                    <div>
+                      <p className="font-headline font-semibold text-on-surface">{tip.title}</p>
+                      <p className="mt-0.5 text-sm text-on-surface-variant">{tip.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </section>
           ) : null}
 
-          {/* Hero / start card */}
-          {data?.blueprint ? (
-            <section className={cn(card, "mb-12 p-6 md:p-10")}>
-              <p className="inline-flex items-center gap-2 rounded-full bg-brand-fixed px-3 py-1 font-headline text-xs font-semibold uppercase tracking-widest text-brand-container">
-                <Icon name="timer" className="text-base" />
-                Full Simulation
-              </p>
-              <h2 className="mt-4 font-headline text-3xl font-bold leading-tight tracking-tight text-on-surface md:text-4xl">
-                {data.blueprint.name}
-              </h2>
-              <p className="mt-3 max-w-xl font-body text-base leading-relaxed text-on-surface-variant">
-                {data.blueprint.description}
-              </p>
-              <dl className="mt-6 grid max-w-sm grid-cols-2 gap-3">
-                <div className="rounded-xl bg-surface-low px-4 py-3">
-                  <dt className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
-                    Questions
-                  </dt>
-                  <dd className="mt-1 font-headline text-2xl font-bold tabular-nums text-on-surface">
-                    {data.blueprint.totalQuestions}
-                  </dd>
-                </div>
-                <div className="rounded-xl bg-surface-low px-4 py-3">
-                  <dt className="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">
-                    Duration
-                  </dt>
-                  <dd className="mt-1 font-headline text-2xl font-bold tabular-nums text-on-surface">
-                    {formatTime(data.blueprint.durationSeconds)}
-                  </dd>
-                </div>
-              </dl>
-              <div className="mt-8">
-                {/* Starting a new paper would leave the open one ungraded. */}
-                {openMock ? (
-                  <p className="text-sm text-on-surface-variant">
-                    Submit your mock in progress to start a new one.
-                  </p>
-                ) : (
-                  <StartMockButton blueprintId={data.blueprint.id} />
-                )}
-              </div>
-            </section>
-          ) : (
-            <section className={cn(card, "mb-12 p-8")}>
-              <p className="font-body text-on-surface-variant">
-                No mock test is available for this entry test yet.
-              </p>
-            </section>
-          )}
-
-          {/* Recent results */}
-          <section>
-            <h3 className="mb-4 font-headline text-xl font-bold tracking-tight text-on-surface md:text-2xl">
-              Recent Results
-            </h3>
+          <section aria-labelledby="results-heading">
+            <SectionHeading id="results-heading" icon="history" tone={areaTone.progress}>
+              Recent results
+            </SectionHeading>
             {data && data.recentResults.length > 0 ? (
-              <div className="flex flex-col gap-3">
-                {data.recentResults.map((r) => (
-                  <Link
-                    key={r.attemptId}
-                    href={routes.mockResult(r.attemptId)}
-                    className={cn(cardInteractive, "flex items-center justify-between gap-4 p-4 md:p-5")}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-14 w-16 shrink-0 items-center justify-center rounded-xl bg-brand-fixed font-headline text-xl font-bold tabular-nums text-brand-container">
-                        {Math.round(r.scorePercent)}%
-                      </div>
-                      <div>
-                        <div className="font-headline text-sm font-semibold tracking-tight text-on-surface">
-                          {r.correctCount} / {r.totalQuestions} correct
+              <ul className="flex flex-col gap-3">
+                {data.recentResults.map((r) => {
+                  const tone = toneClasses[scoreTone(r.scorePercent)];
+                  return (
+                    <li key={r.attemptId}>
+                      <Link
+                        href={routes.mockResult(r.attemptId)}
+                        className={cn(cardInteractive, "flex items-center justify-between gap-4 p-4 md:p-5", tone.hoverBorder)}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className={cn("flex h-14 w-16 shrink-0 items-center justify-center rounded-xl font-headline text-xl font-bold tabular-nums", tone.tile)}>
+                            {Math.round(r.scorePercent)}%
+                          </div>
+                          <div>
+                            <div className="font-headline text-sm font-semibold tracking-tight text-on-surface">
+                              {r.correctCount} / {r.totalQuestions} correct
+                            </div>
+                            <div className="mt-0.5 text-xs text-on-surface-variant">
+                              {r.submittedAt
+                                ? new Date(r.submittedAt).toLocaleDateString()
+                                : "—"}
+                            </div>
+                          </div>
                         </div>
-                        <div className="mt-0.5 text-xs text-on-surface-variant">
-                          {r.submittedAt
-                            ? new Date(r.submittedAt).toLocaleDateString()
-                            : "—"}
-                        </div>
-                      </div>
-                    </div>
-                    <Icon name="chevron_right" className="text-on-surface-variant" />
-                  </Link>
-                ))}
-              </div>
+                        <span className="text-on-surface-variant">
+                          <LinkPendingIndicator>
+                            <Icon name="chevron_right" />
+                          </LinkPendingIndicator>
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
             ) : (
-              <div className={cn(card, "p-8")}>
+              <div className={cn(card, "p-6")}>
                 <p className="font-body text-on-surface-variant">
-                  No mock attempts yet. Start your first full mock above to see
-                  your results here.
+                  No results yet. Your scores appear here after you submit a mock.
                 </p>
               </div>
             )}
@@ -172,10 +156,10 @@ function MockSkeleton() {
   return (
     <>
       <DashboardHeaderFallback />
-      <main className="px-4 pb-24 pt-28 md:px-12">
-        <div className="mx-auto max-w-4xl">
-          <div className={cn(skeleton, "mb-12 h-64 w-full")} />
-          <div className={cn(skeleton, "h-40 w-full")} />
+      <main className="px-4 pb-24 pt-24 sm:px-6 md:px-12 md:pt-28">
+        <div className="mx-auto flex max-w-4xl flex-col gap-10">
+          <MockCardSkeleton />
+          <RowsSkeleton rows={3} label="Loading results" />
         </div>
       </main>
     </>
