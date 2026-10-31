@@ -5,10 +5,16 @@ following a structured, token-efficient, best-practices loop. Follow this every
 session.
 
 ## 1. Start every task by loading context (cheap, do it first)
-Before exploring the codebase, read the project memory:
-- `.kiro/context/progress.md` — what's done, in progress, next.
+Before exploring the codebase, read the project memory in this order:
+- `.kiro/context/local/session.md` — per-machine scratchpad (gitignored; skip
+  if it doesn't exist).
+- `.kiro/context/progress.md` — start with the "Current state" block at the
+  top, then the newest dated entry at the bottom (the log is oldest-first).
 - `.kiro/context/decisions.md` — architectural decisions + rationale.
-- `.kiro/context/csv-cleanup-plan.md` — data pipeline status (if data-related).
+- `.kiro/context/PROJECT_MAP.md` — what lives where (instead of scanning).
+- `.kiro/context/DESIGN.md` — before any UI work.
+- `.kiro/context/csv-cleanup-plan.md` / `pu-missing-subjects.md` — data
+  pipeline status (if data-related).
 Then read only the specific files the task needs. Do NOT re-scan the whole repo.
 
 ## 2. Use the installed skills (don't reinvent)
@@ -39,10 +45,13 @@ Skills live in `.kiro/skills/`. Activate the matching skill for the task:
   `supabase gen types typescript --linked > lib/database.types.ts`.
 
 ## 5. Verify before declaring done
-- Build/lint: `npm run build`, `npm run lint`.
-- **Tests**: `npm run test` (Vitest). Pure logic lives in small testable helpers
-  (e.g. `lib/queries/*-helpers.ts`) with co-located `*.test.ts`. Add/extend tests
-  when adding features or fixing bugs.
+- Run `npm run lint && npm run typecheck && npm run test && npm run build`.
+  If any step can't run in your environment, record it as "⚠ Not run" in
+  progress.md instead of claiming it passed.
+- **Tests**: `npm run test` (Vitest, single run; never `test:watch`). Pure
+  logic lives in small testable helpers (e.g. `lib/queries/*-helpers.ts`)
+  with co-located `*.test.ts`. Add/extend tests when adding features or
+  fixing bugs.
 - For runtime behavior, use the `next-dev-loop` skill against a running dev
   server (the USER runs `npm run dev`; agents do not start long-running servers).
 - For UI changes, run a pass with `web-design-guidelines` and follow
@@ -50,8 +59,11 @@ Skills live in `.kiro/skills/`. Activate the matching skill for the task:
   site, dashboard and auth).
 
 ## 6. Close the loop — update memory
-When a chunk of work completes, update `.kiro/context/progress.md` (done / next)
-and append any new architectural decision to `.kiro/context/decisions.md`.
+When a chunk of work completes, append a dated entry to the bottom of
+`.kiro/context/progress.md` (done / next), refresh its "Current state" block
+at the top, and append any new architectural decision to
+`.kiro/context/decisions.md`. If files moved or were added, update
+`PROJECT_MAP.md` and `structure.md` in the same change.
 Keep entries short and factual. This is what makes future sessions cheap.
 
 ## Token-efficiency rules

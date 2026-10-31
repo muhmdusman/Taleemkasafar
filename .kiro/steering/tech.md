@@ -1,7 +1,12 @@
 # Tech Stack & Conventions
 
 ## Stack
-- **Framework**: Next.js (App Router, latest) with React 19, TypeScript.
+- **Framework**: Next.js 16 (App Router; `package.json` pins `latest`, lockfile
+  resolves 16.1.6) with React 19, TypeScript. `eslint-config-next` is pinned
+  at 15.3.1.
+- **Cache Components** is ON (`cacheComponents: true` in `next.config.ts`).
+  See `data-fetching.md` for what that means for data reads.
+- **Tests**: Vitest (`vitest.config.ts`), co-located `*.test.ts`.
 - **Styling**: Tailwind CSS v3 + `tailwindcss-animate`. UI primitives from
   shadcn/ui (Radix under the hood) in `components/ui/`.
 - **Backend**: Supabase (Postgres 17, Auth, Storage, RLS).
@@ -18,6 +23,11 @@
 Defined in `.env.local` (gitignored):
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (publishable key, not the legacy anon JWT)
+
+- `NEXT_PUBLIC_SITE_URL` (production only; leave unset locally). Canonical
+  origin: used by `config/site.ts` (falls back to `https://taleemkasafar.com`)
+  and to keep OAuth PKCE cookies and auth redirects on one host. Template:
+  `.env.example`.
 
 This project uses the **publishable key** pattern (`sb_publishable_...`), not the
 legacy `anon` key. Client helpers read `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
@@ -54,7 +64,20 @@ folder.
 
 ## Commands
 - Dev server: `npm run dev` (run manually, do not background from the agent).
-- Build: `npm run build`  |  Lint: `npm run lint`
+- Build: `npm run build`  |  Lint: `npm run lint`  |  Types: `npm run typecheck`
+- Tests: `npm run test` (`vitest run`, single pass). `npm run test:watch` is
+  watch mode; agents must not run it.
+- Full check before declaring done:
+  `npm run lint && npm run typecheck && npm run test && npm run build`
+
+## `next.config.ts`
+- `cacheComponents: true`.
+- `outputFileTracingIncludes` ships `content/blog/**` and
+  `public/blog/covers/**` with `/blog/*` (the loader reads them at runtime for
+  the 404 fallback).
+- `redirects()`: legacy `/subjects*`, `/mock*`, `/performance` → `/dashboard/*`
+  (308); short aliases `/sign-in` → `/auth/login`, `/register` →
+  `/auth/sign-up` (307).
 - CLI is logged in to the Taleemkasafar account. Link with:
   `supabase link --project-ref lcsuasddoertvoujwsgo`
 

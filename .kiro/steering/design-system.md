@@ -54,7 +54,9 @@ auth (`app/auth/`, `components/auth/`). Each area's layout sets `theme-public`
   `focusRing`, `appButton({ variant: primary|secondary|ghost|danger, size: sm|md|lg })`.
   Used by dashboard, quiz and auth.
 - Loading (app): content-shaped fallbacks from `components/dashboard/skeletons.tsx`
-  for every Suspense boundary; `LinkPendingIndicator` inside links whose
+  (`HeroSkeleton`, `ProgressSkeleton`, `SubjectCardsSkeleton`,
+  `MockCardSkeleton`, `RowsSkeleton`, `BlockSkeleton`) for every Suspense
+  boundary; `LinkPendingIndicator` inside links whose
   target may be slow; `Spinner` / `TopProgressBar` from `loading-indicators.tsx`
   for in-place and whole-screen work; `FullscreenLoader` for multi-second jobs.
   Never leave a click without visible feedback.

@@ -1,5 +1,28 @@
 # Progress Log
 
+## Current state (updated 2026-10-31) — read this first
+Dated entries below are oldest-first; the newest is at the bottom.
+- **Shipped on `main`** (through PR #5, 9b21a44): dashboard (practice,
+  past paper, mocks with a full-screen sitting + pause/resume, performance),
+  soft rounded design with app tones, header test switcher, onboarding
+  picker; public site (landing, merit calculator, blog, contact UI,
+  academies). NET + PU question data is loaded.
+- **DB**: migrations mcq_01–mcq_15 in `supabase/migrations/`. mcq_15 is
+  applied in production (file renamed to its recorded version in b917d2c).
+- **Open / unverified**:
+  - `get_advisors` after mcq_15 and regenerating `lib/database.types.ts`
+    (types were hand-edited).
+  - No recorded green run of `npm run lint && npm run typecheck && npm run
+    test && npm run build` after PRs #4–#5.
+  - Browser check of the 2026-10-30 (c) flows (test switching, new-student
+    home, mock pause/resume, time-up, offline save + Retry).
+  - Apex move: canonical origin in code is `taleemkasafar.com`; whether
+    production left `entrytest.taleemkasafar.com` (with a 301) is not
+    confirmed in the repo.
+  - Contact form has no backend; Terms/Privacy links are still `#`.
+- **Next on the roadmap**: see `.kiro/steering/product.md` (dashboard UX
+  rounds, remaining basic features, content SEO).
+
 ## 2026-06-25 — Project setup
 
 ### Done
@@ -887,3 +910,33 @@ pu_import.sql still not applied to DB — regenerate then load via psql.
 - Browser check: test switching (desktop + mobile), new-student home,
   mock Back button → Pause → home → Resume (timer continues from the paused
   time), End test, time running out, offline save + Retry.
+
+## 2026-10-31 — PR #5 merged; agent docs synced with the code
+
+### Done
+- PR #5 merged (9b21a44). Since the (c) entry: back-guard timeout fix
+  (7ebe8c0) and mcq_15 renamed to `20261031133618_mcq_15_mock_pause_and_progress.sql`,
+  the version recorded in production (b917d2c). So mcq_15 is applied; the
+  (c) "Apply mcq_15" step is done.
+- Audited `.kiro/` docs against the code and fixed drift:
+  - `product.md`: current stage + roadmap status; Soft Brutalism line now
+    matches design-system.md (retired).
+  - `tech.md`: Next 16 / Cache Components / Vitest, `NEXT_PUBLIC_SITE_URL`,
+    full command list, `next.config.ts` summary.
+  - `structure.md`: full tree (lib/queries, lib/quiz, lib/auth, lib/hooks,
+    hooks/, root config files, supabase/templates, all steering + context
+    files, both specs).
+  - `data-fetching.md`: three clients; new section on grading RPCs
+    (mcq_14/15, `question_options` select revoked).
+  - `workflow.md` + `context/README.md`: one reading order (incl.
+    `local/session.md`, PROJECT_MAP, DESIGN), full verify command, keep
+    PROJECT_MAP/structure in sync.
+  - `PROJECT_MAP.md`: 15 migrations, views + RPCs, Material Symbols is
+    dashboard-only, removed the non-existent `placeholder-value`, added
+    missing lib/data/config rows, fixed the split components table.
+  - `design-system.md`: listed the skeleton exports.
+- Added the "Current state" block at the top of this file.
+
+### Next
+- Still open: `get_advisors` + type regeneration after mcq_15, full verify
+  run, browser check of the (c) flows, confirm the apex host move.
