@@ -57,14 +57,15 @@ export function useBackGuard(active: boolean, onBack: () => void) {
           return;
         }
         releasingRef.current = true;
-        let timer: ReturnType<typeof setTimeout>;
         const done = () => {
           window.removeEventListener("popstate", done);
           clearTimeout(timer);
           resolve();
         };
         // Some browsers skip popstate for same-document entries; don't hang.
-        timer = setTimeout(done, 400);
+        // `done` only runs after this line (timeout or popstate), so `timer`
+        // is always initialised by then.
+        const timer = setTimeout(done, 400);
         window.addEventListener("popstate", done);
         window.history.back();
       }),
