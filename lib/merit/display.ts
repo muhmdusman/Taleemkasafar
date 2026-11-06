@@ -30,6 +30,33 @@ export function weightSummary(formula: MeritFormula): string {
     .join(" · ");
 }
 
+/** "75% NET + 15% Inter + 10% Matric": weights in formula order, test by name. */
+export function formulaSummary(formula: MeritFormula): string {
+  return formula.components
+    .map((c) => {
+      const name =
+        c.key === "entryTest"
+          ? (formula.entryTestName ?? COMPONENT_SHORT_LABEL.entryTest)
+          : COMPONENT_SHORT_LABEL[c.key];
+      return `${c.weightPercent}% ${name}`;
+    })
+    .join(" + ");
+}
+
+/**
+ * The sentence under the h1, e.g. "Calculate your National University of
+ * Sciences & Technology aggregate: 75% NET + 15% Inter + 10% Matric."
+ * With several routes, each route is named.
+ */
+export function universityIntro(university: University): string {
+  const lead = `Calculate your ${university.name} aggregate`;
+  if (university.formulas.length === 1) {
+    return `${lead}: ${formulaSummary(university.formulas[0])}.`;
+  }
+  const byRoute = university.formulas.map((f) => `${f.label}: ${formulaSummary(f)}.`);
+  return `${lead}. ${byRoute.join(" ")}`;
+}
+
 /** Unique entry-test names across a university's formulas, in order. */
 export function entryTestNames(university: University): string[] {
   const names = university.formulas

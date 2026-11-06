@@ -58,17 +58,3 @@ export function buildMeritInput(values: MeritFormValues, formula: MeritFormula):
   }
   return input;
 }
-
-/** "Clear": drops the current formula's fields (its obtained marks + totals). */
-export function clearFormulaValues(
-  values: MeritFormValues,
-  formula: MeritFormula,
-): MeritFormValues {
-  const drop = new Set(
-    formula.components.flatMap((c) => [
-      formStateKey(formula, c, "obtained"),
-      formStateKey(formula, c, "total"),
-    ]),
-  );
-  return Object.fromEntries(Object.entries(values).filter(([k]) => !drop.has(k)));
-}

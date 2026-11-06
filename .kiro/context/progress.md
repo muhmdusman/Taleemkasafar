@@ -20,9 +20,9 @@ Dated entries below are oldest-first; the newest is at the bottom.
     production left `entrytest.taleemkasafar.com` (with a 301) is not
     confirmed in the repo.
   - Contact form has no backend; Terms/Privacy links are still `#`.
-  - 2026-11-06: simpler merit university pages
-    (`feat/simplify-merit-university-page`) need a browser check on the
-    Vercel preview (see the newest entry).
+  - 2026-11-06: merit university pages redone like the owner's reference
+    (`feat/merit-page-like-reference`); need a browser check, and the QAU
+    formula needs verifying (see the newest entry).
 - **Next on the roadmap**: see `.kiro/steering/product.md` (dashboard UX
   rounds, remaining basic features, content SEO).
 
@@ -964,3 +964,25 @@ pu_import.sql still not applied to DB — regenerate then load via psql.
 - Browser check on the preview: single-route (NUST), multi-route (FAST,
   route switch keeps shared marks), percentage input (Bahria), "not stated"
   total (GIKI), qualifying minimums (MDCAT), errors, mobile width.
+
+## 2026-11-06 (b) — Merit university page like the owner's reference
+
+### Done
+- PR #7 merged (owner: "Seems good now!").
+- `/merit-calculator/<slug>` rebuilt as one column like parhlai's QAU page
+  (DESIGN.md §15, decisions.md 2026-11-06 (b)): plain header with a blue h1
+  and a formula sentence, calculator card with the formula inside, admission
+  criteria, new `other-calculators.tsx` link tiles, practice CTA.
+- New `formulaSummary()` and `universityIntro()` in `lib/merit/display.ts`
+  (+ tests). Deleted `formula-card.tsx` and `clearFormulaValues` (+ test).
+- Shim run (no npm registry here): display 7, form-state 3, calculate 51,
+  validate 14, data 11, routes 22, all passing; touched files typecheck
+  (strict) against stubs. ⚠ Not run locally: lint, real typecheck, full
+  Vitest, build. The Vercel preview build is the build check.
+
+### Next
+- Browser check on the preview (NUST, FAST route select, Bahria %, GIKI
+  empty total, MDCAT minimums, mobile).
+- Data question for the owner: our QAU formula (PDF) is 70% academics +
+  30% Entry Test/USAT; parhlai says QAU BS is 30% SSC + 70% HSSC Part-I with
+  no test. Verify against QAU's admission notice before changing data.

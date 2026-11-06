@@ -4,6 +4,8 @@ import { getMeritSitemapEntries } from "@/lib/seo/merit-sitemap";
 import {
   admissionYearNotice,
   entryTestNames,
+  formulaSummary,
+  universityIntro,
   universityMetaDescription,
   weightSummary,
 } from "./display";
@@ -16,6 +18,20 @@ describe("merit display helpers", () => {
     expect(weightSummary(nust.formulas[0])).toBe("Test 75% · Inter 15% · Matric 10%");
     expect(weightSummary(getUniversityBySlug("punjab-university")!.formulas[0])).toBe(
       "Test 25% · Academics 75%",
+    );
+  });
+
+  it("summarises a formula with the test's own name", () => {
+    expect(formulaSummary(nust.formulas[0])).toBe("75% NET + 15% Inter + 10% Matric");
+    expect(formulaSummary(fast.formulas[1])).toBe("50% NTS + 50% Inter");
+  });
+
+  it("writes the intro from the data, naming routes when there are several", () => {
+    expect(universityIntro(nust)).toBe(
+      "Calculate your National University of Sciences & Technology aggregate: 75% NET + 15% Inter + 10% Matric.",
+    );
+    expect(universityIntro(fast)).toBe(
+      "Calculate your FAST-NUCES aggregate. NU Test Route: 50% NU Test + 40% Inter + 10% Matric. NTS Route: 50% NTS + 50% Inter.",
     );
   });
 

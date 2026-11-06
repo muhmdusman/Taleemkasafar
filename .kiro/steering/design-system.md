@@ -71,6 +71,9 @@ auth (`app/auth/`, `components/auth/`). Each area's layout sets `theme-public`
 - **Public site**: inner pages start with `PageHeader` (light blue banner,
   blue wordmark, dark h1). CTAs that change for signed-in visitors use
   `AuthAwareButton` (never read cookies on the server in public pages).
+  Exception: merit university pages (`/merit-calculator/<slug>`) use a plain
+  left-aligned header (breadcrumbs, `text-brand-container` h1, one-sentence
+  formula intro) and one `max-w-3xl` column (DESIGN.md §15).
 - **Dashboard**: every screen has ONE obvious next step. Home = greeting +
   `NextStepCard` (resume → first-run checklist with the test picker → keep
   going), then progress + suggested focus, subjects, mock tests. Practice ends

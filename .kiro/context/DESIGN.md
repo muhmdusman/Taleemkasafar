@@ -266,3 +266,19 @@ indicators, and make onboarding effortless. Applies to `app/dashboard/`,
   - **Leaving**: Exit or browser Back opens "Leave the mock test?" with Keep
     going / End test / Pause & exit. Pause stops the timer on the server
     (mcq_15). End submits. Both go to the dashboard home.
+
+## 15. Merit university pages — user override 2026-11-06
+Owner reference: parhlai.com's QAU merit calculator (simple, clear), in our
+palette. Applies to `/merit-calculator/<slug>` only.
+- **Header**: no `PageHeader` banner. Breadcrumbs, then the h1
+  "<short name> Merit & Aggregate Calculator" in `text-brand-container`
+  (the one place an h1 is blue, matching the reference), then one sentence
+  with the formula (`universityIntro()`).
+- **One column**, left-aligned, `max-w-3xl`: calculator card → admission
+  criteria → "Other merit calculators" link tiles → practice CTA.
+- **Calculator card**: route `<select>` (only with several routes), labelled
+  fields in a 2-column grid ("[obtained] / [total]", or a `%` suffix inside
+  the input), one full-width primary "Calculate merit" button, the result
+  (2px `border-brand/30` panel), then "How your result is calculated": the
+  formula in `text-brand-container`, weight rows, qualifying minimums.
+- No field hints, notes or source lines (see decisions.md 2026-11-06).

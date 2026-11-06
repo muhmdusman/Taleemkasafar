@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getUniversityBySlug, getUniversitySlugs } from "@/data/merit-formulas";
-import { universityMetaDescription } from "@/lib/merit/display";
+import { getUniversities, getUniversityBySlug, getUniversitySlugs } from "@/data/merit-formulas";
+import { universityIntro, universityMetaDescription } from "@/lib/merit/display";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { routes } from "@/lib/routes";
+import { Breadcrumbs } from "@/components/marketing/breadcrumbs";
 import { Container } from "@/components/marketing/container";
-import { PageHeader } from "@/components/marketing/page-header";
 import { PracticeCta } from "@/components/marketing/practice-cta";
 import { AdmissionCriteria } from "@/components/marketing/merit/admission-criteria";
-import { FormulaCard } from "@/components/marketing/merit/formula-card";
 import { MeritCalculatorForm } from "@/components/marketing/merit/merit-calculator-form";
+import { OtherCalculators } from "@/components/marketing/merit/other-calculators";
 
 type Params = { university: string };
 
@@ -31,51 +31,48 @@ export async function generateMetadata({
   const university = getUniversityBySlug(slug);
   if (!university) return {};
   return buildMetadata({
-    title: `${university.shortName} Merit Calculator — aggregate formula`,
+    title: `${university.shortName} Merit & Aggregate Calculator`,
     description: universityMetaDescription(university),
     path: routes.meritUniversity(university.slug),
   });
 }
 
 /**
- * One job: enter marks, get the aggregate. The calculator sits on the left;
- * the formula and admission criteria it relies on sit beside it.
+ * One left-aligned column: title + formula in one sentence, the calculator
+ * card (with "how it's calculated" inside), admission criteria, then links to
+ * every other university's calculator.
  */
 export default async function UniversityMeritPage({ params }: { params: Promise<Params> }) {
   const { university: slug } = await params;
   const university = getUniversityBySlug(slug);
   if (!university) notFound();
 
-  const multiple = university.formulas.length > 1;
+  const others = getUniversities().filter((u) => u.slug !== university.slug);
 
   return (
-    <>
-      <PageHeader
-        breadcrumbs={[
-          { name: "Home", path: routes.home },
-          { name: "Merit Calculator", path: routes.meritCalculator },
-          { name: university.shortName, path: routes.meritUniversity(university.slug) },
-        ]}
-        title={`${university.name} merit calculator`}
-      />
-
-      <Container className="grid items-start gap-6 py-8 md:py-10 lg:grid-cols-[1.3fr_1fr] lg:gap-8">
-        <MeritCalculatorForm formulas={university.formulas} />
-        <div className="flex flex-col gap-6">
-          {university.formulas.map((formula) => (
-            <FormulaCard
-              key={formula.id}
-              formula={formula}
-              title={multiple ? `${formula.label} formula` : `${university.shortName} merit formula`}
-            />
-          ))}
-          <AdmissionCriteria university={university} />
+    <Container className="py-8 md:py-12">
+      <div className="flex max-w-3xl flex-col gap-10 md:gap-12">
+        <div>
+          <Breadcrumbs
+            items={[
+              { name: "Home", path: routes.home },
+              { name: "Merit Calculator", path: routes.meritCalculator },
+              { name: university.shortName, path: routes.meritUniversity(university.slug) },
+            ]}
+          />
+          <h1 className="mt-6 text-balance font-headline text-3xl font-bold tracking-tight text-brand-container sm:text-4xl md:text-5xl">
+            {university.shortName} Merit & Aggregate Calculator
+          </h1>
+          <p className="mt-4 text-lg leading-relaxed text-on-surface-variant">
+            {universityIntro(university)}
+          </p>
         </div>
-      </Container>
 
-      <Container className="pb-12 md:pb-16">
+        <MeritCalculatorForm formulas={university.formulas} />
+        <AdmissionCriteria university={university} />
+        <OtherCalculators universities={others} />
         <PracticeCta id="university-cta-heading" title="Want a higher aggregate?" />
-      </Container>
-    </>
+      </div>
+    </Container>
   );
 }
