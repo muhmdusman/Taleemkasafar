@@ -38,17 +38,6 @@ export function entryTestNames(university: University): string[] {
   return [...new Set(names)];
 }
 
-/** "p. 3" / "p. 1, 3, 5" — sorted, de-duplicated PDF page refs. */
-export function formatPages(pages: readonly number[]): string {
-  const unique = [...new Set(pages)].sort((a, b) => a - b);
-  return `p. ${unique.join(", ")}`;
-}
-
-/** Source line shown under formulas and results. */
-export function sourceLine(pages: readonly number[]): string {
-  return `Source: merit criteria guide, ${formatPages(pages)}`;
-}
-
 /** True when the source gives no admission year for this formula. */
 export function isYearNotStated(formula: MeritFormula): boolean {
   return (

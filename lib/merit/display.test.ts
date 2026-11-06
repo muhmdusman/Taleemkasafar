@@ -4,7 +4,6 @@ import { getMeritSitemapEntries } from "@/lib/seo/merit-sitemap";
 import {
   admissionYearNotice,
   entryTestNames,
-  formatPages,
   universityMetaDescription,
   weightSummary,
 } from "./display";
@@ -22,10 +21,6 @@ describe("merit display helpers", () => {
 
   it("lists unique entry test names", () => {
     expect(entryTestNames(fast)).toEqual(["NU Test", "NTS"]);
-  });
-
-  it("formats sorted, de-duplicated page refs", () => {
-    expect(formatPages([5, 3, 3])).toBe("p. 3, 5");
   });
 
   it("names the test and weights in the meta description", () => {

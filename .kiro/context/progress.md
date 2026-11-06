@@ -20,6 +20,9 @@ Dated entries below are oldest-first; the newest is at the bottom.
     production left `entrytest.taleemkasafar.com` (with a 301) is not
     confirmed in the repo.
   - Contact form has no backend; Terms/Privacy links are still `#`.
+  - 2026-11-06: simpler merit university pages
+    (`feat/simplify-merit-university-page`) need a browser check on the
+    Vercel preview (see the newest entry).
 - **Next on the roadmap**: see `.kiro/steering/product.md` (dashboard UX
   rounds, remaining basic features, content SEO).
 
@@ -940,3 +943,24 @@ pu_import.sql still not applied to DB — regenerate then load via psql.
 ### Next
 - Still open: `get_advisors` + type regeneration after mcq_15, full verify
   run, browser check of the (c) flows, confirm the apex host move.
+
+## 2026-11-06 — Simpler merit university pages
+
+### Done
+- `/merit-calculator/[university]` rebuilt around one job (see
+  decisions.md 2026-11-06): calculator left, formula table + admission
+  criteria right, CTA below. New `admission-criteria.tsx`; `formula-card`
+  is a single table; the form uses "[obtained] / [total]" rows, a compact
+  route picker, a "Calculate" + "Clear" pair and a shorter result.
+  `PracticeCta.description` is now optional.
+- Removed `sourceLine` / `formatPages` (dead after the change) and their test.
+- Merit tests via a Node type-stripping shim (no npm registry in the
+  sandbox): display 5, calculate 51, validate 14, form-state 4, data 11,
+  routes 22, all passing. Changed files typecheck (strict) against stubs.
+- ⚠ Not run locally: lint, real typecheck, full Vitest, build (no
+  node_modules). The Vercel preview build on the PR is the build check.
+
+### Next
+- Browser check on the preview: single-route (NUST), multi-route (FAST,
+  route switch keeps shared marks), percentage input (Bahria), "not stated"
+  total (GIKI), qualifying minimums (MDCAT), errors, mobile width.
