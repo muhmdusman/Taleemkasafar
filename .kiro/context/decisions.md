@@ -571,3 +571,18 @@ paper surfaces, and a less saturated blue. Targets: body text ≥12:1, muted
 - Kept on purpose: the one-line `MERIT_DISCLAIMER` under the result (every
   formula is undated, so students must verify) and the qualifying minimums
   (they decide whether a student qualifies at all).
+
+## 2026-11-06 (b) — Merit university page follows the owner's reference
+- Reference: parhlai.com/merit-calculator/qau, in our palette (DESIGN.md §15).
+  Supersedes the two-column layout from the entry above.
+- The formula now lives inside the calculator card ("How your result is
+  calculated", selected route only). `formula-card.tsx` was deleted. The
+  card is a client component that also renders on the server, so the
+  default route's weights are in the HTML; the intro sentence names every
+  route's weights for search engines.
+- The intro sentence is back, but it is the formula, generated from the data
+  (`universityIntro()`), not marketing copy.
+- One button: "Clear" was removed (and `clearFormulaValues` with it).
+- "Other merit calculators": link tiles to the other 17 universities, for
+  students who landed on the wrong page and for internal linking.
+- Page title: "<short name> Merit & Aggregate Calculator" (matches the h1).

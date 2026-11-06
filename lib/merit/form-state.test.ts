@@ -3,7 +3,6 @@ import { getUniversityBySlug } from "@/data/merit-formulas";
 import { calculateMerit } from "./calculate";
 import {
   buildMeritInput,
-  clearFormulaValues,
   formFieldValue,
   formStateKey,
   type MeritFormValues,
@@ -53,18 +52,5 @@ describe("merit form state", () => {
     expect(outcome.ok).toBe(false);
     if (outcome.ok) return;
     expect(outcome.errors.map((e) => [e.field, e.code])).toEqual([["matric.total", "total-required"]]);
-  });
-
-  it("clear drops only the current formula's fields", () => {
-    let values: MeritFormValues = {};
-    values = set(values, nuTest, "entryTest", "obtained", "70");
-    values = set(values, nuTest, "matric", "total", "1050");
-    values = set(values, nts, "entryTest", "obtained", "60");
-    values = set(values, nts, "entryTest", "total", "120");
-    const cleared = clearFormulaValues(values, nts);
-    expect(formFieldValue(cleared, nts, comp(nts, "entryTest"), "obtained")).toBe("");
-    expect(formFieldValue(cleared, nts, comp(nts, "entryTest"), "total")).toBe("100");
-    expect(formFieldValue(cleared, nuTest, comp(nuTest, "entryTest"), "obtained")).toBe("70");
-    expect(formFieldValue(cleared, nuTest, comp(nuTest, "matric"), "total")).toBe("1050");
   });
 });
