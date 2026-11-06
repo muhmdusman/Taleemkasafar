@@ -5,12 +5,16 @@ import { entryTestNames } from "@/lib/merit/display";
 import { routes } from "@/lib/routes";
 import { WeightChips } from "@/components/marketing/merit/weight-chips";
 
-/** One card per university on /merit-calculator (server component). */
+/**
+ * One card per university on /merit-calculator (server component). The
+ * "Calculate … merit" link is the card's one link; its ::after overlay makes
+ * the whole card clickable without nesting interactive elements.
+ */
 export function UniversityCard({ university }: { university: University }) {
   const tests = entryTestNames(university);
   const multiple = university.formulas.length > 1;
   return (
-    <li className="flex flex-col rounded-2xl border border-outline-variant bg-surface-lowest p-6 shadow-soft transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-soft-lg motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+    <li className="group relative flex flex-col rounded-2xl border border-outline-variant bg-surface-lowest p-6 shadow-soft transition-[transform,box-shadow] duration-200 focus-within:ring-2 focus-within:ring-brand-container focus-within:ring-offset-2 focus-within:ring-offset-surface hover:-translate-y-0.5 hover:shadow-soft-lg motion-reduce:transition-none motion-reduce:hover:translate-y-0">
       <p className="font-headline text-sm font-semibold uppercase tracking-widest text-brand-container">
         {university.shortName}
       </p>
@@ -38,7 +42,7 @@ export function UniversityCard({ university }: { university: University }) {
       </div>
       <Link
         href={routes.meritUniversity(university.slug)}
-        className="mt-6 inline-flex items-center gap-2 self-start rounded-lg font-headline text-base font-semibold text-brand-container underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-container focus-visible:ring-offset-2 focus-visible:ring-offset-surface-lowest"
+        className="mt-6 inline-flex items-center gap-2 self-start font-headline text-base font-semibold text-brand-container underline-offset-4 after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:outline-none group-hover:underline"
       >
         Calculate {university.shortName} merit
         <ArrowRight className="size-4" aria-hidden="true" />

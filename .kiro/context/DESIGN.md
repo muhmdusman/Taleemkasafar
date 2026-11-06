@@ -274,11 +274,16 @@ palette. Applies to `/merit-calculator/<slug>` only.
   "<short name> Merit & Aggregate Calculator" in `text-brand-container`
   (the one place an h1 is blue, matching the reference), then one sentence
   with the formula (`universityIntro()`).
-- **One column**, left-aligned, `max-w-3xl`: calculator card → admission
+- **One column**, `max-w-4xl`, centred on desktop (`mx-auto`), text
+  left-aligned inside it; h1 `text-3xl sm:text-4xl` so it stays on one line
+  for most names; intro `max-w-2xl`. Order: calculator card → admission
   criteria → "Other merit calculators" link tiles → practice CTA.
 - **Calculator card**: route `<select>` (only with several routes), labelled
-  fields in a 2-column grid ("[obtained] / [total]", or a `%` suffix inside
-  the input), one full-width primary "Calculate merit" button, the result
-  (2px `border-brand/30` panel), then "How your result is calculated": the
-  formula in `text-brand-container`, weight rows, qualifying minimums.
+  fields (`font-semibold`) in a 2-column grid, `h-11` inputs with
+  placeholders: "[Obtained] out of [Total]" (obtained wide, total `6rem`,
+  usually pre-filled) or "[0 to 100 %]" for percentages; one full-width
+  primary "Calculate merit" button (`md`); the result (2px `border-brand/30`
+  panel); then "How your result is calculated" (no divider): the formula in
+  `text-brand-container`, weight rows, qualifying minimums.
 - No field hints, notes or source lines (see decisions.md 2026-11-06).
+- `/merit-calculator` cards are fully clickable (stretched link).

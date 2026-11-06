@@ -47,7 +47,8 @@ export function FinalCta() {
               size="lg"
               arrow
               signedOut={{ label: "Register for free", href: auth.register.href }}
-              signedIn={{ label: auth.dashboard.label, href: auth.dashboard.href }}
+              // A verb for the big CTA (as in the hero); the header says "Dashboard".
+              signedIn={{ label: "Go to dashboard", href: auth.dashboard.href }}
             />
             <AuthAwareButton
               size="lg"

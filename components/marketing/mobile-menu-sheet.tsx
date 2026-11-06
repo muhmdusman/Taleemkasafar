@@ -37,7 +37,7 @@ export default function MobileMenuSheet({
   const pathname = usePathname();
   const isSignedIn = useSignedIn();
   const { auth } = siteConfig;
-  // Signed in: Access dashboard + Start practice; otherwise Register + Sign in.
+  // Signed in: Dashboard + Start practice; otherwise Register + Sign in.
   const [primary, secondary] = isSignedIn
     ? [auth.dashboard, auth.practice]
     : [auth.register, auth.signIn];

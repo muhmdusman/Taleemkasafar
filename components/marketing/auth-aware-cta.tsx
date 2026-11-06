@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, LayoutDashboard } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { VariantProps } from "class-variance-authority";
 import { ButtonLink, type marketingButton } from "@/components/marketing/button-link";
 import { siteConfig } from "@/config/site";
@@ -43,7 +43,7 @@ export function AuthAwareButton({
   );
 }
 
-/** Header buttons: Sign in + Register, or Start practice + Access dashboard. */
+/** Header buttons: Sign in + Register, or Start practice + Dashboard. */
 export function HeaderAuthButtons() {
   const isSignedIn = useSignedIn();
   const { auth } = siteConfig;
@@ -64,7 +64,6 @@ export function HeaderAuthButtons() {
           size="sm"
           className="hidden sm:inline-flex"
         >
-          <LayoutDashboard aria-hidden="true" />
           {auth.dashboard.label}
         </ButtonLink>
       </>

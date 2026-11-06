@@ -20,7 +20,7 @@ type FieldKey = `${ComponentKey}.${FieldPart}`;
 const PARTS: readonly FieldPart[] = ["obtained", "total"];
 
 const controlClass =
-  "h-12 w-full min-w-0 rounded-xl border border-outline bg-surface-lowest px-4 text-base text-on-surface transition-colors focus-visible:border-brand-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-container aria-[invalid=true]:border-danger motion-reduce:transition-none";
+  "h-11 w-full min-w-0 rounded-xl border border-outline bg-surface-lowest px-4 text-base text-on-surface transition-colors placeholder:text-on-surface-variant focus-visible:border-brand-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-container aria-[invalid=true]:border-danger motion-reduce:transition-none";
 
 /** "MBBS needs at least 55% in MDCAT Score." Same wording before and after calculating. */
 function minimumText(label: string, minimumPercent: number, component: string): string {
@@ -106,7 +106,7 @@ export function MeritCalculatorForm({ formulas }: { formulas: MeritFormula[] }) 
       >
         {formulas.length > 1 ? (
           <div className="flex flex-col gap-2 sm:max-w-xs">
-            <label htmlFor={routeId} className="text-sm font-medium text-on-surface">
+            <label htmlFor={routeId} className="text-sm font-semibold text-on-surface">
               Admission route
             </label>
             <select
@@ -140,7 +140,7 @@ export function MeritCalculatorForm({ formulas }: { formulas: MeritFormula[] }) 
 
         <button
           type="submit"
-          className={cn(marketingButton({ variant: "primary", size: "lg" }), "w-full")}
+          className={cn(marketingButton({ variant: "primary", size: "md" }), "w-full")}
         >
           Calculate merit
         </button>
@@ -167,7 +167,7 @@ type ComponentFieldsProps = {
   onChange: (part: FieldPart, next: string) => void;
 };
 
-/** One component: "[obtained] / [total]", or "[percentage %]". */
+/** One component: "[obtained] out of [total]", or "[percentage %]". */
 function ComponentFields({
   component,
   afterNegativeMarking,
@@ -178,7 +178,12 @@ function ComponentFields({
 }: ComponentFieldsProps) {
   const percentage = component.inputMode === "percentage";
   const parts = percentage ? PARTS.slice(0, 1) : PARTS;
-  const renderInput = (part: FieldPart, label: string, className?: string) => {
+  const renderInput = (
+    part: FieldPart,
+    label: string,
+    placeholder: string,
+    className?: string,
+  ) => {
     const message = error(part);
     return (
       <input
@@ -187,6 +192,7 @@ function ComponentFields({
         inputMode="decimal"
         autoComplete="off"
         aria-label={label}
+        placeholder={placeholder}
         value={value(part)}
         onChange={(e) => onChange(part, e.target.value)}
         aria-invalid={message ? true : undefined}
@@ -198,14 +204,14 @@ function ComponentFields({
 
   return (
     <fieldset className="min-w-0">
-      <legend className="text-sm font-medium text-on-surface">
+      <legend className="text-sm font-semibold text-on-surface">
         {component.label}
         {/* Changes what the student types, so it stays in the field name. */}
         {afterNegativeMarking ? " (after negative marking)" : null}
       </legend>
       {percentage ? (
         <div className="relative mt-2">
-          {renderInput("obtained", "Percentage", "pr-10")}
+          {renderInput("obtained", "Percentage", "0 to 100", "pr-10")}
           <span
             aria-hidden="true"
             className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-on-surface-variant"
@@ -214,12 +220,13 @@ function ComponentFields({
           </span>
         </div>
       ) : (
-        <div className="mt-2 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-          {renderInput("obtained", "Marks obtained")}
-          <span aria-hidden="true" className="text-lg text-on-surface-variant">
-            /
+        // Obtained takes the room; the total is short and usually pre-filled.
+        <div className="mt-2 grid grid-cols-[minmax(0,1fr)_auto_6rem] items-center gap-2">
+          {renderInput("obtained", "Marks obtained", "Obtained")}
+          <span aria-hidden="true" className="whitespace-nowrap text-sm text-on-surface-variant">
+            out of
           </span>
-          {renderInput("total", "Total marks")}
+          {renderInput("total", "Total marks", "Total", "px-3")}
         </div>
       )}
       {parts.map((part) => {
@@ -311,10 +318,7 @@ function FormulaBreakdown({ formula }: { formula: MeritFormula }) {
   );
 
   return (
-    <section
-      aria-labelledby="merit-formula-heading"
-      className="border-t border-outline-variant pt-6"
-    >
+    <section aria-labelledby="merit-formula-heading" className="pt-2">
       <h2
         id="merit-formula-heading"
         className="font-headline text-base font-semibold text-on-surface"
