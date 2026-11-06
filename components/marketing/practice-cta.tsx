@@ -7,7 +7,7 @@ type PracticeCtaProps = {
   /** Heading id for aria-labelledby (must be unique on the page). */
   id: string;
   title: string;
-  description: string;
+  description?: string;
   className?: string;
 };
 
@@ -34,7 +34,7 @@ export function PracticeCta({ id, title, description, className }: PracticeCtaPr
         >
           {title}
         </h2>
-        <p className="mt-3 text-on-surface-variant">{description}</p>
+        {description ? <p className="mt-3 text-on-surface-variant">{description}</p> : null}
       </div>
       <AuthAwareButton
         size="lg"

@@ -550,3 +550,24 @@ paper surfaces, and a less saturated blue. Targets: body text ≥12:1, muted
 - **Progress per test**: `practice_progress` RPC (SECURITY INVOKER) groups
   answers per subject in one query, instead of loading rows (PostgREST
   1000-row cap). Mock results and Performance are scoped to the active test.
+
+## 2026-11-06 — Merit university pages: one job, no notes (owner)
+- Owner direction: simple like Linear / Apple Notes; cut taglines, helper
+  text and secondary labels, and fix the layout instead of explaining it.
+- `/merit-calculator/[university]` shows only: h1, calculator (left), formula
+  table + admission criteria (right), practice CTA. Removed from the UI:
+  "Notes on this formula" (review flags + formula notes), "Good to know"
+  (university notes), PDF source lines, the admission-year notice, intro
+  text, at-a-glance chips, field hints, weight pills, the formula text line
+  and the back button (breadcrumbs cover it).
+- The data keeps everything (`reviewFlags`, `notes`, `sourcePages`,
+  `formulaText`): they are for content review and traceability to the PDF,
+  not for students. `sourceLine`/`formatPages` were deleted as dead code.
+- Inputs are one row per component, "[obtained] / [total]" (Pakistani
+  result-card notation), so they need only the component name as a visible
+  label (`aria-label` names each input). The one hint that changes what a
+  student types, "after negative marking" (`net-score-required`), is part of
+  the field name.
+- Kept on purpose: the one-line `MERIT_DISCLAIMER` under the result (every
+  formula is undated, so students must verify) and the qualifying minimums
+  (they decide whether a student qualifies at all).
