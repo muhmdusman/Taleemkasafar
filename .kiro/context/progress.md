@@ -20,9 +20,8 @@ Dated entries below are oldest-first; the newest is at the bottom.
     production left `entrytest.taleemkasafar.com` (with a 301) is not
     confirmed in the repo.
   - Contact form has no backend; Terms/Privacy links are still `#`.
-  - 2026-11-06: merit university pages redone like the owner's reference
-    (`feat/merit-page-like-reference`); need a browser check, and the QAU
-    formula needs verifying (see the newest entry).
+  - 2026-11-06: merit pages (centred column, clickable cards) and the
+    "Dashboard" header label need a browser check (see the newest entry).
 - **Next on the roadmap**: see `.kiro/steering/product.md` (dashboard UX
   rounds, remaining basic features, content SEO).
 
@@ -986,3 +985,20 @@ pu_import.sql still not applied to DB — regenerate then load via psql.
 - Data question for the owner: our QAU formula (PDF) is 70% academics +
   30% Entry Test/USAT; parhlai says QAU BS is 30% SSC + 70% HSSC Part-I with
   no test. Verify against QAU's admission notice before changing data.
+
+## 2026-11-06 (c) — Centred merit page, clickable cards, header label
+
+### Done
+- PR #8 merged. Owner: keep the PDF criteria (QAU unchanged); the second
+  Vercel project that fails on every PR is the owner's to fix.
+- Merit university page centred on desktop (`max-w-4xl`), one-line h1 for
+  most names, "[Obtained] out of [Total]" fields with placeholders, `h-11`
+  inputs, `md` button, no divider above "How your result is calculated".
+- `/merit-calculator`: whole university card is clickable.
+- Header (signed in): "Dashboard" without the icon; final CTA "Go to dashboard".
+- ⚠ Not run locally: lint, real typecheck, full Vitest, build (no npm
+  registry). The main Vercel preview build is the build check.
+
+### Next
+- Browser check on the preview: desktop centring, card click + keyboard
+  focus ring on `/merit-calculator`, signed-in header label.

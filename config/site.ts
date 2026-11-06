@@ -44,7 +44,7 @@ export const siteConfig = {
     signIn: { label: "Sign in", href: routes.login },
     register: { label: "Register", href: routes.signUp },
     // Shown instead of Sign in / Register when the visitor is signed in.
-    dashboard: { label: "Access dashboard", href: routes.dashboard },
+    dashboard: { label: "Dashboard", href: routes.dashboard },
     practice: { label: "Start practice", href: routes.subjects },
   },
   /**

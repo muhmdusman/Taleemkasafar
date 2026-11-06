@@ -586,3 +586,15 @@ paper surfaces, and a less saturated blue. Targets: body text ≥12:1, muted
 - "Other merit calculators": link tiles to the other 17 universities, for
   students who landed on the wrong page and for internal linking.
 - Page title: "<short name> Merit & Aggregate Calculator" (matches the h1).
+
+## 2026-11-06 (c) — Centred merit page, clickable cards, "Dashboard" label (owner)
+- Merit data: keep the PDF criteria as they are (owner: ignore the
+  reference site's numbers, e.g. QAU; the owner will fix data separately).
+- `/merit-calculator/<slug>`: the column is centred on desktop
+  (`mx-auto max-w-4xl`); text stays left-aligned inside it. Fields read
+  "[Obtained] out of [Total]" with placeholders, like the reference.
+- `/merit-calculator` cards: the whole card opens the calculator (stretched
+  link, same pattern as blog post cards).
+- Signed-in header button: "Dashboard", no icon (`siteConfig.auth.dashboard`,
+  also used by the mobile menu). The home final CTA says "Go to dashboard",
+  matching the hero, so big CTAs stay verbs.

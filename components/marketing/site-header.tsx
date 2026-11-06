@@ -49,7 +49,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          {/* Swaps to Start practice / Access dashboard for signed-in visitors. */}
+          {/* Swaps to Start practice / Dashboard for signed-in visitors. */}
           <HeaderAuthButtons />
           <div className="lg:hidden">
             {/* Trigger only; the Sheet loads on first open (no pathname read here). */}

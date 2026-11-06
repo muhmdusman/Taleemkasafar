@@ -72,8 +72,13 @@ auth (`app/auth/`, `components/auth/`). Each area's layout sets `theme-public`
   blue wordmark, dark h1). CTAs that change for signed-in visitors use
   `AuthAwareButton` (never read cookies on the server in public pages).
   Exception: merit university pages (`/merit-calculator/<slug>`) use a plain
-  left-aligned header (breadcrumbs, `text-brand-container` h1, one-sentence
-  formula intro) and one `max-w-3xl` column (DESIGN.md §15).
+  header (breadcrumbs, `text-brand-container` h1, one-sentence formula intro)
+  and one `max-w-4xl` column centred on desktop, text left-aligned inside it
+  (DESIGN.md §15).
+- **Clickable cards**: if a card leads to one page, the whole card is the
+  link: one descriptive `<Link>` with an `after:absolute after:inset-0`
+  overlay, `relative group` + `focus-within:ring` on the card (see
+  `post-card.tsx`, `university-card.tsx`). Never nest links.
 - **Dashboard**: every screen has ONE obvious next step. Home = greeting +
   `NextStepCard` (resume → first-run checklist with the test picker → keep
   going), then progress + suggested focus, subjects, mock tests. Practice ends

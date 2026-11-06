@@ -38,8 +38,8 @@ export async function generateMetadata({
 }
 
 /**
- * One left-aligned column: title + formula in one sentence, the calculator
- * card (with "how it's calculated" inside), admission criteria, then links to
+ * One centred column: title + formula in one sentence, the calculator card
+ * (with "how it's calculated" inside), admission criteria, then links to
  * every other university's calculator.
  */
 export default async function UniversityMeritPage({ params }: { params: Promise<Params> }) {
@@ -51,7 +51,8 @@ export default async function UniversityMeritPage({ params }: { params: Promise<
 
   return (
     <Container className="py-8 md:py-12">
-      <div className="flex max-w-3xl flex-col gap-10 md:gap-12">
+      {/* One reading column, centred on wide screens. */}
+      <div className="mx-auto flex max-w-4xl flex-col gap-10 md:gap-12">
         <div>
           <Breadcrumbs
             items={[
@@ -60,10 +61,10 @@ export default async function UniversityMeritPage({ params }: { params: Promise<
               { name: university.shortName, path: routes.meritUniversity(university.slug) },
             ]}
           />
-          <h1 className="mt-6 text-balance font-headline text-3xl font-bold tracking-tight text-brand-container sm:text-4xl md:text-5xl">
+          <h1 className="mt-5 text-balance font-headline text-3xl font-bold tracking-tight text-brand-container sm:text-4xl">
             {university.shortName} Merit & Aggregate Calculator
           </h1>
-          <p className="mt-4 text-lg leading-relaxed text-on-surface-variant">
+          <p className="mt-3 max-w-2xl text-lg leading-relaxed text-on-surface-variant">
             {universityIntro(university)}
           </p>
         </div>
