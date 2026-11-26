@@ -28,6 +28,8 @@ export const routes = {
   blogPost: (slug: string) => `${BLOG}/${slug}`,
   academies: "/academies",
   contact: "/contact",
+  // Senior Connect (Beta): students meet bachelor students.
+  seniors: "/seniors",
   dashboard: DASHBOARD,
   subjects: `${DASHBOARD}/subjects`,
   subject: (slug: string) => `${DASHBOARD}/subjects/${slug}`,
@@ -50,6 +52,7 @@ const PUBLIC_EXACT = new Set<string>([
   routes.home,
   routes.contact,
   routes.academies,
+  routes.seniors,
   routes.signInAlias,
   routes.registerAlias,
   "/robots.txt",

@@ -66,7 +66,7 @@ export const homeFaq: FaqItem[] = [
     id: "seniors",
     question: "Can I get guidance from seniors at my dream university?",
     answer:
-      "This is coming soon. If no cousin or elder sibling studies where you want to go, you will be able to connect with university seniors who already got admission and ask them what really works.",
+      "Yes, through Senior Connect, now in beta. If no cousin or elder sibling studies where you want to go, join the student waitlist on the Seniors page and we will introduce you to a bachelor student from your dream university.",
   },
   {
     id: "mock-tests",

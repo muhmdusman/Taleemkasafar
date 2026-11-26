@@ -17,6 +17,7 @@ export const staticPublicRoutes: PublicRoute[] = [
   { path: routes.home, changeFrequency: "weekly", priority: 1 },
   { path: routes.meritCalculator, changeFrequency: "monthly", priority: 0.9 },
   { path: routes.blog, changeFrequency: "weekly", priority: 0.8 },
+  { path: routes.seniors, changeFrequency: "weekly", priority: 0.7 },
   { path: routes.academies, changeFrequency: "monthly", priority: 0.6 },
   { path: routes.contact, changeFrequency: "yearly", priority: 0.5 },
 ];

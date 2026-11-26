@@ -18,7 +18,7 @@ const url = (process.env.NEXT_PUBLIC_SITE_URL || "https://taleemkasafar.com").re
   "",
 );
 
-export type NavLink = { label: string; href: string };
+export type NavLink = { label: string; href: string; /** Small pill, e.g. "Beta". */ badge?: string };
 
 export const siteConfig = {
   name: "Taleem ka Safar",
@@ -36,6 +36,7 @@ export const siteConfig = {
   nav: [
     { label: "Home", href: routes.home },
     { label: "Merit Calculator", href: routes.meritCalculator },
+    { label: "Seniors", href: routes.seniors, badge: "Beta" },
     { label: "Blog", href: routes.blog },
     { label: "For Academics", href: routes.academies },
     { label: "Contact", href: routes.contact },

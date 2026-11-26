@@ -1002,3 +1002,20 @@ pu_import.sql still not applied to DB — regenerate then load via psql.
 ### Next
 - Browser check on the preview: desktop centring, card click + keyboard
   focus ring on `/merit-calculator`, signed-in header label.
+
+
+## 2026-10-31 — Senior Connect (Beta) page (branch feat/senior-connect-beta)
+
+### Done
+- `/seniors`: charcoal hero with sample chat, problem (85%+ stat), solution +
+  3 steps, audiences, two sign-up forms (Web3Forms), privacy note, FAQ (+ JSON-LD).
+- Nav "Seniors · Beta" (desktop, mobile, footer), sitemap, public allowlist,
+  home FAQ points to the beta.
+- Verified: lint, typecheck, 263 tests (11 new), build (`/seniors` static),
+  browser test of empty/valid/429/retry submissions with intercepted
+  Web3Forms calls, Lighthouse a11y/BP/SEO 100.
+
+### Next
+- Owner: create the Web3Forms key, set it in Vercel, redeploy, send one real
+  test sign-up. Add a source for the 85% figure.
+- Later: DB tables + server action, senior listing page, matching workflow.

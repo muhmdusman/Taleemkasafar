@@ -58,6 +58,7 @@ export function SiteFooter() {
               <li key={link.href}>
                 <Link href={link.href} className={linkClass}>
                   {link.label}
+                  {link.badge ? ` (${link.badge})` : null}
                 </Link>
               </li>
             ))}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { marketingButton, prefetchFor } from "@/components/marketing/button-link";
+import { NavBadge } from "@/components/marketing/nav-links";
 import {
   Sheet,
   SheetClose,
@@ -79,6 +80,7 @@ export default function MobileMenuSheet({
                       )}
                     >
                       {link.label}
+                      {link.badge ? <NavBadge>{link.badge}</NavBadge> : null}
                     </Link>
                   </SheetClose>
                 </li>

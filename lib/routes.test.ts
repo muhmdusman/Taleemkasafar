@@ -32,6 +32,7 @@ describe("routes builders", () => {
     expect(routes.blogPost("net-guide")).toBe("/blog/net-guide");
     expect(routes.academies).toBe("/academies");
     expect(routes.contact).toBe("/contact");
+    expect(routes.seniors).toBe("/seniors");
     expect(routes.signInAlias).toBe("/sign-in");
     expect(routes.registerAlias).toBe("/register");
   });
@@ -78,6 +79,7 @@ describe("isPublicPath (deny-by-default allowlist)", () => {
       "/blog/how-to-prepare-for-net/opengraph-image-1a2b3c",
       "/contact",
       "/academies",
+      "/seniors",
       "/sign-in",
       "/register",
     ]) {
@@ -95,6 +97,8 @@ describe("isPublicPath (deny-by-default allowlist)", () => {
       "/contact/x",
       "/academiesx",
       "/academies/x",
+      "/seniorsx",
+      "/seniors/x",
       "/sign-in/x",
       "/sign-inx",
       "/registerx",
@@ -151,7 +155,7 @@ describe("shouldBounceSignedIn", () => {
   });
 
   it("lets signed-in users browse the public site", () => {
-    for (const p of ["/", "/merit-calculator", "/blog", "/contact", "/academies"]) {
+    for (const p of ["/", "/merit-calculator", "/blog", "/contact", "/academies", "/seniors"]) {
       expect(shouldBounceSignedIn(p), p).toBe(false);
     }
   });
