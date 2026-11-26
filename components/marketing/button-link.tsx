@@ -20,6 +20,11 @@ export const marketingButton = cva(
           "border border-outline-variant bg-surface-lowest text-on-surface hover:border-outline hover:bg-surface-low",
         brand: "bg-brand text-on-brand hover:bg-brand-container",
         ghost: "text-on-surface hover:bg-surface-container",
+        // On charcoal banners: the on-dark blue (#296FBB) + a neutral outline.
+        "primary-dark":
+          "bg-brand-ondark text-on-brand hover:bg-brand-ondark/85 focus-visible:ring-on-ink focus-visible:ring-offset-ink",
+        "outline-dark":
+          "border border-on-ink/40 text-on-ink hover:border-on-ink/70 hover:bg-on-ink/10 focus-visible:ring-on-ink focus-visible:ring-offset-ink",
       },
       size: {
         sm: "h-10 px-4 text-sm",

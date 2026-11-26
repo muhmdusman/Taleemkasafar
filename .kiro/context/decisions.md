@@ -598,3 +598,25 @@ paper surfaces, and a less saturated blue. Targets: body text ≥12:1, muted
 - Signed-in header button: "Dashboard", no icon (`siteConfig.auth.dashboard`,
   also used by the mobile menu). The home final CTA says "Go to dashboard",
   matching the hero, so big CTAs stay verbs.
+
+
+## 2026-10-31 — Senior Connect (Beta) at /seniors
+
+- Static public page connecting students seeking admission with bachelor
+  students. No DB yet: two sign-up forms (student waitlist, senior mentor)
+  deliver through **Web3Forms from the browser** (free plan forbids server-side
+  calls). Key: `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` (public by design; inlined at
+  build, so set it in Vercel and redeploy). Without it the forms show a
+  WhatsApp fallback. Free plan: 250 submissions/month.
+- Seniors give: name, email, WhatsApp, university, campus (+ optional
+  programme) and consent. Students give: name, email, WhatsApp, entry test,
+  dream university and consent. Validation is pure (`lib/senior-connect/forms.ts`)
+  so a future server action / DB insert reuses it; tables to add later:
+  `senior_connect_students`, `senior_connect_seniors`.
+- Copy lives in `config/senior-connect.ts`. The "85%+" figure is owner-provided
+  and has no source yet (`stat.source` renders when filled).
+- Operational promises made on the page (owner must honour them): every senior
+  is checked before introductions; contact details are shared only after both
+  sides agree; phone numbers are never published.
+- Nav links can carry a badge (`NavLink.badge`); "Seniors" shows "Beta".
+  Button variants `primary-dark` / `outline-dark` for charcoal banners.

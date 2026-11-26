@@ -3,6 +3,15 @@ import type { NavLink } from "@/config/site";
 import { isNavActive } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
+/** Small "Beta"-style pill next to a nav label. */
+export function NavBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="ml-1.5 rounded-full bg-brand px-1.5 py-0.5 align-middle font-headline text-[10px] font-bold uppercase leading-none tracking-wider text-on-brand">
+      {children}
+    </span>
+  );
+}
+
 export const desktopLinkClass =
   "rounded-lg px-3 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container hover:text-on-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-container";
 export const desktopActiveClass = "bg-surface-container font-semibold text-on-surface";
@@ -36,6 +45,7 @@ export function NavLinks({
               className={cn(linkClassName, active && activeClassName)}
             >
               {link.label}
+              {link.badge ? <NavBadge>{link.badge}</NavBadge> : null}
             </Link>
           </li>
         );

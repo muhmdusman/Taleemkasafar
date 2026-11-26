@@ -61,6 +61,12 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  */
 const PK_PHONE_RE = /^(?:\+92|0092|0)(?:3\d{9}|[124-9]\d{8,9})$/;
 
+/** Shared email check (also used by lib/senior-connect). */
+export function isValidEmail(raw: string): boolean {
+  const email = raw.trim();
+  return email.length <= EMAIL_MAX && EMAIL_RE.test(email);
+}
+
 export function normalizePhone(raw: string): string {
   return raw.replace(/[\s\-().]/g, "");
 }
